@@ -275,7 +275,7 @@ export default function HomePage() {
                 <span className="text-bone">Premium</span>,{" "}
                 <span className="text-bone">Signature</span>.
                 Tutto compreso: progettazione, sviluppo, deploy, hosting, email
-                di consegna. Una tantum, niente abbonamenti.
+                di consegna.
               </p>
             </Reveal>
 
