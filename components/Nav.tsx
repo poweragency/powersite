@@ -30,10 +30,10 @@ export function Nav() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 transition-all duration-500 ease-out",
+        "sticky top-0 z-50 transition-all duration-500 ease-out",
         scrolled
-          ? "border-b border-brass/20 bg-obsidian backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.7)]"
-          : "border-b border-transparent bg-gradient-to-b from-obsidian/85 via-obsidian/60 to-transparent backdrop-blur-md",
+          ? "border-b border-bone/10 bg-obsidian backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.7)]"
+          : "border-b border-brass/15 bg-transparent backdrop-blur-[2px]",
       )}
     >
       <div className="container-x flex h-16 items-center justify-between gap-3">

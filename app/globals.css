@@ -19,9 +19,8 @@ html {
   background: rgb(var(--obsidian));
 }
 
-html, body { height: 100%; }
-
 body {
+  min-height: 100vh;
   background: rgb(var(--obsidian));
   color: rgb(var(--bone));
   font-feature-settings: "ss01" on, "cv11" on;
