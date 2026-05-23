@@ -101,84 +101,85 @@ export default function HomePage() {
 
       {/* ─── HERO ────────────────────────────────────────── */}
       <section className="relative isolate overflow-hidden">
-        {/* Atmosfere di sfondo — più morbide */}
-        <div className="glow-orb top-[-5%] right-[-8%] h-[700px] w-[700px] animate-glow bg-flame/25" />
-        <div className="glow-orb top-[35%] left-[-15%] h-[500px] w-[500px] animate-glow-slow bg-brass/18" />
+        {/* Atmosfere */}
+        <div className="glow-orb top-[-10%] right-[-12%] h-[800px] w-[800px] animate-glow bg-flame/20" />
+        <div className="glow-orb top-[40%] left-[-15%] h-[600px] w-[600px] animate-glow-slow bg-brass/15" />
         <div className="grain" />
 
-        <div className="container-x relative pt-24 pb-28 md:pt-32 md:pb-36">
-          <div className="mx-auto max-w-5xl">
+        <div className="container-x relative pt-28 pb-32 md:pt-36 md:pb-40 lg:pt-44">
+          <div className="mx-auto max-w-5xl text-center">
 
-            {/* Eyebrow — hairline brass bracketed */}
+            {/* Eyebrow — chip-brass coerente col resto della pagina */}
             <Reveal>
-              <div className="flex items-center justify-center gap-5">
-                <span className="h-px w-10 bg-brass/40 md:w-16" />
-                <span className="font-mono text-[10px] uppercase tracking-widest text-brass md:text-[11px]">
-                  Atelier digitale · Firenze
-                </span>
-                <span className="h-px w-10 bg-brass/40 md:w-16" />
-              </div>
+              <span className="chip-brass">
+                Atelier digitale · Firenze
+              </span>
             </Reveal>
 
             {/* Headline */}
-            <h1 className="display mt-10 text-center text-balance text-6xl font-bold leading-[0.95] text-cream md:mt-12 md:text-7xl lg:text-[7rem] lg:leading-[0.92]">
-              <Reveal delay={100} inline className="block">Sito web</Reveal>
-              <Reveal delay={250} inline className="block">
+            <h1 className="display mt-12 text-balance text-5xl font-bold leading-[1] text-cream sm:text-6xl md:mt-14 md:text-7xl lg:text-[7.5rem] lg:leading-[0.95]">
+              <Reveal delay={120} inline className="block">Sito web</Reveal>
+              <Reveal delay={280} inline className="block">
                 <span className="serif-italic">su misura</span>
                 <span className="text-mist">,</span>
               </Reveal>
-              <Reveal delay={400} inline className="block">
+              <Reveal delay={440} inline className="block">
                 <span className="text-flame">in 48 ore.</span>
               </Reveal>
             </h1>
 
-            {/* Subhead */}
+            {/* Hairline brass — segno editoriale */}
             <Reveal delay={650}>
-              <p className="mx-auto mt-10 max-w-2xl text-pretty text-center text-lg leading-relaxed text-bone/80 md:text-xl">
-                Non un template. Non un drag-and-drop. Un sito disegnato
-                e costruito per te, dal nostro studio. Una consegna alla
+              <div className="hairline mx-auto mt-14 max-w-xs md:mt-16" />
+            </Reveal>
+
+            {/* Subhead */}
+            <Reveal delay={780}>
+              <p className="mx-auto mt-10 max-w-xl text-pretty text-base leading-relaxed text-bone/80 md:text-lg">
+                Niente template. Niente drag-and-drop. Un sito disegnato e
+                costruito per te, dal nostro studio. Una consegna alla
                 volta, con cura artigianale.
               </p>
             </Reveal>
 
-            {/* CTAs — primary + understated text link */}
-            <Reveal delay={800}>
-              <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-5">
-                <Link href="/ordina" className="btn-flame btn-lg">
+            {/* CTAs */}
+            <Reveal delay={920}>
+              <div className="mt-12 flex flex-col items-center gap-5">
+                <Link href="/ordina" className="btn-flame btn-xl">
                   Avvia il progetto
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12" />
                     <polyline points="12 5 19 12 12 19" />
                   </svg>
                 </Link>
                 <Link
                   href="#processo"
-                  className="group inline-flex items-center gap-2 text-sm font-medium text-bone underline-offset-[6px] decoration-brass/40 transition-colors hover:text-brass hover:underline"
+                  className="group inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-mist transition-colors hover:text-brass"
                 >
                   Scopri il processo
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-0.5">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-y-0.5">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <polyline points="19 12 12 19 5 12" />
                   </svg>
                 </Link>
               </div>
             </Reveal>
 
-            {/* Stats — riga orizzontale elegante con hairline verticali */}
-            <Reveal delay={1000}>
-              <div className="mx-auto mt-20 flex flex-col items-center gap-8 md:mt-24 md:flex-row md:justify-center md:gap-0">
+            {/* Stats — riga elegante con hairline verticali */}
+            <Reveal delay={1100}>
+              <div className="mx-auto mt-24 flex flex-col items-center gap-7 md:mt-32 md:flex-row md:justify-center md:gap-0">
                 {[
                   { num: "48h", label: "Consegna" },
                   { num: "30", label: "Progetti/mese max" },
                   { num: "100%", label: "Su misura" },
                 ].map((s, i) => (
                   <Fragment key={s.label}>
-                    {i > 0 && <span className="hidden h-14 w-px bg-bone/15 md:mx-12 md:block lg:mx-16" />}
+                    {i > 0 && <span className="hidden h-12 w-px bg-bone/15 md:mx-12 md:block lg:mx-16" />}
                     <div className="text-center">
-                      <div className="display text-4xl font-bold tracking-tightest text-cream md:text-5xl">
+                      <div className="display text-3xl font-bold tracking-tightest text-cream md:text-4xl">
                         {s.num}
                       </div>
-                      <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-mist">
+                      <div className="mt-1.5 font-mono text-[10px] uppercase tracking-widest text-mist">
                         {s.label}
                       </div>
                     </div>
@@ -228,24 +229,15 @@ export default function HomePage() {
       {/* ─── VALORI ──────────────────────────────────────── */}
       <section id="filosofia" className="relative py-32 md:py-40">
         <div className="container-x">
-          <div className="grid items-end gap-10 md:grid-cols-[1fr_1fr] md:gap-20">
-            <div>
-              <Reveal>
-                <span className="chip-brass">La nostra filosofia</span>
-              </Reveal>
-              <Reveal delay={150}>
-                <h2 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tighter text-cream md:text-6xl">
-                  Sei principi <br />
-                  su cui non <span className="serif-italic">scendiamo</span> a patti.
-                </h2>
-              </Reveal>
-            </div>
-            <Reveal delay={250}>
-              <p className="text-pretty text-lg leading-relaxed text-mist">
-                Mentre i grandi studi ti tengono settimane in stallo
-                creativo e i template generici sembrano tutti uguali,
-                noi facciamo una cosa sola — bene, in fretta, su misura.
-              </p>
+          <div className="mx-auto max-w-3xl text-center">
+            <Reveal>
+              <span className="chip-brass">La nostra filosofia</span>
+            </Reveal>
+            <Reveal delay={150}>
+              <h2 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tighter text-cream md:text-6xl">
+                Sei principi <br />
+                su cui non <span className="serif-italic">scendiamo</span> a patti.
+              </h2>
             </Reveal>
           </div>
 

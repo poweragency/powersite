@@ -32,8 +32,8 @@ export function Nav() {
       className={cn(
         "sticky top-0 z-40 transition-all duration-500 ease-out",
         scrolled
-          ? "border-b border-bone/10 bg-obsidian/95 backdrop-blur-xl shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)]"
-          : "border-b border-bone/5 bg-obsidian/55 backdrop-blur-md",
+          ? "border-b border-bone/15 bg-obsidian backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.7)]"
+          : "border-b border-bone/5 bg-obsidian/80 backdrop-blur-lg",
       )}
     >
       <div className="container-x flex h-16 items-center justify-between gap-3">
