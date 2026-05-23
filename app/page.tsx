@@ -100,7 +100,10 @@ export default function HomePage() {
       <Nav />
 
       {/* ─── HERO ────────────────────────────────────────── */}
-      <section className="relative isolate overflow-hidden">
+      {/* -mt-16 pt-16: l'hero scorre SOTTO il nav (che è z-50 trasparente)
+          così gli orb atmosferici riempiono anche la zona del nav, eliminando
+          la "riga nera" tra nav e hero. pt-16 ricompensa lo spazio per il contenuto. */}
+      <section className="relative isolate -mt-16 overflow-hidden pt-16">
         {/* Atmosfere */}
         <div className="glow-orb top-[-10%] right-[-12%] h-[800px] w-[800px] animate-glow bg-flame/20" />
         <div className="glow-orb top-[40%] left-[-15%] h-[600px] w-[600px] animate-glow-slow bg-brass/15" />
