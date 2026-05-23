@@ -226,7 +226,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── VALORI ──────────────────────────────────────── */}
-      <section className="relative py-32 md:py-40">
+      <section id="filosofia" className="relative py-32 md:py-40">
         <div className="container-x">
           <div className="grid items-end gap-10 md:grid-cols-[1fr_1fr] md:gap-20">
             <div>
@@ -319,7 +319,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── TESTIMONIANZE ──────────────────────────────── */}
-      <section className="relative py-32 md:py-40">
+      <section id="recensioni" className="relative py-32 md:py-40">
         <div className="container-x">
           <div className="mb-20 grid items-end gap-10 md:grid-cols-2">
             <div>
