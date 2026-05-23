@@ -24,14 +24,9 @@ const ADDON_PRICE_ENV: Record<AddonKey, string> = {
   analytics: "STRIPE_PRICE_ADDON_ANALYTICS",
   chatbot: "STRIPE_PRICE_ADDON_CHATBOT",
   email_funnel: "STRIPE_PRICE_ADDON_EMAIL_FUNNEL",
-  brand_kit: "STRIPE_PRICE_ADDON_BRAND_KIT",
-  blog: "STRIPE_PRICE_ADDON_BLOG",
   cro: "STRIPE_PRICE_ADDON_CRO",
   booking: "STRIPE_PRICE_ADDON_BOOKING",
-  pwa: "STRIPE_PRICE_ADDON_PWA",
   domain: "STRIPE_PRICE_ADDON_DOMAIN",
-  performance: "STRIPE_PRICE_ADDON_PERFORMANCE",
-  human_review: "STRIPE_PRICE_ADDON_HUMAN_REVIEW",
 };
 
 function priceFor(envVar: string, label: string): string {

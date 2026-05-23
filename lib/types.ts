@@ -7,14 +7,9 @@ export type AddonKey =
   | "analytics"
   | "chatbot"
   | "email_funnel"
-  | "brand_kit"
-  | "blog"
   | "cro"
   | "booking"
-  | "pwa"
-  | "domain"
-  | "performance"
-  | "human_review";
+  | "domain";
 
 export type ToneOfVoice =
   | "professional"

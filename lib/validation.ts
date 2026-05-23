@@ -20,8 +20,8 @@ export const orderIntakeSchema = z.object({
   // Pacchetto
   tier: z.enum(["standard", "premium", "business"]),
   addons: z.array(z.enum([
-    "seo","geo","gaio","analytics","chatbot","email_funnel","brand_kit",
-    "blog","cro","booking","pwa","domain","performance","human_review",
+    "seo","geo","gaio","analytics","chatbot","email_funnel",
+    "cro","booking","domain",
   ])).default([]),
 
   // Immagini
