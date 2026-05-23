@@ -9,57 +9,68 @@ type Device = "desktop" | "mobile";
 
 /**
  * Renderizza un sito esterno a risoluzione FISSA (1920×1080 desktop o
- * 1080×1920 mobile) e lo scala via CSS transform per entrare nello
- * spazio disponibile. Così il sito si carica come se fosse su un
- * monitor Full HD nativo, niente più viste tagliate o riadattate.
+ * 1080×1920 mobile) e lo scala via CSS transform per entrare INTERO
+ * nello spazio disponibile — senza scroll, proporzioni native preservate.
+ *
+ * Logica: misura larghezza + altezza del contenitore, calcola
+ * `min(maxW/baseW, maxH/baseH)`. Così se manca altezza si stringe, se
+ * manca larghezza si stringe — qualunque sia il vincolo prevalente.
  */
 function ResolutionPreview({ url, device }: { url: string; device: Device }) {
   const baseW = device === "desktop" ? 1920 : 1080;
   const baseH = device === "desktop" ? 1080 : 1920;
-  const aspect = device === "desktop" ? "aspect-[16/9]" : "aspect-[9/16]";
-  const maxW = device === "desktop" ? "max-w-full" : "max-w-[420px]";
+  // Cap di larghezza per mobile: anche se ci fosse spazio in larghezza,
+  // restringiamo per simulare un telefono reale.
+  const widthCap = device === "desktop" ? Infinity : 420;
 
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0);
 
   useEffect(() => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-    const update = () => setScale(wrapper.clientWidth / baseW);
+    const container = containerRef.current;
+    if (!container) return;
+    const update = () => {
+      const availW = Math.min(container.clientWidth, widthCap);
+      const availH = container.clientHeight;
+      if (availW <= 0 || availH <= 0) return;
+      setScale(Math.min(availW / baseW, availH / baseH));
+    };
     update();
     const ro = new ResizeObserver(update);
-    ro.observe(wrapper);
+    ro.observe(container);
     return () => ro.disconnect();
-  }, [baseW]);
+  }, [baseW, baseH, widthCap]);
+
+  const scaledW = baseW * scale;
+  const scaledH = baseH * scale;
 
   return (
-    <div className={cn("mx-auto", maxW)}>
-      <div
-        ref={wrapperRef}
-        className={cn(
-          "relative overflow-hidden rounded-lg border border-bone/10 bg-white shadow-[0_20px_60px_-20px_rgba(0,0,0,0.5)]",
-          aspect,
-        )}
-      >
-        {scale > 0 && (
-          <iframe
-            src={url}
-            title="Preview"
-            loading="lazy"
-            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-            style={{
-              width: `${baseW}px`,
-              height: `${baseH}px`,
-              transform: `scale(${scale})`,
-              transformOrigin: "top left",
-            }}
-            className="absolute left-0 top-0 border-0"
-          />
-        )}
-      </div>
-      <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-widest text-mist">
-        Risoluzione · {baseW} × {baseH}
-      </p>
+    <div ref={containerRef} className="flex h-full w-full items-center justify-center">
+      {scale > 0 && (
+        <div className="flex flex-col items-center gap-3">
+          <div
+            className="relative overflow-hidden rounded-lg border border-bone/10 bg-white shadow-[0_20px_60px_-20px_rgba(0,0,0,0.5)]"
+            style={{ width: `${scaledW}px`, height: `${scaledH}px` }}
+          >
+            <iframe
+              src={url}
+              title="Preview"
+              loading="lazy"
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              style={{
+                width: `${baseW}px`,
+                height: `${baseH}px`,
+                transform: `scale(${scale})`,
+                transformOrigin: "top left",
+              }}
+              className="absolute left-0 top-0 border-0"
+            />
+          </div>
+          <p className="font-mono text-[10px] uppercase tracking-widest text-mist">
+            Risoluzione · {baseW} × {baseH} · scale {(scale * 100).toFixed(0)}%
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -181,8 +192,8 @@ export function ShowcaseModal({ tier, onClose }: Props) {
           </div>
         </header>
 
-        {/* Iframe viewport — risoluzione fissa HD scalata */}
-        <div className="relative flex-1 overflow-auto bg-obsidian/60 p-4 md:p-6">
+        {/* Iframe viewport — risoluzione fissa HD scalata per entrare intera, niente scroll */}
+        <div className="relative flex-1 overflow-hidden bg-obsidian/60 p-4 md:p-6">
           <ResolutionPreview key={active.url + device} url={active.url} device={device} />
         </div>
 
