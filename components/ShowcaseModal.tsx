@@ -1,11 +1,68 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { SHOWCASE } from "@/lib/showcase";
 import type { Tier } from "@/lib/types";
 
 type Device = "desktop" | "mobile";
+
+/**
+ * Renderizza un sito esterno a risoluzione FISSA (1920×1080 desktop o
+ * 1080×1920 mobile) e lo scala via CSS transform per entrare nello
+ * spazio disponibile. Così il sito si carica come se fosse su un
+ * monitor Full HD nativo, niente più viste tagliate o riadattate.
+ */
+function ResolutionPreview({ url, device }: { url: string; device: Device }) {
+  const baseW = device === "desktop" ? 1920 : 1080;
+  const baseH = device === "desktop" ? 1080 : 1920;
+  const aspect = device === "desktop" ? "aspect-[16/9]" : "aspect-[9/16]";
+  const maxW = device === "desktop" ? "max-w-full" : "max-w-[420px]";
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    const update = () => setScale(wrapper.clientWidth / baseW);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(wrapper);
+    return () => ro.disconnect();
+  }, [baseW]);
+
+  return (
+    <div className={cn("mx-auto", maxW)}>
+      <div
+        ref={wrapperRef}
+        className={cn(
+          "relative overflow-hidden rounded-lg border border-bone/10 bg-white shadow-[0_20px_60px_-20px_rgba(0,0,0,0.5)]",
+          aspect,
+        )}
+      >
+        {scale > 0 && (
+          <iframe
+            src={url}
+            title="Preview"
+            loading="lazy"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+            style={{
+              width: `${baseW}px`,
+              height: `${baseH}px`,
+              transform: `scale(${scale})`,
+              transformOrigin: "top left",
+            }}
+            className="absolute left-0 top-0 border-0"
+          />
+        )}
+      </div>
+      <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-widest text-mist">
+        Risoluzione · {baseW} × {baseH}
+      </p>
+    </div>
+  );
+}
 
 interface Props {
   tier: Tier | null;
@@ -124,22 +181,9 @@ export function ShowcaseModal({ tier, onClose }: Props) {
           </div>
         </header>
 
-        {/* Iframe viewport */}
+        {/* Iframe viewport — risoluzione fissa HD scalata */}
         <div className="relative flex-1 overflow-auto bg-obsidian/60 p-4 md:p-6">
-          <div
-            className={cn(
-              "mx-auto h-full overflow-hidden rounded-lg border border-bone/10 bg-white shadow-[0_20px_60px_-20px_rgba(0,0,0,0.5)] transition-all",
-              device === "mobile" ? "max-w-[420px]" : "max-w-full",
-            )}
-          >
-            <iframe
-              src={active.url}
-              title={active.name}
-              className="h-full w-full"
-              loading="lazy"
-              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-            />
-          </div>
+          <ResolutionPreview key={active.url + device} url={active.url} device={device} />
         </div>
 
         {/* Footer — tab thumbnails se più esempi */}
