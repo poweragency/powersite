@@ -24,7 +24,6 @@ const ADDON_PRICE_ENV: Record<AddonKey, string> = {
   analytics: "STRIPE_PRICE_ADDON_ANALYTICS",
   chatbot: "STRIPE_PRICE_ADDON_CHATBOT",
   email_funnel: "STRIPE_PRICE_ADDON_EMAIL_FUNNEL",
-  cro: "STRIPE_PRICE_ADDON_CRO",
   booking: "STRIPE_PRICE_ADDON_BOOKING",
   domain: "STRIPE_PRICE_ADDON_DOMAIN",
 };

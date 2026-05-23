@@ -91,13 +91,6 @@ export const ADDONS: AddonSpec[] = [
     icon: "Mail",
   },
   {
-    key: "cro",
-    name: "CRO — Più clienti, stesse visite",
-    priceEur: 127,
-    description: "Guardiamo cosa fanno le persone sul sito: dove cliccano, dove si fermano, dove si annoiano. Poi cambiamo i bottoni finché non funzionano meglio.",
-    icon: "TrendingUp",
-  },
-  {
     key: "booking",
     name: "Booking & E-commerce",
     priceEur: 197,

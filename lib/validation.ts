@@ -4,8 +4,8 @@ export const orderIntakeSchema = z.object({
   // Contatti
   email: z.string().email("Email non valida"),
   company: z.string().min(2, "Nome azienda obbligatorio").max(100),
+  phone: z.string().min(6, "Telefono obbligatorio (serve per la delivery)").max(30),
   website: z.string().url().optional().or(z.literal("")),
-  phone: z.string().optional(),
 
   // Brief
   sector: z.string().min(2, "Settore obbligatorio").max(80),
@@ -21,7 +21,7 @@ export const orderIntakeSchema = z.object({
   tier: z.enum(["standard", "premium", "business"]),
   addons: z.array(z.enum([
     "seo","geo","gaio","analytics","chatbot","email_funnel",
-    "cro","booking","domain",
+    "booking","domain",
   ])).default([]),
 
   // Immagini

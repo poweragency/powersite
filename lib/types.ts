@@ -7,7 +7,6 @@ export type AddonKey =
   | "analytics"
   | "chatbot"
   | "email_funnel"
-  | "cro"
   | "booking"
   | "domain";
 
@@ -50,8 +49,8 @@ export interface OrderPayload {
   email: string;
   company: string;
   companySlug: string;
+  phone: string;
   website?: string;
-  phone?: string;
 
   // Brief
   sector: string;

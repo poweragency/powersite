@@ -327,8 +327,9 @@ export default function OrderForm() {
                     <input name="website" type="url" placeholder="https://" className="input" />
                   </div>
                   <div>
-                    <label className="label">Telefono (opz.)</label>
-                    <input name="phone" type="tel" placeholder="+39..." className="input" />
+                    <label className="label">Telefono *</label>
+                    <input name="phone" type="tel" required placeholder="+39..." className="input" />
+                    <p className="mt-2 text-xs text-mist">Serve per coordinare la delivery del sito.</p>
                   </div>
                 </div>
               </section>
