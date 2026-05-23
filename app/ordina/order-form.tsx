@@ -105,7 +105,7 @@ export default function OrderForm() {
           </h1>
           <p className="mt-5 max-w-xl text-pretty text-mist">
             Cinque minuti di brief. Poi pagamento, e ci pensiamo noi.
-            Riceverai il link di anteprima entro 24 ore.
+            Riceverai il link di anteprima entro 48 ore.
           </p>
         </header>
 

@@ -42,7 +42,7 @@ export default async function GraziePage({
               <p className="mx-auto mt-8 max-w-xl text-pretty text-lg leading-relaxed text-mist">
                 Il tuo brief è arrivato al nostro studio. Il nostro team è
                 già al lavoro sul progetto. Riceverai un&apos;email con il
-                link di anteprima <span className="text-bone">entro 24 ore</span>.
+                link di anteprima <span className="text-bone">entro 48 ore</span>.
               </p>
             </Reveal>
 

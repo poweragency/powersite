@@ -9,7 +9,7 @@ import { formatEur } from "@/lib/utils";
 const MARQUEE = [
   "Atelier digitale",
   "Su misura",
-  "Consegna in 24 ore",
+  "Consegna in 48 ore",
   "Made in Italy",
   "Lavoro sartoriale",
   "Codice scritto a mano",
@@ -45,7 +45,7 @@ const VALUES = [
   { t: "Codice scritto a mano.", d: "Sviluppiamo con cura artigianale, riga per riga. Il sito è veloce, pulito, e tuo per sempre." },
   { t: "Le tue immagini.", d: "Carichi tu le foto del business. Niente stock photography, niente immagini generiche da archivio." },
   { t: "Copy che vende.", d: "Ogni parola è studiata per portare risultati. Headline, CTA, FAQ, tutto curato come fosse un'ammiraglia." },
-  { t: "Consegna garantita.", d: "Ventiquattro ore dal pagamento al link di anteprima. Non promesse, ma il nostro impegno scritto." },
+  { t: "Consegna garantita.", d: "Quarantotto ore dal pagamento al link di anteprima. Non promesse, ma il nostro impegno scritto." },
   { t: "Tuo per sempre.", d: "Codice, repository, dominio: tutto a tuo nome. Vuoi cambiare studio domani? Hai già tutto in mano." },
 ];
 
@@ -70,7 +70,7 @@ const TESTIMONIALS = [
 const FAQ = [
   {
     q: "Quanto ci impiegate davvero?",
-    a: "Ventiquattro ore dal pagamento al link di anteprima. È il nostro impegno, scritto. Se per qualsiasi ragione non riusciamo a rispettarlo, ti rimborsiamo integralmente.",
+    a: "Quarantotto ore dal pagamento al link di anteprima. È il nostro impegno, scritto. Se per qualsiasi ragione non riusciamo a rispettarlo, ti rimborsiamo integralmente.",
   },
   {
     q: "Cosa serve per iniziare?",
@@ -124,7 +124,7 @@ export default function HomePage() {
                 <span className="text-mist">,</span>
               </Reveal>
               <Reveal delay={400} inline className="block">
-                <span className="text-flame">in 24 ore.</span>
+                <span className="text-flame">in 48 ore.</span>
               </Reveal>
             </h1>
 
@@ -154,7 +154,7 @@ export default function HomePage() {
             <Reveal delay={1000}>
               <div className="mx-auto mt-24 grid max-w-3xl grid-cols-3 gap-px overflow-hidden rounded-2xl border border-bone/10 bg-bone/10">
                 {[
-                  { num: "24h", label: "Consegna" },
+                  { num: "48h", label: "Consegna" },
                   { num: "30", label: "Progetti/mese max" },
                   { num: "100%", label: "Su misura" },
                 ].map((s) => (
@@ -479,14 +479,14 @@ export default function HomePage() {
           </Reveal>
           <Reveal delay={300}>
             <p className="mx-auto mt-8 max-w-xl text-pretty text-lg text-mist">
-              Cinque minuti per il brief. Ventiquattro ore per la consegna.
+              Cinque minuti per il brief. Quarantotto ore per la consegna.
               Una decisione che fa la differenza.
             </p>
           </Reveal>
           <Reveal delay={450}>
             <div className="mt-12 flex flex-wrap justify-center gap-4">
               <Link href="/ordina?tier=premium" className="btn-flame btn-xl">
-                Avvia il progetto — da {formatEur(399)}
+                Avvia il progetto — da {formatEur(397)}
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12" />
                   <polyline points="12 5 19 12 12 19" />
