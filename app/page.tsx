@@ -486,7 +486,7 @@ export default function HomePage() {
           <Reveal delay={450}>
             <div className="mt-12 flex flex-wrap justify-center gap-4">
               <Link href="/ordina?tier=premium" className="btn-flame btn-xl">
-                Avvia il progetto — da {formatEur(197)}
+                Avvia il progetto — da {formatEur(399)}
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12" />
                   <polyline points="12 5 19 12 12 19" />

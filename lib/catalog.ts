@@ -4,7 +4,7 @@ export const TIERS: TierSpec[] = [
   {
     key: "standard",
     name: "Standard",
-    priceEur: 197,
+    priceEur: 399,
     description: "Landing essenziale ad alta conversione. Consegna in 24h.",
     features: [
       "5 sezioni (hero, valore, prova, CTA, contatti)",
@@ -18,7 +18,7 @@ export const TIERS: TierSpec[] = [
   {
     key: "premium",
     name: "Premium",
-    priceEur: 497,
+    priceEur: 699,
     description: "Landing avanzata con animazioni e integrazioni.",
     features: [
       "Tutto Standard +",
@@ -32,8 +32,8 @@ export const TIERS: TierSpec[] = [
   },
   {
     key: "business",
-    name: "Business",
-    priceEur: 997,
+    name: "Signature",
+    priceEur: 1299,
     description: "Esperienza cinematografica con video di apertura su misura.",
     features: [
       "Tutto Premium +",
