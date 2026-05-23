@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ADDONS, TIERS, calculateTotal } from "@/lib/catalog";
 import type { AddonKey, Tier } from "@/lib/types";
@@ -348,7 +349,29 @@ export default function OrderForm() {
           {step === 1 ? (
             <>
               <header>
-                <span className="chip-brass">Step 1 di 2</span>
+                <Link
+                  href="/"
+                  className="group mb-10 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-mist transition-colors hover:text-brass"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="transition-transform group-hover:-translate-x-0.5"
+                  >
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                  Torna al sito
+                </Link>
+                <div>
+                  <span className="chip-brass">Step 1 di 2</span>
+                </div>
                 <h1 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tightest text-cream md:text-5xl">
                   Parlaci di <span className="serif-italic">te.</span>
                 </h1>
@@ -525,15 +548,17 @@ export default function OrderForm() {
                 <button
                   type="button"
                   onClick={goToStep1}
-                  className="mb-4 inline-flex items-center gap-2 text-xs uppercase tracking-widest text-mist transition-colors hover:text-brass"
+                  className="group mb-10 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-mist transition-colors hover:text-brass"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:-translate-x-0.5">
                     <line x1="19" y1="12" x2="5" y2="12" />
                     <polyline points="12 19 5 12 12 5" />
                   </svg>
                   Modifica brief
                 </button>
-                <span className="chip-brass">Step 2 di 2</span>
+                <div>
+                  <span className="chip-brass">Step 2 di 2</span>
+                </div>
                 <h1 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tightest text-cream md:text-5xl">
                   Scegli il <span className="serif-italic">pacchetto.</span>
                 </h1>
