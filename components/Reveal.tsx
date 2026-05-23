@@ -29,17 +29,17 @@ export function Reveal({ children, delay = 0, className = "", inline = false }: 
           obs.disconnect();
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+      { threshold: 0, rootMargin: "0px 0px 120px 0px" },
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 
   const classes = cn(
-    "transition-all duration-1000 ease-out will-change-transform",
+    "transition-all duration-500 ease-out will-change-transform",
     visible
       ? "opacity-100 translate-y-0 blur-0"
-      : "opacity-0 translate-y-8 blur-[6px]",
+      : "opacity-0 translate-y-3 blur-[2px]",
     className,
   );
   const style = { transitionDelay: `${delay}ms` };
