@@ -34,10 +34,10 @@ export const TIERS: TierSpec[] = [
     key: "business",
     name: "Signature",
     priceEur: 1297,
-    description: "Esperienza cinematografica con video di apertura su misura.",
+    description: "Esperienza cinematografica: video di apertura con porta che si apre e ingresso nel locale.",
     features: [
       "Tutto Premium +",
-      "Video di apertura con avatar parlante",
+      "Video di apertura cinematografico — porta che si apre, ingresso fisico nel locale",
       "Hero animato in stile cinematografico",
       "Soundtrack e effetti audio",
       "Loading screen branded",

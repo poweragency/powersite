@@ -399,12 +399,12 @@ export default function OrderForm() {
                   {tier === "business" && (
                     <div className="rounded-2xl border border-brass/30 bg-brass/5 p-5">
                       <label className="label !text-brass">
-                        ✦ Script video di apertura (opz., max 30s)
+                        ✦ Atmosfera del video di apertura (opz.)
                       </label>
                       <textarea
                         name="videoScript"
                         rows={3}
-                        placeholder="Cosa deve dire l'apertura cinematografica? Se vuoto, lo scriviamo noi dal brief."
+                        placeholder="Descrivi com'è fatto il tuo locale: l'ingresso, gli ambienti, l'atmosfera che vuoi trasmettere nei primi secondi (es. 'porta vintage in legno, luci calde, parquet, tavoli apparecchiati...'). Se vuoto, ci basiamo sulle foto che carichi."
                         className="textarea"
                       />
                     </div>
