@@ -24,7 +24,6 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li><Link href="#processo" className="text-mist hover:text-bone">Il processo</Link></li>
               <li><Link href="#pacchetti" className="text-mist hover:text-bone">Pacchetti</Link></li>
-              <li><Link href="#manifesto" className="text-mist hover:text-bone">Manifesto</Link></li>
               <li><Link href="#faq" className="text-mist hover:text-bone">FAQ</Link></li>
             </ul>
           </div>

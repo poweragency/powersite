@@ -176,40 +176,6 @@ export default function HomePage() {
       {/* ─── MARQUEE ────────────────────────────────────── */}
       <Marquee items={MARQUEE} />
 
-      {/* ─── MANIFESTO ──────────────────────────────────── */}
-      <section id="manifesto" className="relative py-32 md:py-40">
-        <div className="container-x">
-          <div className="mx-auto max-w-4xl">
-            <Reveal>
-              <span className="chip-brass">Il manifesto</span>
-            </Reveal>
-            <Reveal delay={150}>
-              <h2 className="display mt-8 text-balance text-4xl font-bold leading-[1.05] tracking-tighter text-cream md:text-6xl lg:text-7xl">
-                Non un servizio. <br />
-                Un <span className="serif-italic">atelier</span> digitale.
-              </h2>
-            </Reveal>
-            <Reveal delay={300}>
-              <div className="hairline mt-12" />
-            </Reveal>
-            <Reveal delay={400}>
-              <div className="mt-12 grid gap-12 md:grid-cols-2">
-                <p className="text-pretty text-lg leading-relaxed text-bone/90">
-                  Crediamo che ogni business meriti una pagina costruita
-                  apposta. Una pagina che parli con la sua voce, mostri
-                  i suoi colori, racconti la sua storia.
-                </p>
-                <p className="text-pretty text-lg leading-relaxed text-bone/90">
-                  Lavoriamo come un&apos;antica bottega: pochi progetti
-                  alla volta, ognuno con cura ossessiva. Veloce non
-                  significa veloce-male: significa solo essere bravi.
-                </p>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
       {/* ─── PROCESSO ────────────────────────────────────── */}
       <section id="processo" className="relative border-y border-bone/10 bg-coal/30 py-32 md:py-40">
         <div className="container-x">

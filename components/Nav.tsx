@@ -13,9 +13,6 @@ export function Nav() {
           <Link href="#pacchetti" className="text-sm text-mist transition-colors hover:text-bone">
             Pacchetti
           </Link>
-          <Link href="#manifesto" className="text-sm text-mist transition-colors hover:text-bone">
-            Manifesto
-          </Link>
           <Link href="#faq" className="text-sm text-mist transition-colors hover:text-bone">
             FAQ
           </Link>
