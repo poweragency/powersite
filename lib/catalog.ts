@@ -79,7 +79,7 @@ export const ADDONS: AddonSpec[] = [
   {
     key: "chatbot",
     name: "Chatbot custom 24/7",
-    priceEur: 197,
+    priceEur: 297,
     description: "Un robottino sul sito che chiacchiera con i visitatori al posto tuo. Risponde alle domande sempre, anche di notte, e ti manda i contatti di chi è interessato.",
     icon: "MessageSquare",
   },
