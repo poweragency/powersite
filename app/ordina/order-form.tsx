@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { ADDONS, TIERS, calculateTotal } from "@/lib/catalog";
 import type { AddonKey, Tier } from "@/lib/types";
 import { cn, formatEur } from "@/lib/utils";
+import { ShowcaseModal } from "@/components/ShowcaseModal";
 
 const FORM_ID = "order-form";
 const MIN_ENTRANCE_DIMENSION = 1920;
@@ -213,6 +214,7 @@ export default function OrderForm() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [signatureMode, setSignatureMode] = useState<"text" | "image" | null>(null);
+  const [showcaseTier, setShowcaseTier] = useState<Tier | null>(null);
   const [videoScript, setVideoScript] = useState("");
   const [entranceMobile, setEntranceMobile] = useState<File | null>(null);
   const [entranceMobileMeta, setEntranceMobileMeta] = useState<{ w: number; h: number } | null>(null);
@@ -341,6 +343,7 @@ export default function OrderForm() {
 
   return (
     <div className="mx-auto max-w-6xl">
+      <ShowcaseModal tier={showcaseTier} onClose={() => setShowcaseTier(null)} />
       <StepIndicator current={step} />
 
       <div className="grid gap-12 md:grid-cols-[2fr_1fr]">
@@ -575,30 +578,47 @@ export default function OrderForm() {
                   {TIERS.map((t) => {
                     const active = tier === t.key;
                     return (
-                      <button
-                        type="button"
+                      <div
                         key={t.key}
-                        onClick={() => setTier(t.key)}
                         className={cn(
-                          "group relative rounded-2xl border p-5 text-left transition-all",
+                          "group relative rounded-2xl border transition-all",
                           active
                             ? "border-brass bg-brass/10 shadow-[0_0_30px_-10px_rgba(201,165,92,0.4)]"
                             : "border-bone/10 bg-coal/60 hover:border-bone/30 hover:bg-coal",
                         )}
                       >
-                        <div className="flex items-center justify-between">
-                          <span className="font-display text-lg font-bold tracking-tighter text-cream">{t.name}</span>
-                          {active && (
-                            <span className="grid h-6 w-6 place-items-center rounded-full bg-brass text-obsidian">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="20 6 9 17 4 12" />
-                              </svg>
-                            </span>
-                          )}
+                        <button
+                          type="button"
+                          onClick={() => setTier(t.key)}
+                          className="block w-full p-5 text-left"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-display text-lg font-bold tracking-tighter text-cream">{t.name}</span>
+                            {active && (
+                              <span className="grid h-6 w-6 place-items-center rounded-full bg-brass text-obsidian">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                              </span>
+                            )}
+                          </div>
+                          <div className="display mt-3 text-3xl font-bold tracking-tightest text-cream">{formatEur(t.priceEur)}</div>
+                          <div className="mt-2 text-xs leading-relaxed text-mist">{t.description}</div>
+                        </button>
+                        <div className="border-t border-bone/5 px-5 py-3">
+                          <button
+                            type="button"
+                            onClick={() => setShowcaseTier(t.key)}
+                            className="group/btn flex w-full items-center justify-between font-mono text-[10px] uppercase tracking-widest text-mist transition-colors hover:text-brass"
+                          >
+                            <span>Vedi esempi</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover/btn:translate-x-0.5">
+                              <line x1="5" y1="12" x2="19" y2="12" />
+                              <polyline points="12 5 19 12 12 19" />
+                            </svg>
+                          </button>
                         </div>
-                        <div className="display mt-3 text-3xl font-bold tracking-tightest text-cream">{formatEur(t.priceEur)}</div>
-                        <div className="mt-2 text-xs leading-relaxed text-mist">{t.description}</div>
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
