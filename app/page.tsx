@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
@@ -43,7 +44,7 @@ const VALUES = [
   { t: "Su misura, davvero.", d: "Ogni landing è progettata da zero per te. Niente template, niente preset, niente layout già visti." },
   { t: "Codice scritto a mano.", d: "Sviluppiamo con cura artigianale, riga per riga. Il sito è veloce, pulito, e tuo per sempre." },
   { t: "Le tue immagini.", d: "Carichi tu le foto del business. Niente stock photography, niente immagini generiche da archivio." },
-  { t: "Copy che vende.", d: "Ogni parola è studiata per portare risultati. Headline, CTA, FAQ, tutto curato come fosse un'ammiraglia." },
+  { t: "Copy che vende.", d: "Ogni parola è studiata per portare risultati. Headline, CTA, FAQ, tutto curato come fosse un vestito cucito a mano." },
   { t: "Consegna garantita.", d: "Quarantotto ore dal pagamento al link di anteprima. Non promesse, ma il nostro impegno scritto." },
   { t: "Tuo per sempre.", d: "Codice, repository, dominio: tutto a tuo nome. Vuoi cambiare studio domani? Hai già tutto in mano." },
 ];
@@ -100,26 +101,30 @@ export default function HomePage() {
 
       {/* ─── HERO ────────────────────────────────────────── */}
       <section className="relative isolate overflow-hidden">
-        {/* Background atmospherics */}
-        <div className="glow-orb top-[-15%] right-[-10%] h-[600px] w-[600px] animate-glow bg-flame/30" />
-        <div className="glow-orb top-[20%] left-[-15%] h-[500px] w-[500px] animate-glow-slow bg-brass/20" />
+        {/* Atmosfere di sfondo — più morbide */}
+        <div className="glow-orb top-[-5%] right-[-8%] h-[700px] w-[700px] animate-glow bg-flame/25" />
+        <div className="glow-orb top-[35%] left-[-15%] h-[500px] w-[500px] animate-glow-slow bg-brass/18" />
         <div className="grain" />
 
-        <div className="container-x relative pt-24 pb-32 md:pt-32 md:pb-40">
+        <div className="container-x relative pt-24 pb-28 md:pt-32 md:pb-36">
           <div className="mx-auto max-w-5xl">
+
+            {/* Eyebrow — hairline brass bracketed */}
             <Reveal>
-              <div className="flex items-center justify-center">
-                <span className="chip-brass">
-                  <span className="inline-flex h-1.5 w-1.5 rounded-full bg-brass animate-pulse" />
-                  Atelier digitale · Power Agency
+              <div className="flex items-center justify-center gap-5">
+                <span className="h-px w-10 bg-brass/40 md:w-16" />
+                <span className="font-mono text-[10px] uppercase tracking-widest text-brass md:text-[11px]">
+                  Atelier digitale · Firenze
                 </span>
+                <span className="h-px w-10 bg-brass/40 md:w-16" />
               </div>
             </Reveal>
 
-            <h1 className="display mt-10 text-center text-balance text-6xl font-bold leading-[0.95] text-cream md:text-7xl lg:text-[7.5rem] lg:leading-[0.9]">
+            {/* Headline */}
+            <h1 className="display mt-10 text-center text-balance text-6xl font-bold leading-[0.95] text-cream md:mt-12 md:text-7xl lg:text-[7rem] lg:leading-[0.92]">
               <Reveal delay={100} inline className="block">Sito web</Reveal>
               <Reveal delay={250} inline className="block">
-                <span className="serif-italic font-bold">su misura</span>
+                <span className="serif-italic">su misura</span>
                 <span className="text-mist">,</span>
               </Reveal>
               <Reveal delay={400} inline className="block">
@@ -127,44 +132,57 @@ export default function HomePage() {
               </Reveal>
             </h1>
 
+            {/* Subhead */}
             <Reveal delay={650}>
-              <p className="mx-auto mt-10 max-w-2xl text-pretty text-center text-lg leading-relaxed text-mist md:text-xl">
-                Non un template. Non un drag-and-drop. Una pagina disegnata
-                e costruita per te, dal nostro studio. Una consegna alla volta,
-                con cura artigianale.
+              <p className="mx-auto mt-10 max-w-2xl text-pretty text-center text-lg leading-relaxed text-bone/80 md:text-xl">
+                Non un template. Non un drag-and-drop. Un sito disegnato
+                e costruito per te, dal nostro studio. Una consegna alla
+                volta, con cura artigianale.
               </p>
             </Reveal>
 
+            {/* CTAs — primary + understated text link */}
             <Reveal delay={800}>
-              <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
-                <Link href="/ordina?tier=premium" className="btn-flame btn-lg">
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-5">
+                <Link href="/ordina" className="btn-flame btn-lg">
                   Avvia il progetto
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12" />
                     <polyline points="12 5 19 12 12 19" />
                   </svg>
                 </Link>
-                <Link href="#processo" className="btn-ghost-bone btn-lg">
+                <Link
+                  href="#processo"
+                  className="group inline-flex items-center gap-2 text-sm font-medium text-bone underline-offset-[6px] decoration-brass/40 transition-colors hover:text-brass hover:underline"
+                >
                   Scopri il processo
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-0.5">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
                 </Link>
               </div>
             </Reveal>
 
+            {/* Stats — riga orizzontale elegante con hairline verticali */}
             <Reveal delay={1000}>
-              <div className="mx-auto mt-24 grid max-w-3xl grid-cols-3 gap-px overflow-hidden rounded-2xl border border-bone/10 bg-bone/10">
+              <div className="mx-auto mt-20 flex flex-col items-center gap-8 md:mt-24 md:flex-row md:justify-center md:gap-0">
                 {[
                   { num: "48h", label: "Consegna" },
                   { num: "30", label: "Progetti/mese max" },
                   { num: "100%", label: "Su misura" },
-                ].map((s) => (
-                  <div key={s.label} className="bg-coal/80 px-6 py-8 text-center backdrop-blur">
-                    <div className="display text-4xl font-bold tracking-tightest text-cream md:text-5xl">
-                      {s.num}
+                ].map((s, i) => (
+                  <Fragment key={s.label}>
+                    {i > 0 && <span className="hidden h-14 w-px bg-bone/15 md:mx-12 md:block lg:mx-16" />}
+                    <div className="text-center">
+                      <div className="display text-4xl font-bold tracking-tightest text-cream md:text-5xl">
+                        {s.num}
+                      </div>
+                      <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-mist">
+                        {s.label}
+                      </div>
                     </div>
-                    <div className="mt-2 text-[10px] font-medium uppercase tracking-widest text-mist">
-                      {s.label}
-                    </div>
-                  </div>
+                  </Fragment>
                 ))}
               </div>
             </Reveal>
