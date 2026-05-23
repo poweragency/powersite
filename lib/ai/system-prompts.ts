@@ -148,7 +148,10 @@ const COPY_PRINCIPLES = `## PRINCIPI DI COPYWRITING NON NEGOZIABILI
 
 6. **Mai inventare dati**. Se il brief non dice "20 anni" non scrivere "20 anni". Resta sul generico verificabile.
 
-7. **Coerenza CTA**. Tutte le CTA primarie del sito devono puntare alla STESSA azione del brief (\`primaryCta\`). Se diverse sezioni vogliono CTA diverse, l'azione primaria resta la stessa, varia solo la label.
+7. **Coerenza CTA**. Tutte le CTA primarie del sito devono puntare alla STESSA azione, qualunque essa sia. Le sezioni possono variare la label ma l'azione (href) resta una sola.
+   - Se il brief contiene \`cta_primaria\`, usala identica come label della CTA primaria della hero (e label coerenti nelle altre sezioni).
+   - Se è \`null\`, DEDUCI tu la CTA primaria dal settore + target + USP: identifica l'azione di conversione più naturale per quel business (es. "Prenota visita gratuita" per dentista, "Chiedi un preventivo" per studio legale, "Prova gratis 14 giorni" per SaaS, "Ordina online" per ristorante). Verbi all'imperativo, 2-5 parole, beneficio implicito.
+   - Per la \`href\`: usa \`"#contatti"\` di default (scroll alla sezione contact). Per CTA telefoniche: \`"tel:+39..."\` se il brief fornisce il telefono.
 
 8. **SEO meta**:
    - \`meta.title\`: 50-60 char, formato "[Brand] — [Promessa breve]"

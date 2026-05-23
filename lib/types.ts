@@ -56,7 +56,7 @@ export interface OrderPayload {
   sector: string;
   targetAudience: string;
   uniqueSellingProposition: string;
-  primaryCta: string;
+  primaryCta?: string;
   secondaryCta?: string;
   toneOfVoice: ToneOfVoice;
   preferredColors?: string;

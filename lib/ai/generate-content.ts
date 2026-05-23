@@ -48,7 +48,7 @@ function buildUserMessage(order: OrderPayload): string {
     settore: order.sector,
     target: order.targetAudience,
     proposta_unica: order.uniqueSellingProposition,
-    cta_primaria: order.primaryCta,
+    cta_primaria: order.primaryCta ?? null,
     cta_secondaria: order.secondaryCta ?? null,
     tono_di_voce: order.toneOfVoice,
     colori_preferiti: order.preferredColors ?? null,

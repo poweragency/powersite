@@ -370,27 +370,6 @@ export default function OrderForm() {
                   </div>
                   <div className="grid gap-5 md:grid-cols-2">
                     <div>
-                      <label className="label">CTA principale *</label>
-                      <input
-                        name="primaryCta"
-                        type="text"
-                        required
-                        placeholder="es. Prenota una consulenza"
-                        className="input"
-                      />
-                    </div>
-                    <div>
-                      <label className="label">CTA secondaria (opz.)</label>
-                      <input
-                        name="secondaryCta"
-                        type="text"
-                        placeholder="es. Scopri il menù"
-                        className="input"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid gap-5 md:grid-cols-2">
-                    <div>
                       <label className="label">Tono di voce *</label>
                       <select name="toneOfVoice" required defaultValue="professional" className="input">
                         {TONE_OPTIONS.map((o) => (

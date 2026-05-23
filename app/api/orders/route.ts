@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       sector: form.get("sector")?.toString() ?? "",
       targetAudience: form.get("targetAudience")?.toString() ?? "",
       uniqueSellingProposition: form.get("uniqueSellingProposition")?.toString() ?? "",
-      primaryCta: form.get("primaryCta")?.toString() ?? "",
+      primaryCta: form.get("primaryCta")?.toString() || undefined,
       secondaryCta: form.get("secondaryCta")?.toString() || undefined,
       toneOfVoice: form.get("toneOfVoice")?.toString() ?? "professional",
       preferredColors: form.get("preferredColors")?.toString() || undefined,
