@@ -1,0 +1,40 @@
+import { z } from "zod";
+
+export const orderIntakeSchema = z.object({
+  // Contatti
+  email: z.string().email("Email non valida"),
+  company: z.string().min(2, "Nome azienda obbligatorio").max(100),
+  website: z.string().url().optional().or(z.literal("")),
+  phone: z.string().optional(),
+
+  // Brief
+  sector: z.string().min(2, "Settore obbligatorio").max(80),
+  targetAudience: z.string().min(10, "Descrivi il target in almeno 10 caratteri").max(500),
+  uniqueSellingProposition: z.string().min(10, "Descrivi la USP in almeno 10 caratteri").max(500),
+  primaryCta: z.string().min(2, "CTA principale obbligatoria").max(60),
+  secondaryCta: z.string().max(60).optional(),
+  toneOfVoice: z.enum(["professional", "friendly", "luxury", "energetic", "minimal"]),
+  preferredColors: z.string().max(120).optional(),
+  contentNotes: z.string().max(2000).optional(),
+
+  // Pacchetto
+  tier: z.enum(["standard", "premium", "business"]),
+  addons: z.array(z.enum([
+    "seo","geo","gaio","analytics","chatbot","email_funnel","brand_kit",
+    "blog","cro","booking","pwa","domain","performance","human_review",
+  ])).default([]),
+
+  // Immagini
+  forceAllImages: z.boolean().default(false),
+  imageUrls: z.array(z.string().url()).max(30, "Massimo 30 immagini").default([]),
+
+  // Video (solo Business)
+  videoScript: z.string().max(1000).optional(),
+
+  // Terms
+  acceptedTerms: z.literal(true, {
+    errorMap: () => ({ message: "Devi accettare i termini per procedere" }),
+  }),
+});
+
+export type OrderIntakeInput = z.infer<typeof orderIntakeSchema>;

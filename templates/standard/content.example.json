@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "title": "Studio Dentistico Bianchi — Sorrisi che durano una vita",
+    "description": "Studio dentistico a Milano: implantologia, ortodonzia invisibile e igiene professionale. Prima visita gratuita.",
+    "ogTitle": "Studio Dentistico Bianchi",
+    "ogDescription": "Prenota la tua prima visita gratuita"
+  },
+  "brand": {
+    "name": "Studio Bianchi",
+    "tone": "professional",
+    "palette": ["#0a3d62", "#f5f6fa", "#ffd32a"]
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "headline": "Sorrisi che durano una vita.",
+      "subheadline": "20 anni di esperienza in odontoiatria a Milano.",
+      "ctaPrimary": { "label": "Prenota visita gratuita", "href": "#contatti" },
+      "image": "/uploads/image_0.jpg"
+    },
+    {
+      "type": "value",
+      "title": "Cosa offriamo",
+      "items": [
+        { "title": "Implantologia avanzata", "body": "Tecnica all-on-4 con guarigione rapida." },
+        { "title": "Ortodonzia invisibile", "body": "Allineatori trasparenti Invisalign." },
+        { "title": "Igiene professionale", "body": "Pulizia, sbiancamento, ablazione tartaro." }
+      ]
+    },
+    {
+      "type": "social-proof",
+      "title": "I nostri pazienti",
+      "testimonials": [
+        { "name": "Maria R.", "quote": "Mi sono trovata benissimo, staff competente.", "rating": 5 }
+      ]
+    },
+    {
+      "type": "cta",
+      "title": "Pronto per il tuo nuovo sorriso?",
+      "ctaPrimary": { "label": "Prenota ora", "href": "tel:+390212345678" }
+    },
+    {
+      "type": "contact",
+      "title": "Contatti",
+      "address": "Via Roma 1, 20100 Milano",
+      "phone": "+39 02 1234 5678",
+      "email": "info@studiobianchi.it"
+    }
+  ],
+  "images": {
+    "forceAll": false,
+    "selected": ["/uploads/image_0.jpg", "/uploads/image_2.jpg"],
+    "unused": ["/uploads/image_1.jpg"]
+  },
+  "addonsConfig": {}
+}

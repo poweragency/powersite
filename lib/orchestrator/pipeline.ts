@@ -1,0 +1,93 @@
+/**
+ * Pipeline orchestratore stateless.
+ *
+ * Input: OrderPayload completo (letto dal manifest su Vercel Blob).
+ * Nessun database. Output: URL del sito deployato.
+ *
+ * Step:
+ *   1. Genera contenuto con Claude (testi + struttura sezioni)
+ *   2. [Business] Genera video AI di apertura
+ *   3. Compila il template col content
+ *   4. Crea NUOVA repo GitHub e push
+ *   5. Crea project Vercel + deploy
+ *   6. Email cliente + admin
+ *   7. Cleanup Vercel Blob (manifest + immagini effimere)
+ */
+
+import type { OrderPayload } from "@/lib/types";
+import { generateLandingContent } from "@/lib/ai/generate-content";
+import { generateVideo } from "./steps/generate-video";
+import { buildProject } from "./steps/build-project";
+import { createGithubRepo } from "./steps/create-github-repo";
+import { deployToVercel } from "./steps/deploy-vercel";
+import { sendPreviewEmail, sendAdminAlert } from "./steps/send-email";
+import { cleanupOrderBlobs } from "@/lib/blob";
+
+export interface PipelineResult {
+  ok: true;
+  nonce: string;
+  repoUrl: string;
+  previewUrl: string;
+}
+
+export async function runPipeline(order: OrderPayload): Promise<PipelineResult> {
+  console.log(`[pipeline:${order.nonce}] START tier=${order.tier} addons=${order.addons.join(",")}`);
+
+  try {
+    // 1. Contenuto con Claude
+    const content = await generateLandingContent(order);
+    console.log(`[pipeline:${order.nonce}] content generated`);
+
+    // 2. Video di apertura (solo Business)
+    let video;
+    if (order.tier === "business") {
+      video = await generateVideo(order, content);
+      console.log(`[pipeline:${order.nonce}] video generated`);
+    }
+
+    // 3. Compila template
+    const builtPath = await buildProject(order, { ...content, video });
+    console.log(`[pipeline:${order.nonce}] project built at ${builtPath}`);
+
+    // 4. Crea NUOVA repo GitHub
+    const repo = await createGithubRepo({ order, localPath: builtPath });
+    console.log(`[pipeline:${order.nonce}] repo created ${repo.url}`);
+
+    // 5. Deploy Vercel
+    const deploy = await deployToVercel({ order, repoFullName: repo.fullName });
+    console.log(`[pipeline:${order.nonce}] deployed ${deploy.url}`);
+
+    // 6. Email cliente + admin
+    await sendPreviewEmail({
+      to: order.email,
+      company: order.company,
+      previewUrl: deploy.url,
+    });
+    await sendAdminAlert({
+      nonce: order.nonce,
+      company: order.company,
+      tier: order.tier,
+      previewUrl: deploy.url,
+      repoUrl: repo.url,
+    });
+
+    // 7. Cleanup
+    const deleted = await cleanupOrderBlobs(order.nonce).catch((e) => {
+      console.warn(`[pipeline:${order.nonce}] cleanup failed:`, e);
+      return 0;
+    });
+    console.log(`[pipeline:${order.nonce}] cleanup ${deleted} blobs`);
+
+    return { ok: true, nonce: order.nonce, repoUrl: repo.url, previewUrl: deploy.url };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[pipeline:${order.nonce}] FAILED:`, message);
+    await sendAdminAlert({
+      nonce: order.nonce,
+      company: order.company,
+      tier: order.tier,
+      error: message,
+    }).catch(() => {});
+    throw err;
+  }
+}

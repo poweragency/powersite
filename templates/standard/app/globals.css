@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Le 3 variabili --color-* vengono SOVRASCRITTE a build-time dalla pipeline
+ * con i valori di brand.palette generati dall'AI per il cliente.
+ * Default = palette neutra Power Agency.
+ */
+:root {
+  --color-primary:    220 90% 12%;    /* deep navy */
+  --color-secondary:  220 15% 95%;    /* off-white */
+  --color-accent:     14 100% 57%;    /* coral */
+  --color-ink:        220 20% 10%;
+  --color-canvas:     0 0% 100%;
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+html, body {
+  height: 100%;
+}
+body {
+  color: hsl(var(--color-ink));
+  background: hsl(var(--color-canvas));
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-md bg-accent text-white px-6 py-3 font-semibold transition-opacity hover:opacity-90;
+}
+.btn-outline {
+  @apply inline-flex items-center justify-center rounded-md border-2 border-primary text-primary px-6 py-3 font-semibold transition-colors hover:bg-primary hover:text-white;
+}
+.container-narrow {
+  @apply mx-auto max-w-5xl px-6;
+}
