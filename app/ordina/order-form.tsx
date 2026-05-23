@@ -211,6 +211,8 @@ export default function OrderForm() {
   const [forceAllImages, setForceAllImages] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [images, setImages] = useState<File[]>([]);
+  const [signatureMode, setSignatureMode] = useState<"text" | "image" | null>(null);
+  const [videoScript, setVideoScript] = useState("");
   const [entranceMobile, setEntranceMobile] = useState<File | null>(null);
   const [entranceMobileMeta, setEntranceMobileMeta] = useState<{ w: number; h: number } | null>(null);
   const [entranceMobileError, setEntranceMobileError] = useState<string | null>(null);
@@ -312,9 +314,12 @@ export default function OrderForm() {
     formData.set("forceAllImages", forceAllImages ? "true" : "false");
     formData.set("acceptedTerms", "true");
     images.forEach((img, i) => formData.append(`image_${i}`, img));
-    if (tier === "business") {
+    if (tier === "business" && signatureMode === "image") {
       if (entranceMobile) formData.append("entrance_image_mobile", entranceMobile);
       if (entranceDesktop) formData.append("entrance_image_desktop", entranceDesktop);
+    }
+    if (tier !== "business" || signatureMode !== "text") {
+      formData.delete("videoScript");
     }
 
     try {
@@ -583,52 +588,121 @@ export default function OrderForm() {
                       </h3>
                     </header>
 
-                    <div>
-                      <label className="label !text-brass">
-                        Atmosfera del video di apertura (opz.)
-                      </label>
-                      <textarea
-                        name="videoScript"
-                        rows={3}
-                        placeholder="Descrivi com'è fatto il tuo locale: l'ingresso, gli ambienti, l'atmosfera dei primi secondi (es. 'porta vintage in legno, luci calde, parquet, tavoli apparecchiati...'). Se vuoto, ci basiamo sulle foto."
-                        className="textarea"
-                      />
+                    <p className="text-xs leading-relaxed text-mist">
+                      Per il video di apertura puoi guidarci in <strong className="text-bone">uno dei due modi</strong>.
+                      Scegli quello che preferisci — gli altri restano disattivati.
+                    </p>
+
+                    {/* Selettore modalità */}
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <button
+                        type="button"
+                        onClick={() => setSignatureMode("text")}
+                        className={cn(
+                          "group rounded-xl border-2 p-4 text-left transition-all",
+                          signatureMode === "text"
+                            ? "border-brass bg-brass/15 shadow-[0_0_20px_-8px_rgba(201,165,92,0.5)]"
+                            : "border-bone/10 bg-coal/40 hover:border-bone/30 hover:bg-coal",
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-display text-sm font-bold tracking-tighter text-cream">
+                            Descrivilo a parole
+                          </span>
+                          {signatureMode === "text" && (
+                            <span className="grid h-5 w-5 place-items-center rounded-full bg-brass text-obsidian">
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-1.5 text-xs leading-relaxed text-mist">
+                          Ci dici l&apos;atmosfera del locale, noi ricostruiamo la scena.
+                        </p>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setSignatureMode("image")}
+                        className={cn(
+                          "group rounded-xl border-2 p-4 text-left transition-all",
+                          signatureMode === "image"
+                            ? "border-brass bg-brass/15 shadow-[0_0_20px_-8px_rgba(201,165,92,0.5)]"
+                            : "border-bone/10 bg-coal/40 hover:border-bone/30 hover:bg-coal",
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-display text-sm font-bold tracking-tighter text-cream">
+                            Inviaci le foto
+                          </span>
+                          {signatureMode === "image" && (
+                            <span className="grid h-5 w-5 place-items-center rounded-full bg-brass text-obsidian">
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-1.5 text-xs leading-relaxed text-mist">
+                          2 foto hi-res del tuo ingresso, riproduzione fedele.
+                        </p>
+                      </button>
                     </div>
 
-                    <div>
-                      <label className="label !text-brass">
-                        Immagini d&apos;ingresso del locale (opz., hi-res)
-                      </label>
-                      <p className="mb-4 text-xs text-mist">
-                        Se vuoi una <strong className="text-bone">riproduzione fedele</strong> del tuo ingresso nel video,
-                        carica <strong className="text-bone">due foto</strong>: una in formato verticale per mobile,
-                        una in formato orizzontale per desktop. In entrambe la porta deve essere{" "}
-                        <strong className="text-bone">perfettamente centrata</strong>.
-                      </p>
-
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <EntranceSlot
-                          format="mobile"
-                          label="Mobile (verticale)"
-                          aspect="9:16"
-                          file={entranceMobile}
-                          meta={entranceMobileMeta}
-                          error={entranceMobileError}
-                          onSelect={(e) => onEntranceSelected(e, "mobile")}
-                          onRemove={() => removeEntrance("mobile")}
-                        />
-                        <EntranceSlot
-                          format="desktop"
-                          label="Desktop (orizzontale)"
-                          aspect="16:9"
-                          file={entranceDesktop}
-                          meta={entranceDesktopMeta}
-                          error={entranceDesktopError}
-                          onSelect={(e) => onEntranceSelected(e, "desktop")}
-                          onRemove={() => removeEntrance("desktop")}
+                    {/* Area attiva — Testo */}
+                    {signatureMode === "text" && (
+                      <div className="pt-2">
+                        <label className="label !text-brass">
+                          Atmosfera del video di apertura
+                        </label>
+                        <textarea
+                          name="videoScript"
+                          rows={3}
+                          value={videoScript}
+                          onChange={(e) => setVideoScript(e.target.value)}
+                          placeholder="Descrivi com'è fatto il tuo locale: l'ingresso, gli ambienti, l'atmosfera dei primi secondi (es. 'porta vintage in legno, luci calde, parquet, tavoli apparecchiati...')."
+                          className="textarea"
                         />
                       </div>
-                    </div>
+                    )}
+
+                    {/* Area attiva — Immagini */}
+                    {signatureMode === "image" && (
+                      <div className="pt-2">
+                        <label className="label !text-brass">
+                          Immagini d&apos;ingresso hi-res
+                        </label>
+                        <p className="mb-4 text-xs text-mist">
+                          Servono <strong className="text-bone">due foto</strong>: una verticale per mobile,
+                          una orizzontale per desktop. In entrambe la porta deve essere{" "}
+                          <strong className="text-bone">perfettamente centrata</strong>.
+                        </p>
+
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <EntranceSlot
+                            format="mobile"
+                            label="Mobile (verticale)"
+                            aspect="9:16"
+                            file={entranceMobile}
+                            meta={entranceMobileMeta}
+                            error={entranceMobileError}
+                            onSelect={(e) => onEntranceSelected(e, "mobile")}
+                            onRemove={() => removeEntrance("mobile")}
+                          />
+                          <EntranceSlot
+                            format="desktop"
+                            label="Desktop (orizzontale)"
+                            aspect="16:9"
+                            file={entranceDesktop}
+                            meta={entranceDesktopMeta}
+                            error={entranceDesktopError}
+                            onSelect={(e) => onEntranceSelected(e, "desktop")}
+                            onRemove={() => removeEntrance("desktop")}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </section>
