@@ -23,13 +23,13 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Power Agency — Atelier digitale. Landing su misura in 48h.",
+  title: "Power Agency — Atelier digitale. Sito web su misura in 48h.",
   description:
-    "Un piccolo studio italiano che disegna landing page sartoriali. Niente template. Niente account. Solo lavoro su misura, consegnato in 48 ore.",
+    "Un piccolo studio italiano che disegna siti web sartoriali. Niente template. Niente account. Solo lavoro su misura, consegnato in 48 ore.",
   openGraph: {
     title: "Power Agency — Atelier digitale",
     description:
-      "Landing page sartoriali, disegnate per te. Consegna in 48 ore.",
+      "Siti web sartoriali, disegnati per te. Consegna in 48 ore.",
     type: "website",
     locale: "it_IT",
   },

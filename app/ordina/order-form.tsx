@@ -73,6 +73,84 @@ function StepIndicator({ current }: { current: Step }) {
   );
 }
 
+interface EntranceSlotProps {
+  format: EntranceFormat;
+  label: string;
+  aspect: string;
+  file: File | null;
+  meta: { w: number; h: number } | null;
+  error: string | null;
+  onSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemove: () => void;
+}
+
+function EntranceSlot({ format, label, aspect, file, meta, error, onSelect, onRemove }: EntranceSlotProps) {
+  const isPortrait = format === "mobile";
+  return (
+    <div>
+      <div className="mb-2 flex items-baseline justify-between">
+        <span className="font-mono text-[10px] uppercase tracking-widest text-brass">{label}</span>
+        <span className="font-mono text-[10px] text-mist">{aspect}</span>
+      </div>
+      {file ? (
+        <div className="rounded-xl border border-brass/30 bg-coal p-3">
+          <div
+            className={cn(
+              "mb-2 grid place-items-center rounded bg-brass/10 text-brass",
+              isPortrait ? "aspect-[9/16]" : "aspect-[16/9]",
+            )}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="9" cy="9" r="2" />
+              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+            </svg>
+          </div>
+          <div className="truncate font-mono text-[11px] text-cream" title={file.name}>{file.name}</div>
+          <div className="mt-0.5 flex items-baseline justify-between">
+            <span className="text-[10px] text-mist">
+              {meta?.w}×{meta?.h} · {(file.size / 1024 / 1024).toFixed(1)}MB
+            </span>
+            <button
+              type="button"
+              onClick={onRemove}
+              className="text-[10px] font-medium uppercase tracking-widest text-flame hover:underline"
+            >
+              Rimuovi
+            </button>
+          </div>
+        </div>
+      ) : (
+        <label
+          className={cn(
+            "block cursor-pointer rounded-xl border-2 border-dashed border-brass/30 bg-coal/40 p-4 text-center transition-all hover:border-brass hover:bg-brass/10",
+            isPortrait ? "aspect-[9/16]" : "aspect-[16/9]",
+          )}
+        >
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={onSelect}
+            className="sr-only"
+          />
+          <div className="flex h-full flex-col items-center justify-center">
+            <div className="grid h-8 w-8 place-items-center rounded-full border border-brass/40 bg-brass/15 text-brass">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+            </div>
+            <p className="mt-2 font-display text-xs font-bold tracking-tighter text-cream">Carica foto</p>
+            <p className="mt-1 text-[10px] text-mist">min 1920px · max 15MB</p>
+          </div>
+        </label>
+      )}
+      {error && <p className="mt-2 text-[11px] text-flame-300">{error}</p>}
+    </div>
+  );
+}
+
 function SectionHeader({ n, title, hint }: { n: string; title: string; hint?: string }) {
   return (
     <div className="mb-6 flex items-baseline gap-4 border-b border-bone/10 pb-5">
@@ -83,8 +161,11 @@ function SectionHeader({ n, title, hint }: { n: string; title: string; hint?: st
   );
 }
 
+type EntranceFormat = "mobile" | "desktop";
+
 async function validateEntranceImage(
   file: File,
+  format: EntranceFormat,
 ): Promise<{ ok: true; w: number; h: number } | { ok: false; reason: string }> {
   if (file.size > MAX_ENTRANCE_BYTES) {
     return { ok: false, reason: `Massimo 15MB (questa è ${(file.size / 1024 / 1024).toFixed(1)}MB)` };
@@ -94,15 +175,30 @@ async function validateEntranceImage(
     const img = new window.Image();
     img.onload = () => {
       URL.revokeObjectURL(url);
-      const longEdge = Math.max(img.naturalWidth, img.naturalHeight);
+      const { naturalWidth: w, naturalHeight: h } = img;
+      const longEdge = Math.max(w, h);
       if (longEdge < MIN_ENTRANCE_DIMENSION) {
         resolve({
           ok: false,
-          reason: `Risoluzione troppo bassa: ${img.naturalWidth}×${img.naturalHeight}. Serve almeno ${MIN_ENTRANCE_DIMENSION}px sul lato lungo per una riproduzione fedele.`,
+          reason: `Risoluzione troppo bassa: ${w}×${h}. Serve almeno ${MIN_ENTRANCE_DIMENSION}px sul lato lungo.`,
         });
-      } else {
-        resolve({ ok: true, w: img.naturalWidth, h: img.naturalHeight });
+        return;
       }
+      if (format === "mobile" && h <= w) {
+        resolve({
+          ok: false,
+          reason: `Serve un'immagine verticale (es. 1080×1920). Questa è ${w}×${h}, orizzontale.`,
+        });
+        return;
+      }
+      if (format === "desktop" && w <= h) {
+        resolve({
+          ok: false,
+          reason: `Serve un'immagine orizzontale (es. 1920×1080). Questa è ${w}×${h}, verticale.`,
+        });
+        return;
+      }
+      resolve({ ok: true, w, h });
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
@@ -124,9 +220,12 @@ export default function OrderForm() {
   const [forceAllImages, setForceAllImages] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [images, setImages] = useState<File[]>([]);
-  const [entranceImage, setEntranceImage] = useState<File | null>(null);
-  const [entranceMeta, setEntranceMeta] = useState<{ w: number; h: number } | null>(null);
-  const [entranceError, setEntranceError] = useState<string | null>(null);
+  const [entranceMobile, setEntranceMobile] = useState<File | null>(null);
+  const [entranceMobileMeta, setEntranceMobileMeta] = useState<{ w: number; h: number } | null>(null);
+  const [entranceMobileError, setEntranceMobileError] = useState<string | null>(null);
+  const [entranceDesktop, setEntranceDesktop] = useState<File | null>(null);
+  const [entranceDesktopMeta, setEntranceDesktopMeta] = useState<{ w: number; h: number } | null>(null);
+  const [entranceDesktopError, setEntranceDesktopError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -151,25 +250,37 @@ export default function OrderForm() {
     setImages((curr) => curr.filter((_, idx) => idx !== i));
   }
 
-  async function onEntranceSelected(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onEntranceSelected(
+    e: React.ChangeEvent<HTMLInputElement>,
+    format: EntranceFormat,
+  ) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setEntranceError(null);
-    const result = await validateEntranceImage(file);
+    const setErr = format === "mobile" ? setEntranceMobileError : setEntranceDesktopError;
+    const setFile = format === "mobile" ? setEntranceMobile : setEntranceDesktop;
+    const setMeta = format === "mobile" ? setEntranceMobileMeta : setEntranceDesktopMeta;
+    setErr(null);
+    const result = await validateEntranceImage(file, format);
     if (result.ok) {
-      setEntranceImage(file);
-      setEntranceMeta({ w: result.w, h: result.h });
+      setFile(file);
+      setMeta({ w: result.w, h: result.h });
     } else {
-      setEntranceImage(null);
-      setEntranceMeta(null);
-      setEntranceError(result.reason);
+      setFile(null);
+      setMeta(null);
+      setErr(result.reason);
     }
   }
 
-  function removeEntrance() {
-    setEntranceImage(null);
-    setEntranceMeta(null);
-    setEntranceError(null);
+  function removeEntrance(format: EntranceFormat) {
+    if (format === "mobile") {
+      setEntranceMobile(null);
+      setEntranceMobileMeta(null);
+      setEntranceMobileError(null);
+    } else {
+      setEntranceDesktop(null);
+      setEntranceDesktopMeta(null);
+      setEntranceDesktopError(null);
+    }
   }
 
   function goToStep2() {
@@ -210,8 +321,9 @@ export default function OrderForm() {
     formData.set("forceAllImages", forceAllImages ? "true" : "false");
     formData.set("acceptedTerms", "true");
     images.forEach((img, i) => formData.append(`image_${i}`, img));
-    if (entranceImage && tier === "business") {
-      formData.append("entrance_image", entranceImage);
+    if (tier === "business") {
+      if (entranceMobile) formData.append("entrance_image_mobile", entranceMobile);
+      if (entranceDesktop) formData.append("entrance_image_desktop", entranceDesktop);
     }
 
     try {
@@ -494,66 +606,37 @@ export default function OrderForm() {
 
                     <div>
                       <label className="label !text-brass">
-                        Immagine d&apos;ingresso del locale (opz., hi-res)
+                        Immagini d&apos;ingresso del locale (opz., hi-res)
                       </label>
-                      <p className="mb-3 text-xs text-mist">
+                      <p className="mb-4 text-xs text-mist">
                         Se vuoi una <strong className="text-bone">riproduzione fedele</strong> del tuo ingresso nel video,
-                        carica una foto in alta risoluzione (min {MIN_ENTRANCE_DIMENSION}px sul lato lungo).
-                        Senza, ricostruiamo l&apos;atmosfera dalle foto del brief.
+                        carica <strong className="text-bone">due foto</strong>: una in formato verticale per mobile,
+                        una in formato orizzontale per desktop. In entrambe la porta deve essere{" "}
+                        <strong className="text-bone">perfettamente centrata</strong>.
                       </p>
 
-                      {entranceImage ? (
-                        <div className="flex items-center justify-between rounded-xl border border-brass/30 bg-coal p-4">
-                          <div className="flex items-center gap-3">
-                            <span className="grid h-10 w-10 place-items-center rounded bg-brass/20 text-brass">
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="3" y="3" width="18" height="18" rx="2" />
-                                <circle cx="9" cy="9" r="2" />
-                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                              </svg>
-                            </span>
-                            <div className="text-sm">
-                              <div className="font-mono text-cream">{entranceImage.name}</div>
-                              <div className="text-xs text-mist">
-                                {entranceMeta?.w}×{entranceMeta?.h}px · {(entranceImage.size / 1024 / 1024).toFixed(1)}MB
-                              </div>
-                            </div>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={removeEntrance}
-                            className="text-xs font-medium text-flame hover:underline"
-                          >
-                            Rimuovi
-                          </button>
-                        </div>
-                      ) : (
-                        <label className="block cursor-pointer rounded-xl border-2 border-dashed border-brass/30 bg-coal/40 p-6 text-center transition-all hover:border-brass hover:bg-brass/10">
-                          <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp"
-                            onChange={onEntranceSelected}
-                            className="sr-only"
-                          />
-                          <div className="mx-auto grid h-10 w-10 place-items-center rounded-full border border-brass/40 bg-brass/15 text-brass">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                              <polyline points="17 8 12 3 7 8" />
-                              <line x1="12" y1="3" x2="12" y2="15" />
-                            </svg>
-                          </div>
-                          <p className="mt-3 font-display text-sm font-bold tracking-tighter text-cream">
-                            Carica foto ingresso
-                          </p>
-                          <p className="mt-1 text-xs text-mist">
-                            JPG / PNG / WebP · min {MIN_ENTRANCE_DIMENSION}px · max 15MB
-                          </p>
-                        </label>
-                      )}
-
-                      {entranceError && (
-                        <p className="mt-2 text-xs text-flame-300">{entranceError}</p>
-                      )}
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <EntranceSlot
+                          format="mobile"
+                          label="Mobile (verticale)"
+                          aspect="9:16"
+                          file={entranceMobile}
+                          meta={entranceMobileMeta}
+                          error={entranceMobileError}
+                          onSelect={(e) => onEntranceSelected(e, "mobile")}
+                          onRemove={() => removeEntrance("mobile")}
+                        />
+                        <EntranceSlot
+                          format="desktop"
+                          label="Desktop (orizzontale)"
+                          aspect="16:9"
+                          file={entranceDesktop}
+                          meta={entranceDesktopMeta}
+                          error={entranceDesktopError}
+                          onSelect={(e) => onEntranceSelected(e, "desktop")}
+                          onRemove={() => removeEntrance("desktop")}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -672,7 +755,7 @@ export default function OrderForm() {
                       onChange={(e) => setAcceptedTerms(e.target.checked)}
                       className="mt-0.5 h-4 w-4 accent-brass"
                     />
-                    <span>Accetto i <a href="#" className="text-brass hover:underline">termini di servizio</a> e la <a href="#" className="text-brass hover:underline">privacy policy</a> *</span>
+                    <span>Accetto i <a href="/termini" target="_blank" className="text-brass hover:underline">termini di servizio</a> e le <a href="/legal" target="_blank" className="text-brass hover:underline">note legali</a> *</span>
                   </label>
 
                   <button

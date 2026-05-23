@@ -72,6 +72,7 @@ export interface OrderPayload {
   forceAllImages: boolean;
   imageBlobUrls: string[];   // URL pubblici delle immagini su Vercel Blob
 
-  // Solo Signature: immagine in alta risoluzione dell'ingresso del locale
-  entranceImageUrl?: string;
+  // Solo Signature: due immagini hi-res dell'ingresso del locale (mobile + desktop)
+  entranceImageMobileUrl?: string;
+  entranceImageDesktopUrl?: string;
 }

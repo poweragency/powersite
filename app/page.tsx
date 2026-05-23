@@ -118,7 +118,7 @@ export default function HomePage() {
             </Reveal>
 
             <h1 className="display mt-10 text-center text-balance text-6xl font-bold leading-[0.95] text-cream md:text-7xl lg:text-[7.5rem] lg:leading-[0.9]">
-              <Reveal delay={100} inline className="block">Landing page</Reveal>
+              <Reveal delay={100} inline className="block">Sito web</Reveal>
               <Reveal delay={250} inline className="block">
                 <span className="serif-italic font-bold">su misura</span>
                 <span className="text-mist">,</span>

@@ -34,10 +34,11 @@ export async function uploadImage(
 
 export async function uploadEntranceImage(
   nonce: string,
+  format: "mobile" | "desktop",
   file: File,
 ): Promise<PutBlobResult> {
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-  const path = blobPath(nonce, `entrance.${ext}`);
+  const path = blobPath(nonce, `entrance_${format}.${ext}`);
   return put(path, file, {
     access: "public",
     contentType: file.type || "image/jpeg",

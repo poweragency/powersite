@@ -73,18 +73,23 @@ export async function POST(req: NextRequest) {
       imageBlobUrls.push(result.url);
     }
 
-    // 1b. (Solo Signature) immagine ingresso hi-res
-    let entranceImageUrl: string | undefined;
-    const entranceFile = form.get("entrance_image");
-    if (entranceFile instanceof File && entranceFile.size > 0) {
-      if (entranceFile.size > MAX_ENTRANCE_IMAGE_BYTES) {
-        return NextResponse.json(
-          { error: `Immagine d'ingresso supera 15MB (${(entranceFile.size / 1024 / 1024).toFixed(1)}MB)` },
-          { status: 413 },
-        );
+    // 1b. (Solo Signature) due immagini ingresso hi-res (mobile + desktop)
+    let entranceImageMobileUrl: string | undefined;
+    let entranceImageDesktopUrl: string | undefined;
+
+    for (const format of ["mobile", "desktop"] as const) {
+      const entranceFile = form.get(`entrance_image_${format}`);
+      if (entranceFile instanceof File && entranceFile.size > 0) {
+        if (entranceFile.size > MAX_ENTRANCE_IMAGE_BYTES) {
+          return NextResponse.json(
+            { error: `Immagine ingresso ${format} supera 15MB (${(entranceFile.size / 1024 / 1024).toFixed(1)}MB)` },
+            { status: 413 },
+          );
+        }
+        const uploaded = await uploadEntranceImage(nonce, format, entranceFile);
+        if (format === "mobile") entranceImageMobileUrl = uploaded.url;
+        else entranceImageDesktopUrl = uploaded.url;
       }
-      const uploaded = await uploadEntranceImage(nonce, entranceFile);
-      entranceImageUrl = uploaded.url;
     }
 
     // 2. Costruisci payload e caricalo come manifest.json
@@ -110,7 +115,8 @@ export async function POST(req: NextRequest) {
       totalEur,
       forceAllImages: data.forceAllImages,
       imageBlobUrls,
-      entranceImageUrl,
+      entranceImageMobileUrl,
+      entranceImageDesktopUrl,
     };
     const manifest = await uploadManifest(payload);
 
