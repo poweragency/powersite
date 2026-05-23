@@ -645,7 +645,7 @@ export default function OrderForm() {
                           )}
                         </div>
                         <p className="mt-1.5 text-xs leading-relaxed text-mist">
-                          2 foto hi-res del tuo ingresso, riproduzione fedele.
+                          2 foto in HD del tuo ingresso, riproduzione fedele.
                         </p>
                       </button>
                     </div>
@@ -671,7 +671,7 @@ export default function OrderForm() {
                     {signatureMode === "image" && (
                       <div className="pt-2">
                         <label className="label !text-brass">
-                          Immagini d&apos;ingresso hi-res
+                          Immagini d&apos;ingresso in HD
                         </label>
                         <p className="mb-4 text-xs text-mist">
                           Servono <strong className="text-bone">due foto</strong>: una verticale per mobile,
