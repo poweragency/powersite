@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { TIERS } from "@/lib/catalog";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { Reveal } from "@/components/Reveal";
@@ -21,7 +20,7 @@ const STEPS = [
   {
     n: "I",
     t: "Compili il brief",
-    d: "Quindici domande mirate, scritte da chi disegna landing da anni. Cinque minuti che ci dicono tutto quello che serve.",
+    d: "Quindici domande mirate, scritte da chi disegna siti web da anni. Cinque minuti che ci dicono tutto quello che serve.",
   },
   {
     n: "II",
@@ -31,7 +30,7 @@ const STEPS = [
   {
     n: "III",
     t: "Costruiamo e deployiamo",
-    d: "Sviluppiamo il sito con codice scritto a mano, lo pubblichiamo su dominio, lo testiamo su ogni dispositivo. Sei sempre l'unica priorità del momento.",
+    d: "Sviluppiamo il sito con codice scritto a mano, lo pubblichiamo su dominio, lo testiamo su ogni dispositivo.",
   },
   {
     n: "IV",
@@ -248,125 +247,56 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── PACCHETTI ──────────────────────────────────── */}
+      {/* ─── INVESTIMENTO ─────────────────────────────── */}
       <section id="pacchetti" className="relative overflow-hidden border-y border-bone/10 py-32 md:py-40">
-        <div className="glow-orb bottom-[-20%] left-[20%] h-[700px] w-[700px] animate-glow-slow bg-flame/20" />
+        <div className="glow-orb top-[5%] right-[15%] h-[500px] w-[500px] animate-glow bg-flame/20" />
+        <div className="glow-orb bottom-[-20%] left-[15%] h-[600px] w-[600px] animate-glow-slow bg-brass/20" />
         <div className="grain" />
 
         <div className="container-x relative">
-          <div className="mx-auto mb-20 max-w-3xl text-center">
+          <div className="mx-auto max-w-3xl text-center">
             <Reveal>
-              <span className="chip-brass">I pacchetti</span>
+              <span className="chip-brass">Investimento</span>
             </Reveal>
+
             <Reveal delay={150}>
-              <h2 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tighter text-cream md:text-6xl">
-                Tre livelli. <br />
-                <span className="serif-italic">Una sola promessa.</span>
+              <h2 className="display mt-8 text-balance text-5xl font-bold leading-[0.95] tracking-tightest text-cream md:text-7xl lg:text-[7rem]">
+                A partire da
+                <br />
+                <span className="text-flame">{formatEur(397)}</span>
+                <span className="text-mist">.</span>
               </h2>
             </Reveal>
+
             <Reveal delay={300}>
-              <p className="mx-auto mt-6 max-w-2xl text-pretty text-mist">
-                Una tantum. Nessun abbonamento. Tutto compreso: progettazione,
-                sviluppo, deploy, hosting, email di consegna.
+              <p className="mx-auto mt-10 max-w-2xl text-pretty text-lg leading-relaxed text-mist">
+                Tre livelli pensati per ogni esigenza —{" "}
+                <span className="text-bone">Standard</span>,{" "}
+                <span className="text-bone">Premium</span>,{" "}
+                <span className="text-bone">Signature</span>.
+                Tutto compreso: progettazione, sviluppo, deploy, hosting, email
+                di consegna. Una tantum, niente abbonamenti.
+              </p>
+            </Reveal>
+
+            <Reveal delay={450}>
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
+                <Link href="/ordina" className="btn-flame btn-xl">
+                  Avvia il progetto
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </Link>
+              </div>
+            </Reveal>
+
+            <Reveal delay={600}>
+              <p className="mt-8 font-mono text-[11px] uppercase tracking-widest text-smoke">
+                Pacchetti dettagliati nel checkout · Pagamento sicuro via Stripe
               </p>
             </Reveal>
           </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {TIERS.map((tier, i) => {
-              const featured = tier.key === "premium";
-              return (
-                <Reveal key={tier.key} delay={i * 120}>
-                  <article
-                    className={
-                      featured
-                        ? "card-flame relative h-full ring-1 ring-flame-300/40 md:scale-[1.03] md:-translate-y-2"
-                        : "card group h-full"
-                    }
-                  >
-                    {featured && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-obsidian px-4 py-1 text-[10px] font-semibold uppercase tracking-widest text-brass">
-                        ✦ Più scelto
-                      </span>
-                    )}
-
-                    <div className="flex items-baseline justify-between">
-                      <h3 className={
-                        featured
-                          ? "display text-3xl font-bold tracking-tightest text-white"
-                          : "display text-3xl font-bold tracking-tightest text-cream"
-                      }>
-                        {tier.name}
-                      </h3>
-                      {i === 2 && (
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-brass">
-                          ✦ con video
-                        </span>
-                      )}
-                    </div>
-                    <p className={featured ? "mt-2 text-sm text-white/85" : "mt-2 text-sm text-mist"}>
-                      {tier.description}
-                    </p>
-
-                    <div className="mt-10">
-                      <div className="flex items-baseline gap-2">
-                        <span className={
-                          featured
-                            ? "display text-6xl font-bold tracking-tightest text-white"
-                            : "display text-6xl font-bold tracking-tightest text-cream"
-                        }>
-                          {formatEur(tier.priceEur)}
-                        </span>
-                      </div>
-                      <span className={featured ? "text-xs text-white/70" : "text-xs text-smoke"}>
-                        Una tantum · IVA esclusa
-                      </span>
-                    </div>
-
-                    <div className={featured ? "hairline mt-8 opacity-50" : "hairline mt-8"} />
-
-                    <ul className="mt-8 space-y-3.5">
-                      {tier.features.map((f) => (
-                        <li key={f} className="flex gap-3 text-sm">
-                          <svg
-                            width="18"
-                            height="18"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className={featured ? "mt-0.5 shrink-0 text-white" : "mt-0.5 shrink-0 text-brass"}
-                          >
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                          <span className={featured ? "text-white/95" : "text-bone/90"}>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <Link
-                      href={`/ordina?tier=${tier.key}`}
-                      className={
-                        featured
-                          ? "btn-brass btn-lg mt-10 w-full"
-                          : "btn-flame btn-lg mt-10 w-full"
-                      }
-                    >
-                      Scegli {tier.name}
-                    </Link>
-                  </article>
-                </Reveal>
-              );
-            })}
-          </div>
-
-          <Reveal delay={500}>
-            <p className="mt-12 text-center text-xs text-smoke">
-              Pagamento sicuro via Stripe · Garanzia rimborso entro 14 giorni
-            </p>
-          </Reveal>
         </div>
       </section>
 

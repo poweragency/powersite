@@ -694,60 +694,80 @@ export default function OrderForm() {
           )}
         </form>
 
-        {/* ─── SIDEBAR RIEPILOGO ────────────────────── */}
+        {/* ─── SIDEBAR ─────────────────────────────── */}
         <aside className="md:sticky md:top-24 md:self-start">
           <div className="relative overflow-hidden rounded-2xl border border-brass/20 bg-coal p-8 shadow-[0_20px_60px_-20px_rgba(201,165,92,0.3)]">
             <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-brass/15 blur-3xl" />
             <div className="relative">
-              <h3 className="font-mono text-[10px] font-semibold uppercase tracking-widest text-brass">
-                Riepilogo
-              </h3>
-
-              <div className="hairline my-5" />
-
-              <div className="space-y-3">
-                <div className="flex items-baseline justify-between">
-                  <span className="text-sm text-bone">Pacchetto {TIERS.find((t) => t.key === tier)?.name}</span>
-                  <span className="font-mono text-sm text-cream">
-                    {formatEur(TIERS.find((t) => t.key === tier)?.priceEur ?? 0)}
-                  </span>
-                </div>
-                {addons.length === 0 && (
-                  <p className="text-xs italic text-smoke">Nessun add-on selezionato</p>
-                )}
-                {addons.map((k) => {
-                  const addon = ADDONS.find((a) => a.key === k);
-                  return addon ? (
-                    <div key={k} className="flex items-baseline justify-between">
-                      <span className="text-xs text-mist">+ {addon.name}</span>
-                      <span className="font-mono text-xs text-bone">{formatEur(addon.priceEur)}</span>
-                    </div>
-                  ) : null;
-                })}
-              </div>
-
-              <div className="hairline my-5" />
-
-              <div className="flex items-baseline justify-between">
-                <span className="text-sm text-mist">Totale</span>
-                <span className="display text-4xl font-bold tracking-tightest text-cream">{formatEur(total)}</span>
-              </div>
-              <p className="mt-1 text-right text-[10px] uppercase tracking-widest text-smoke">IVA esclusa</p>
-
               {step === 1 ? (
-                <button
-                  type="submit"
-                  form={FORM_ID}
-                  className="btn-flame btn-lg mt-7 hidden w-full md:inline-flex"
-                >
-                  Continua ai pacchetti
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </button>
+                <>
+                  <h3 className="font-mono text-[10px] font-semibold uppercase tracking-widest text-brass">
+                    Step 1 di 2
+                  </h3>
+                  <div className="hairline my-5" />
+                  <p className="display text-2xl font-bold leading-tight tracking-tighter text-cream">
+                    Stai compilando il <span className="serif-italic">brief</span>.
+                  </p>
+                  <p className="mt-4 text-sm leading-relaxed text-mist">
+                    Cinque minuti per dirci chi sei. Poi scegli il pacchetto
+                    e procedi al pagamento.
+                  </p>
+
+                  <div className="hairline my-7" />
+
+                  <button
+                    type="submit"
+                    form={FORM_ID}
+                    className="btn-flame btn-lg hidden w-full md:inline-flex"
+                  >
+                    Continua ai pacchetti
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  </button>
+
+                  <p className="mt-4 text-center text-[10px] uppercase tracking-widest text-smoke">
+                    Dopo: pacchetto + pagamento sicuro
+                  </p>
+                </>
               ) : (
                 <>
+                  <h3 className="font-mono text-[10px] font-semibold uppercase tracking-widest text-brass">
+                    Riepilogo
+                  </h3>
+
+                  <div className="hairline my-5" />
+
+                  <div className="space-y-3">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-sm text-bone">Pacchetto {TIERS.find((t) => t.key === tier)?.name}</span>
+                      <span className="font-mono text-sm text-cream">
+                        {formatEur(TIERS.find((t) => t.key === tier)?.priceEur ?? 0)}
+                      </span>
+                    </div>
+                    {addons.length === 0 && (
+                      <p className="text-xs italic text-smoke">Nessun add-on selezionato</p>
+                    )}
+                    {addons.map((k) => {
+                      const addon = ADDONS.find((a) => a.key === k);
+                      return addon ? (
+                        <div key={k} className="flex items-baseline justify-between">
+                          <span className="text-xs text-mist">+ {addon.name}</span>
+                          <span className="font-mono text-xs text-bone">{formatEur(addon.priceEur)}</span>
+                        </div>
+                      ) : null;
+                    })}
+                  </div>
+
+                  <div className="hairline my-5" />
+
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-sm text-mist">Totale</span>
+                    <span className="display text-4xl font-bold tracking-tightest text-cream">{formatEur(total)}</span>
+                  </div>
+                  <p className="mt-1 text-right text-[10px] uppercase tracking-widest text-smoke">IVA esclusa</p>
+
                   <label className="mt-7 mb-5 flex items-start gap-3 text-xs text-mist cursor-pointer">
                     <input
                       type="checkbox"
@@ -766,12 +786,12 @@ export default function OrderForm() {
                   >
                     {submitting ? "Invio in corso..." : "Procedi al pagamento"}
                   </button>
+
+                  <p className="mt-4 text-center text-[10px] uppercase tracking-widest text-smoke">
+                    Pagamento sicuro · Stripe
+                  </p>
                 </>
               )}
-
-              <p className="mt-4 text-center text-[10px] uppercase tracking-widest text-smoke">
-                {step === 1 ? "Dopo: pacchetto + pagamento" : "Pagamento sicuro · Stripe"}
-              </p>
             </div>
           </div>
 
