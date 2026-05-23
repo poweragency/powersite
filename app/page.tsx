@@ -86,7 +86,7 @@ const FAQ = [
   },
   {
     q: "Cosa succede se non mi piace?",
-    a: "Garantiamo una revisione completa entro 7 giorni: aggiungiamo, togliamo, riscriviamo, fino a quando non sei soddisfatto. Se proprio il risultato non funziona, rimborso pieno entro 14 giorni.",
+    a: "Garantiamo una revisione completa entro 7 giorni: aggiungiamo, togliamo, riscriviamo, fino a quando non sei soddisfatto.",
   },
   {
     q: "Quante landing fate al mese?",
