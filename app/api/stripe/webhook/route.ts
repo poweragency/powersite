@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
-import { readManifest } from "@/lib/blob";
+import {
+  readManifest,
+  isEventProcessed,
+  markEventProcessed,
+} from "@/lib/blob";
 import { runPipeline } from "@/lib/orchestrator/pipeline";
 
 export const runtime = "nodejs";
@@ -12,9 +16,10 @@ export const maxDuration = 300; // 5 min, serve pipeline + GitHub + Vercel + ema
  * Stateless: nessun DB. Tutti i dati dell'ordine sono nel manifest.json
  * su Vercel Blob, l'URL è in `session.metadata.manifest_url`.
  *
- * Idempotenza: Stripe ritenta su 5xx. Una doppia esecuzione genererebbe 2 repo
- * GitHub diverse (nome con timestamp diverso) — per ora accettiamo il rischio
- * (raro), TODO: in-memory dedup su event.id.
+ * Idempotenza: Stripe ritenta su 5xx e a volte invia duplicati. Usiamo
+ * un marker zero-byte su Vercel Blob (`idempotency/{event.id}.flag`)
+ * scritto SOLO dopo runPipeline ok. Una seconda esecuzione dello stesso
+ * event.id la vede e ritorna 200 immediatamente senza re-runnare.
  */
 export async function POST(req: NextRequest) {
   const sig = req.headers.get("stripe-signature");
@@ -37,6 +42,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true, ignored: event.type });
   }
 
+  // Idempotenza: skip se già processato
+  if (await isEventProcessed(event.id)) {
+    console.log(`[stripe webhook] event ${event.id} già processato, skip`);
+    return NextResponse.json({ received: true, idempotent: true });
+  }
+
   const session = event.data.object as Stripe.Checkout.Session;
   const manifestUrl = session.metadata?.manifest_url;
   const nonce = session.metadata?.nonce;
@@ -47,13 +58,15 @@ export async function POST(req: NextRequest) {
 
   try {
     const payload = await readManifest(manifestUrl);
-    // Eseguiamo la pipeline in modo bloccante: con maxDuration=300 c'è margine.
-    // Se in produzione superiamo i 300s, splittiamo in step async (Inngest/Trigger.dev).
     const result = await runPipeline(payload);
+
+    // Marker scritto DOPO il successo — se la pipeline fallisce
+    // a metà, Stripe può legittimamente ritentare
+    await markEventProcessed(event.id);
+
     return NextResponse.json({ received: true, result });
   } catch (err) {
     console.error("[stripe webhook] pipeline failed:", err);
-    // Ritorniamo 500 così Stripe ritenta — ma il dedup è ancora TODO
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Pipeline failed" },
       { status: 500 },

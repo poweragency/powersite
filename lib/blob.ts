@@ -13,9 +13,71 @@ import { put, del, list, type PutBlobResult } from "@vercel/blob";
 import type { OrderPayload } from "@/lib/types";
 
 const PREFIX = "pending";
+const IDEMPOTENCY_PREFIX = "idempotency";
 
 export function blobPath(nonce: string, filename: string): string {
   return `${PREFIX}/${nonce}/${filename}`;
+}
+
+// ─── Idempotenza webhook Stripe ──────────────────────────────
+// Marker zero-byte per ogni event.id già processato. Lo
+// scriviamo SOLO dopo che runPipeline è andata a buon fine.
+
+function eventMarkerPath(eventId: string): string {
+  return `${IDEMPOTENCY_PREFIX}/${eventId}.flag`;
+}
+
+export async function isEventProcessed(eventId: string): Promise<boolean> {
+  const page = await list({ prefix: eventMarkerPath(eventId), limit: 1 });
+  return page.blobs.length > 0;
+}
+
+export async function markEventProcessed(eventId: string): Promise<void> {
+  await put(eventMarkerPath(eventId), "", {
+    access: "public",
+    contentType: "text/plain",
+    addRandomSuffix: false,
+  });
+}
+
+// ─── Cleanup blob orfani ─────────────────────────────────────
+// Cancella tutto sotto `pending/` più vecchio di N ore (clienti
+// che hanno compilato il form senza completare il pagamento) e i
+// marker idempotenza scaduti.
+
+export interface CleanupResult {
+  pendingDeleted: number;
+  markersDeleted: number;
+}
+
+export async function cleanupOrphans(opts: {
+  pendingMaxAgeHours?: number;
+  markerMaxAgeHours?: number;
+} = {}): Promise<CleanupResult> {
+  const pendingMaxAge = (opts.pendingMaxAgeHours ?? 24) * 60 * 60 * 1000;
+  const markerMaxAge = (opts.markerMaxAgeHours ?? 24 * 7) * 60 * 60 * 1000;
+  const now = Date.now();
+
+  const result: CleanupResult = { pendingDeleted: 0, markersDeleted: 0 };
+
+  for (const prefix of [PREFIX + "/", IDEMPOTENCY_PREFIX + "/"]) {
+    const cutoff = prefix.startsWith(PREFIX) ? now - pendingMaxAge : now - markerMaxAge;
+    let cursor: string | undefined;
+    do {
+      const page = await list({ prefix, cursor });
+      const expired = page.blobs.filter(
+        (b) => new Date(b.uploadedAt).getTime() < cutoff,
+      );
+      if (expired.length) {
+        await del(expired.map((b) => b.url));
+        if (prefix.startsWith(PREFIX)) result.pendingDeleted += expired.length;
+        else result.markersDeleted += expired.length;
+      }
+      cursor = page.cursor;
+    } while (cursor);
+  }
+
+  return result;
 }
 
 export async function uploadImage(
