@@ -29,8 +29,15 @@ export const SHOWCASE: Record<Tier, ShowcaseItem[]> = {
     { name: "Concierge Lake Como", sector: "Hospitality · Como", url: PLACEHOLDER },
   ],
   business: [
-    { name: "Hotel Villa Toscana", sector: "Boutique hotel · Toscana", url: PLACEHOLDER },
-    { name: "Ristorante Stellato", sector: "Fine dining · Roma", url: PLACEHOLDER },
-    { name: "Luxury Spa Resort", sector: "Wellness · Sardegna", url: PLACEHOLDER },
+    {
+      name: "Binova",
+      sector: "Brand · Italia",
+      url: "https://binova-git-main-poweragency.vercel.app/",
+    },
+    {
+      name: "Luxnight",
+      sector: "Hospitality · Italia",
+      url: "https://poweragency.github.io/luxnight-landing",
+    },
   ],
 };
