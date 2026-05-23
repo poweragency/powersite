@@ -46,11 +46,14 @@ export async function runPipeline(order: OrderPayload): Promise<PipelineResult> 
     }
 
     // 3. Compila template
-    const builtPath = await buildProject(order, { ...content, video });
-    console.log(`[pipeline:${order.nonce}] project built at ${builtPath}`);
+    const built = await buildProject(order, { ...content, video });
+    console.log(
+      `[pipeline:${order.nonce}] project built at ${built.path}` +
+        ` (imgs=${built.imagesDownloaded}, entrance=${built.entranceImagesDownloaded})`,
+    );
 
     // 4. Crea NUOVA repo GitHub
-    const repo = await createGithubRepo({ order, localPath: builtPath });
+    const repo = await createGithubRepo({ order, localPath: built.path });
     console.log(`[pipeline:${order.nonce}] repo created ${repo.url}`);
 
     // 5. Deploy Vercel
