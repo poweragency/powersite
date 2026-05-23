@@ -32,6 +32,19 @@ export async function uploadImage(
   });
 }
 
+export async function uploadEntranceImage(
+  nonce: string,
+  file: File,
+): Promise<PutBlobResult> {
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+  const path = blobPath(nonce, `entrance.${ext}`);
+  return put(path, file, {
+    access: "public",
+    contentType: file.type || "image/jpeg",
+    addRandomSuffix: false,
+  });
+}
+
 export async function uploadManifest(payload: OrderPayload): Promise<PutBlobResult> {
   const path = blobPath(payload.nonce, "manifest.json");
   return put(path, JSON.stringify(payload), {

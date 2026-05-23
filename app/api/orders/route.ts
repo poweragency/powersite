@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { orderIntakeSchema } from "@/lib/validation";
 import { calculateTotal } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
-import { uploadImage, uploadManifest } from "@/lib/blob";
+import { uploadImage, uploadEntranceImage, uploadManifest } from "@/lib/blob";
 import { stripe, buildLineItems } from "@/lib/stripe";
 import type { OrderPayload } from "@/lib/types";
 
@@ -11,6 +11,7 @@ export const maxDuration = 60;
 
 const MAX_IMAGES = 30;
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const MAX_ENTRANCE_IMAGE_BYTES = 15 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
   try {
@@ -72,6 +73,20 @@ export async function POST(req: NextRequest) {
       imageBlobUrls.push(result.url);
     }
 
+    // 1b. (Solo Signature) immagine ingresso hi-res
+    let entranceImageUrl: string | undefined;
+    const entranceFile = form.get("entrance_image");
+    if (entranceFile instanceof File && entranceFile.size > 0) {
+      if (entranceFile.size > MAX_ENTRANCE_IMAGE_BYTES) {
+        return NextResponse.json(
+          { error: `Immagine d'ingresso supera 15MB (${(entranceFile.size / 1024 / 1024).toFixed(1)}MB)` },
+          { status: 413 },
+        );
+      }
+      const uploaded = await uploadEntranceImage(nonce, entranceFile);
+      entranceImageUrl = uploaded.url;
+    }
+
     // 2. Costruisci payload e caricalo come manifest.json
     const payload: OrderPayload = {
       nonce,
@@ -95,6 +110,7 @@ export async function POST(req: NextRequest) {
       totalEur,
       forceAllImages: data.forceAllImages,
       imageBlobUrls,
+      entranceImageUrl,
     };
     const manifest = await uploadManifest(payload);
 

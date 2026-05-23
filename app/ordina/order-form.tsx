@@ -7,6 +7,8 @@ import type { AddonKey, Tier } from "@/lib/types";
 import { cn, formatEur } from "@/lib/utils";
 
 const FORM_ID = "order-form";
+const MIN_ENTRANCE_DIMENSION = 1920;
+const MAX_ENTRANCE_BYTES = 15 * 1024 * 1024;
 
 const TONE_OPTIONS: { value: string; label: string }[] = [
   { value: "professional", label: "Professionale" },
@@ -20,8 +22,8 @@ type Step = 1 | 2;
 
 function StepIndicator({ current }: { current: Step }) {
   const items: { n: number; label: string }[] = [
-    { n: 1, label: "Pacchetto" },
-    { n: 2, label: "Il tuo brief" },
+    { n: 1, label: "Il tuo brief" },
+    { n: 2, label: "Pacchetto" },
   ];
   return (
     <div className="mb-12 flex items-center justify-center gap-3 md:gap-5">
@@ -81,6 +83,35 @@ function SectionHeader({ n, title, hint }: { n: string; title: string; hint?: st
   );
 }
 
+async function validateEntranceImage(
+  file: File,
+): Promise<{ ok: true; w: number; h: number } | { ok: false; reason: string }> {
+  if (file.size > MAX_ENTRANCE_BYTES) {
+    return { ok: false, reason: `Massimo 15MB (questa è ${(file.size / 1024 / 1024).toFixed(1)}MB)` };
+  }
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new window.Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const longEdge = Math.max(img.naturalWidth, img.naturalHeight);
+      if (longEdge < MIN_ENTRANCE_DIMENSION) {
+        resolve({
+          ok: false,
+          reason: `Risoluzione troppo bassa: ${img.naturalWidth}×${img.naturalHeight}. Serve almeno ${MIN_ENTRANCE_DIMENSION}px sul lato lungo per una riproduzione fedele.`,
+        });
+      } else {
+        resolve({ ok: true, w: img.naturalWidth, h: img.naturalHeight });
+      }
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve({ ok: false, reason: "Impossibile leggere l'immagine" });
+    };
+    img.src = url;
+  });
+}
+
 export default function OrderForm() {
   const params = useSearchParams();
   const router = useRouter();
@@ -93,6 +124,9 @@ export default function OrderForm() {
   const [forceAllImages, setForceAllImages] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [images, setImages] = useState<File[]>([]);
+  const [entranceImage, setEntranceImage] = useState<File | null>(null);
+  const [entranceMeta, setEntranceMeta] = useState<{ w: number; h: number } | null>(null);
+  const [entranceError, setEntranceError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -117,6 +151,27 @@ export default function OrderForm() {
     setImages((curr) => curr.filter((_, idx) => idx !== i));
   }
 
+  async function onEntranceSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setEntranceError(null);
+    const result = await validateEntranceImage(file);
+    if (result.ok) {
+      setEntranceImage(file);
+      setEntranceMeta({ w: result.w, h: result.h });
+    } else {
+      setEntranceImage(null);
+      setEntranceMeta(null);
+      setEntranceError(result.reason);
+    }
+  }
+
+  function removeEntrance() {
+    setEntranceImage(null);
+    setEntranceMeta(null);
+    setEntranceError(null);
+  }
+
   function goToStep2() {
     setError(null);
     setStep(2);
@@ -138,6 +193,7 @@ export default function OrderForm() {
     setError(null);
 
     if (step !== 2) {
+      // Step 1 completato → vai a step 2 (validation HTML5 ha già verificato i required)
       goToStep2();
       return;
     }
@@ -154,6 +210,9 @@ export default function OrderForm() {
     formData.set("forceAllImages", forceAllImages ? "true" : "false");
     formData.set("acceptedTerms", "true");
     images.forEach((img, i) => formData.append(`image_${i}`, img));
+    if (entranceImage && tier === "business") {
+      formData.append("entrance_image", entranceImage);
+    }
 
     try {
       const res = await fetch("/api/orders", { method: "POST", body: formData });
@@ -183,129 +242,11 @@ export default function OrderForm() {
               <header>
                 <span className="chip-brass">Step 1 di 2</span>
                 <h1 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tightest text-cream md:text-5xl">
-                  Scegli il <span className="serif-italic">pacchetto.</span>
-                </h1>
-                <p className="mt-5 max-w-xl text-pretty text-mist">
-                  Pick il livello e aggiungi gli extra che ti servono.
-                  Nel prossimo step compili il brief.
-                </p>
-              </header>
-
-              {/* ─── I. PACCHETTO ─────────────────────── */}
-              <section>
-                <SectionHeader n="I" title="Pacchetto" />
-                <div className="grid gap-3 md:grid-cols-3">
-                  {TIERS.map((t) => {
-                    const active = tier === t.key;
-                    return (
-                      <button
-                        type="button"
-                        key={t.key}
-                        onClick={() => setTier(t.key)}
-                        className={cn(
-                          "group relative rounded-2xl border p-5 text-left transition-all",
-                          active
-                            ? "border-brass bg-brass/10 shadow-[0_0_30px_-10px_rgba(201,165,92,0.4)]"
-                            : "border-bone/10 bg-coal/60 hover:border-bone/30 hover:bg-coal",
-                        )}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-display text-lg font-bold tracking-tighter text-cream">{t.name}</span>
-                          {active && (
-                            <span className="grid h-6 w-6 place-items-center rounded-full bg-brass text-obsidian">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="20 6 9 17 4 12" />
-                              </svg>
-                            </span>
-                          )}
-                        </div>
-                        <div className="display mt-3 text-3xl font-bold tracking-tightest text-cream">{formatEur(t.priceEur)}</div>
-                        <div className="mt-2 text-xs leading-relaxed text-mist">{t.description}</div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-
-              {/* ─── II. ADDONS ───────────────────────── */}
-              <section>
-                <SectionHeader n="II" title="Add-on (opzionali)" hint={`${addons.length} selezionati`} />
-                <div className="grid gap-3 md:grid-cols-2">
-                  {ADDONS.map((a) => {
-                    const active = addons.includes(a.key);
-                    return (
-                      <button
-                        type="button"
-                        key={a.key}
-                        onClick={() => toggleAddon(a.key)}
-                        className={cn(
-                          "flex items-start gap-3 rounded-xl border p-4 text-left transition-all",
-                          active
-                            ? "border-brass bg-brass/10"
-                            : "border-bone/10 bg-coal/60 hover:border-bone/30 hover:bg-coal",
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded border",
-                            active ? "border-brass bg-brass text-obsidian" : "border-bone/30",
-                          )}
-                        >
-                          {active && (
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                          )}
-                        </span>
-                        <span className="flex-1">
-                          <span className="flex items-baseline justify-between gap-2">
-                            <span className="font-semibold text-sm text-cream">{a.name}</span>
-                            <span className="shrink-0 font-mono text-xs font-medium text-brass">+{formatEur(a.priceEur)}</span>
-                          </span>
-                          <span className="mt-1 block text-xs leading-relaxed text-mist">{a.description}</span>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-
-              {/* CTA mobile-only — su desktop sta nella sidebar sticky */}
-              <div className="md:hidden">
-                <button
-                  type="button"
-                  onClick={goToStep2}
-                  className="btn-flame btn-lg w-full"
-                >
-                  Continua al brief
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <header>
-                <button
-                  type="button"
-                  onClick={goToStep1}
-                  className="mb-4 inline-flex items-center gap-2 text-xs uppercase tracking-widest text-mist transition-colors hover:text-brass"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="19" y1="12" x2="5" y2="12" />
-                    <polyline points="12 19 5 12 12 5" />
-                  </svg>
-                  Modifica pacchetto
-                </button>
-                <span className="chip-brass">Step 2 di 2</span>
-                <h1 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tightest text-cream md:text-5xl">
                   Parlaci di <span className="serif-italic">te.</span>
                 </h1>
                 <p className="mt-5 max-w-xl text-pretty text-mist">
-                  Cinque minuti di brief. Quello che ci dici qui diventa
-                  il sito che riceverai entro 48 ore.
+                  Cinque minuti di brief. Quello che ci dici qui diventa il sito
+                  che riceverai entro 48 ore. Dopo, scegli il pacchetto.
                 </p>
               </header>
 
@@ -396,19 +337,6 @@ export default function OrderForm() {
                       className="textarea"
                     />
                   </div>
-                  {tier === "business" && (
-                    <div className="rounded-2xl border border-brass/30 bg-brass/5 p-5">
-                      <label className="label !text-brass">
-                        ✦ Atmosfera del video di apertura (opz.)
-                      </label>
-                      <textarea
-                        name="videoScript"
-                        rows={3}
-                        placeholder="Descrivi com'è fatto il tuo locale: l'ingresso, gli ambienti, l'atmosfera che vuoi trasmettere nei primi secondi (es. 'porta vintage in legno, luci calde, parquet, tavoli apparecchiati...'). Se vuoto, ci basiamo sulle foto che carichi."
-                        className="textarea"
-                      />
-                    </div>
-                  )}
                 </div>
               </section>
 
@@ -471,6 +399,208 @@ export default function OrderForm() {
                   </span>
                 </label>
               </section>
+
+              {/* CTA mobile-only */}
+              <div className="md:hidden">
+                <button type="submit" form={FORM_ID} className="btn-flame btn-lg w-full">
+                  Continua ai pacchetti
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <header>
+                <button
+                  type="button"
+                  onClick={goToStep1}
+                  className="mb-4 inline-flex items-center gap-2 text-xs uppercase tracking-widest text-mist transition-colors hover:text-brass"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                  Modifica brief
+                </button>
+                <span className="chip-brass">Step 2 di 2</span>
+                <h1 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tightest text-cream md:text-5xl">
+                  Scegli il <span className="serif-italic">pacchetto.</span>
+                </h1>
+                <p className="mt-5 max-w-xl text-pretty text-mist">
+                  Pick il livello e aggiungi gli extra che ti servono.
+                  Poi procedi al pagamento sicuro.
+                </p>
+              </header>
+
+              {/* ─── I. PACCHETTO ─────────────────────── */}
+              <section>
+                <SectionHeader n="I" title="Pacchetto" />
+                <div className="grid gap-3 md:grid-cols-3">
+                  {TIERS.map((t) => {
+                    const active = tier === t.key;
+                    return (
+                      <button
+                        type="button"
+                        key={t.key}
+                        onClick={() => setTier(t.key)}
+                        className={cn(
+                          "group relative rounded-2xl border p-5 text-left transition-all",
+                          active
+                            ? "border-brass bg-brass/10 shadow-[0_0_30px_-10px_rgba(201,165,92,0.4)]"
+                            : "border-bone/10 bg-coal/60 hover:border-bone/30 hover:bg-coal",
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-display text-lg font-bold tracking-tighter text-cream">{t.name}</span>
+                          {active && (
+                            <span className="grid h-6 w-6 place-items-center rounded-full bg-brass text-obsidian">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            </span>
+                          )}
+                        </div>
+                        <div className="display mt-3 text-3xl font-bold tracking-tightest text-cream">{formatEur(t.priceEur)}</div>
+                        <div className="mt-2 text-xs leading-relaxed text-mist">{t.description}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* ─── Personalizzazione Signature ─── */}
+                {tier === "business" && (
+                  <div className="mt-6 space-y-5 rounded-2xl border border-brass/30 bg-brass/5 p-6">
+                    <header className="flex items-baseline gap-3">
+                      <span className="font-display text-xl italic text-brass">✦</span>
+                      <h3 className="display text-lg font-bold tracking-tighter text-cream">
+                        Personalizzazione Signature
+                      </h3>
+                    </header>
+
+                    <div>
+                      <label className="label !text-brass">
+                        Atmosfera del video di apertura (opz.)
+                      </label>
+                      <textarea
+                        name="videoScript"
+                        rows={3}
+                        placeholder="Descrivi com'è fatto il tuo locale: l'ingresso, gli ambienti, l'atmosfera dei primi secondi (es. 'porta vintage in legno, luci calde, parquet, tavoli apparecchiati...'). Se vuoto, ci basiamo sulle foto."
+                        className="textarea"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="label !text-brass">
+                        Immagine d&apos;ingresso del locale (opz., hi-res)
+                      </label>
+                      <p className="mb-3 text-xs text-mist">
+                        Se vuoi una <strong className="text-bone">riproduzione fedele</strong> del tuo ingresso nel video,
+                        carica una foto in alta risoluzione (min {MIN_ENTRANCE_DIMENSION}px sul lato lungo).
+                        Senza, ricostruiamo l&apos;atmosfera dalle foto del brief.
+                      </p>
+
+                      {entranceImage ? (
+                        <div className="flex items-center justify-between rounded-xl border border-brass/30 bg-coal p-4">
+                          <div className="flex items-center gap-3">
+                            <span className="grid h-10 w-10 place-items-center rounded bg-brass/20 text-brass">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                <circle cx="9" cy="9" r="2" />
+                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                              </svg>
+                            </span>
+                            <div className="text-sm">
+                              <div className="font-mono text-cream">{entranceImage.name}</div>
+                              <div className="text-xs text-mist">
+                                {entranceMeta?.w}×{entranceMeta?.h}px · {(entranceImage.size / 1024 / 1024).toFixed(1)}MB
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={removeEntrance}
+                            className="text-xs font-medium text-flame hover:underline"
+                          >
+                            Rimuovi
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="block cursor-pointer rounded-xl border-2 border-dashed border-brass/30 bg-coal/40 p-6 text-center transition-all hover:border-brass hover:bg-brass/10">
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            onChange={onEntranceSelected}
+                            className="sr-only"
+                          />
+                          <div className="mx-auto grid h-10 w-10 place-items-center rounded-full border border-brass/40 bg-brass/15 text-brass">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="17 8 12 3 7 8" />
+                              <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                          </div>
+                          <p className="mt-3 font-display text-sm font-bold tracking-tighter text-cream">
+                            Carica foto ingresso
+                          </p>
+                          <p className="mt-1 text-xs text-mist">
+                            JPG / PNG / WebP · min {MIN_ENTRANCE_DIMENSION}px · max 15MB
+                          </p>
+                        </label>
+                      )}
+
+                      {entranceError && (
+                        <p className="mt-2 text-xs text-flame-300">{entranceError}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </section>
+
+              {/* ─── II. ADDONS ───────────────────────── */}
+              <section>
+                <SectionHeader n="II" title="Add-on (opzionali)" hint={`${addons.length} selezionati`} />
+                <div className="grid gap-3 md:grid-cols-2">
+                  {ADDONS.map((a) => {
+                    const active = addons.includes(a.key);
+                    return (
+                      <button
+                        type="button"
+                        key={a.key}
+                        onClick={() => toggleAddon(a.key)}
+                        className={cn(
+                          "flex items-start gap-3 rounded-xl border p-4 text-left transition-all",
+                          active
+                            ? "border-brass bg-brass/10"
+                            : "border-bone/10 bg-coal/60 hover:border-bone/30 hover:bg-coal",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded border",
+                            active ? "border-brass bg-brass text-obsidian" : "border-bone/30",
+                          )}
+                        >
+                          {active && (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className="flex-1">
+                          <span className="flex items-baseline justify-between gap-2">
+                            <span className="font-semibold text-sm text-cream">{a.name}</span>
+                            <span className="shrink-0 font-mono text-xs font-medium text-brass">+{formatEur(a.priceEur)}</span>
+                          </span>
+                          <span className="mt-1 block text-xs leading-relaxed text-mist">{a.description}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
             </>
           )}
 
@@ -523,11 +653,11 @@ export default function OrderForm() {
 
               {step === 1 ? (
                 <button
-                  type="button"
-                  onClick={goToStep2}
+                  type="submit"
+                  form={FORM_ID}
                   className="btn-flame btn-lg mt-7 hidden w-full md:inline-flex"
                 >
-                  Continua al brief
+                  Continua ai pacchetti
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12" />
                     <polyline points="12 5 19 12 12 19" />
@@ -557,7 +687,7 @@ export default function OrderForm() {
               )}
 
               <p className="mt-4 text-center text-[10px] uppercase tracking-widest text-smoke">
-                {step === 1 ? "Dopo: brief + pagamento" : "Pagamento sicuro · Stripe"}
+                {step === 1 ? "Dopo: pacchetto + pagamento" : "Pagamento sicuro · Stripe"}
               </p>
             </div>
           </div>
