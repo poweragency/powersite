@@ -195,7 +195,7 @@ export default function HomePage() {
       <Marquee items={MARQUEE} />
 
       {/* ─── PROCESSO ────────────────────────────────────── */}
-      <section id="processo" className="relative border-y border-bone/10 bg-coal/30 py-32 md:py-40">
+      <section id="processo" className="relative py-32 md:py-40">
         <div className="container-x">
           <div className="mx-auto mb-20 max-w-3xl text-center">
             <Reveal>
@@ -258,7 +258,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── INVESTIMENTO ─────────────────────────────── */}
-      <section id="pacchetti" className="relative overflow-hidden border-y border-bone/10 py-32 md:py-40">
+      <section id="pacchetti" className="relative overflow-hidden py-32 md:py-40">
         <div className="glow-orb top-[5%] right-[15%] h-[500px] w-[500px] animate-glow bg-flame/20" />
         <div className="glow-orb bottom-[-20%] left-[15%] h-[600px] w-[600px] animate-glow-slow bg-brass/20" />
         <div className="grain" />
@@ -357,7 +357,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── FAQ ────────────────────────────────────────── */}
-      <section id="faq" className="relative border-y border-bone/10 bg-coal/30 py-32 md:py-40">
+      <section id="faq" className="relative py-32 md:py-40">
         <div className="container-x grid gap-16 md:grid-cols-[1fr_2fr] md:gap-24">
           <div className="md:sticky md:top-24 md:self-start">
             <Reveal>

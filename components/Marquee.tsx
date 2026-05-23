@@ -6,7 +6,7 @@ interface Props {
 export function Marquee({ items, separator = "✦" }: Props) {
   const loop = [...items, ...items, ...items, ...items];
   return (
-    <div className="overflow-hidden border-y border-bone/10 bg-coal/40 py-5">
+    <div className="overflow-hidden py-8">
       <div className="mask-fade-r flex">
         <div className="flex shrink-0 animate-marquee gap-12 whitespace-nowrap pr-12">
           {loop.map((item, i) => (
