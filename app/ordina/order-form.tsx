@@ -86,67 +86,58 @@ interface EntranceSlotProps {
 
 function EntranceSlot({ format, label, aspect, file, meta, error, onSelect, onRemove }: EntranceSlotProps) {
   const isPortrait = format === "mobile";
+  const badgeClass = cn(
+    "shrink-0 grid place-items-center rounded border border-brass/40 bg-brass/15 text-brass",
+    isPortrait ? "h-9 w-6" : "h-6 w-9",
+  );
   return (
     <div>
-      <div className="mb-2 flex items-baseline justify-between">
+      <div className="mb-1.5 flex items-baseline justify-between">
         <span className="font-mono text-[10px] uppercase tracking-widest text-brass">{label}</span>
         <span className="font-mono text-[10px] text-mist">{aspect}</span>
       </div>
       {file ? (
-        <div className="rounded-xl border border-brass/30 bg-coal p-3">
-          <div
-            className={cn(
-              "mb-2 grid place-items-center rounded bg-brass/10 text-brass",
-              isPortrait ? "aspect-[9/16]" : "aspect-[16/9]",
-            )}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <circle cx="9" cy="9" r="2" />
-              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+        <div className="flex items-center gap-3 rounded-lg border border-brass/30 bg-coal px-3 py-2.5">
+          <span className={badgeClass}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="12" r="3" />
             </svg>
-          </div>
-          <div className="truncate font-mono text-[11px] text-cream" title={file.name}>{file.name}</div>
-          <div className="mt-0.5 flex items-baseline justify-between">
-            <span className="text-[10px] text-mist">
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="truncate font-mono text-[11px] text-cream" title={file.name}>{file.name}</div>
+            <div className="text-[10px] text-mist">
               {meta?.w}×{meta?.h} · {(file.size / 1024 / 1024).toFixed(1)}MB
-            </span>
-            <button
-              type="button"
-              onClick={onRemove}
-              className="text-[10px] font-medium uppercase tracking-widest text-flame hover:underline"
-            >
-              Rimuovi
-            </button>
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={onRemove}
+            className="text-[10px] font-medium uppercase tracking-widest text-flame hover:underline shrink-0"
+          >
+            Rimuovi
+          </button>
         </div>
       ) : (
-        <label
-          className={cn(
-            "block cursor-pointer rounded-xl border-2 border-dashed border-brass/30 bg-coal/40 p-4 text-center transition-all hover:border-brass hover:bg-brass/10",
-            isPortrait ? "aspect-[9/16]" : "aspect-[16/9]",
-          )}
-        >
+        <label className="flex cursor-pointer items-center gap-3 rounded-lg border-2 border-dashed border-brass/30 bg-coal/40 px-3 py-2.5 transition-all hover:border-brass hover:bg-brass/10">
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp"
             onChange={onSelect}
             className="sr-only"
           />
-          <div className="flex h-full flex-col items-center justify-center">
-            <div className="grid h-8 w-8 place-items-center rounded-full border border-brass/40 bg-brass/15 text-brass">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
-            </div>
-            <p className="mt-2 font-display text-xs font-bold tracking-tighter text-cream">Carica foto</p>
-            <p className="mt-1 text-[10px] text-mist">min 1920px · max 15MB</p>
+          <span className={badgeClass}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="text-xs font-semibold text-cream">Carica foto</div>
+            <div className="text-[10px] text-mist">min 1920px · max 15MB</div>
           </div>
         </label>
       )}
-      {error && <p className="mt-2 text-[11px] text-flame-300">{error}</p>}
+      {error && <p className="mt-1 text-[10px] text-flame-300">{error}</p>}
     </div>
   );
 }

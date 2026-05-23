@@ -10,7 +10,7 @@ const SCROLL_THRESHOLD = 16;
 const NAV_ITEMS: { href: string; label: string }[] = [
   { href: "/#processo",     label: "Il processo" },
   { href: "/#filosofia",    label: "La nostra filosofia" },
-  { href: "/#pacchetti",    label: "Pacchetti" },
+  { href: "/#pacchetti",    label: "Listino" },
   { href: "/#recensioni",   label: "Recensioni" },
   { href: "/#faq",          label: "FAQ" },
 ];
@@ -32,8 +32,8 @@ export function Nav() {
       className={cn(
         "sticky top-0 z-40 transition-all duration-500 ease-out",
         scrolled
-          ? "border-b border-bone/15 bg-obsidian backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.7)]"
-          : "border-b border-bone/5 bg-obsidian/80 backdrop-blur-lg",
+          ? "border-b border-brass/20 bg-obsidian backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.7)]"
+          : "border-b border-transparent bg-gradient-to-b from-obsidian/85 via-obsidian/60 to-transparent backdrop-blur-md",
       )}
     >
       <div className="container-x flex h-16 items-center justify-between gap-3">
