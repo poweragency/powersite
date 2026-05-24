@@ -26,6 +26,7 @@ import { config } from "dotenv";
 import { resolve } from "node:path";
 import { generateLandingContent } from "../lib/ai/generate-content";
 import { buildProject } from "../lib/orchestrator/steps/build-project";
+import { createGithubRepo } from "../lib/orchestrator/steps/create-github-repo";
 import type { OrderPayload, Tier, ToneOfVoice } from "../lib/types";
 
 // Carica .env.local
@@ -61,7 +62,8 @@ function makeFakeOrder(tier: Tier, company: string): OrderPayload {
 }
 
 async function main() {
-  const [tierArg = "standard", companyArg = "Studio Bianchi"] = process.argv.slice(2);
+  const [tierArg = "standard", companyArg = "Studio Bianchi", flagArg] = process.argv.slice(2);
+  const doGithub = flagArg === "github";
 
   if (!TIERS_VALID.includes(tierArg as Tier)) {
     console.error(`Tier invalido: ${tierArg}. Usa: ${TIERS_VALID.join(", ")}`);
@@ -84,17 +86,36 @@ async function main() {
   const content = await generateLandingContent(order);
   console.log(`   ✓ ${Date.now() - t0}ms — ${content.sections.length} sezioni\n`);
 
-  console.log(`📦 [2/2] Build del progetto...`);
+  const totalSteps = doGithub ? 3 : 2;
+
+  console.log(`📦 [2/${totalSteps}] Build del progetto...`);
   const t1 = Date.now();
   const result = await buildProject(order, content);
   console.log(`   ✓ ${Date.now() - t1}ms\n`);
 
   console.log(`✅ Progetto generato in:`);
   console.log(`   ${result.path}\n`);
-  console.log(`Per testarlo:`);
-  console.log(`   cd "${result.path}"`);
-  console.log(`   npm install`);
-  console.log(`   npm run dev\n`);
+
+  if (doGithub) {
+    if (!process.env.GITHUB_TOKEN || !process.env.GITHUB_ORG) {
+      console.error("❌ Per testare GitHub serve GITHUB_TOKEN + GITHUB_ORG in .env.local");
+      process.exit(1);
+    }
+    console.log(`🐙 [3/${totalSteps}] Push su GitHub...`);
+    const t2 = Date.now();
+    const repo = await createGithubRepo({ order, localPath: result.path });
+    console.log(`   ✓ ${Date.now() - t2}ms\n`);
+
+    console.log(`✅ Repo ${repo.alreadyExisted ? "trovata (idempotenza)" : "creata"}:`);
+    console.log(`   ${repo.url}`);
+    console.log(`   ${repo.filesPushed} file pushati su ${repo.defaultBranch}\n`);
+  } else {
+    console.log(`Per testarlo:`);
+    console.log(`   cd "${result.path}"`);
+    console.log(`   npm install`);
+    console.log(`   npm run dev\n`);
+    console.log(`(Per pushare anche su GitHub: aggiungi 'github' come 3° arg)\n`);
+  }
 }
 
 main().catch((err) => {

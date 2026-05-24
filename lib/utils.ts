@@ -26,11 +26,18 @@ export function formatEur(cents: number): string {
   }).format(cents);
 }
 
-const RESERVED_REPO_PATTERN = /^client-[a-z0-9-]+-\d{10,}$/;
+/**
+ * Pattern dei nomi repo cliente: `client-{slug}-{8 char hex/alfanum}`.
+ *  - prefisso `client-` invariante (nessuna repo dell'org senza questo è toccata)
+ *  - slug del nome azienda (3-40 char a-z0-9-)
+ *  - suffisso 8 caratteri derivato dal nonce (stesso ordine → stesso nome
+ *    → idempotenza se Stripe ritenta il webhook)
+ */
+const RESERVED_REPO_PATTERN = /^client-[a-z0-9][a-z0-9-]{1,40}-[a-z0-9]{8}$/;
 
-export function buildClientRepoName(companySlug: string): string {
-  const timestamp = Math.floor(Date.now() / 1000);
-  const name = `client-${companySlug}-${timestamp}`;
+export function buildClientRepoName(companySlug: string, nonce: string): string {
+  const shortNonce = nonce.replace(/[^a-z0-9]/gi, "").slice(0, 8).toLowerCase().padEnd(8, "x");
+  const name = `client-${companySlug}-${shortNonce}`;
   if (!RESERVED_REPO_PATTERN.test(name)) {
     throw new Error(`Invalid repo name generated: ${name}`);
   }
