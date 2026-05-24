@@ -91,26 +91,83 @@ export async function buildProject(
     imagesDownloaded++;
   }
 
-  // 5. (Solo Signature) entrance images
+  // 5. (Solo Signature) materializza _signature-video/ con brief + assets
+  //    NON in public/, così non finisce nel sito pubblico. Cartella privata
+  //    dedicata al video editor che produrrà il video manualmente.
   let entranceImagesDownloaded = 0;
   if (order.tier === "business") {
+    const vDir = path.join(outDir, "_signature-video");
+    await mkdir(vDir, { recursive: true });
+
     if (order.entranceImageMobileUrl) {
       const ext = extractExt(order.entranceImageMobileUrl);
-      await downloadTo(
-        order.entranceImageMobileUrl,
-        path.join(uploadsDir, `entrance_mobile.${ext}`),
-      );
+      await downloadTo(order.entranceImageMobileUrl, path.join(vDir, `entrance_mobile.${ext}`));
       entranceImagesDownloaded++;
     }
     if (order.entranceImageDesktopUrl) {
       const ext = extractExt(order.entranceImageDesktopUrl);
-      await downloadTo(
-        order.entranceImageDesktopUrl,
-        path.join(uploadsDir, `entrance_desktop.${ext}`),
-      );
+      await downloadTo(order.entranceImageDesktopUrl, path.join(vDir, `entrance_desktop.${ext}`));
       entranceImagesDownloaded++;
     }
+
+    await writeFile(
+      path.join(vDir, "brief.md"),
+      buildSignatureVideoBrief(order),
+      "utf-8",
+    );
   }
 
   return { path: outDir, imagesDownloaded, entranceImagesDownloaded };
+}
+
+function buildSignatureVideoBrief(order: OrderPayload): string {
+  const hasText = Boolean(order.videoScript?.trim());
+  const hasImages = Boolean(order.entranceImageMobileUrl || order.entranceImageDesktopUrl);
+
+  return `# Video di apertura — ${order.company}
+
+> ⚠️ Cartella **privata** — non finisce nel sito pubblico (non sta in public/).
+> Quando il video è pronto: salvarlo in \`public/uploads/intro_mobile.mp4\` e
+> \`public/uploads/intro_desktop.mp4\`, poi \`git push origin main\`.
+> Il template Signature li monta automaticamente in hero.
+
+## Cliente
+- **Azienda**: ${order.company}
+- **Settore**: ${order.sector}
+- **Email**: ${order.email}
+- **Telefono**: ${order.phone}
+- **Tono di voce**: ${order.toneOfVoice}
+
+## Brief originale
+- **Target**: ${order.targetAudience}
+- **USP**: ${order.uniqueSellingProposition}
+${order.preferredColors ? `- **Colori preferiti**: ${order.preferredColors}\n` : ""}${order.contentNotes ? `- **Note contenuto**: ${order.contentNotes}\n` : ""}
+## Specifica video Signature
+Video di apertura cinematografico — porta che si apre, ingresso fisico nel locale.
+- **Durata**: max 30 secondi
+- **Formato mobile**: 9:16 verticale (1080×1920)
+- **Formato desktop**: 16:9 orizzontale (1920×1080)
+- **Audio**: musica ambient leggera, niente voce parlata
+- **Ritmo**: lento e cinematografico, no cuts veloci
+
+## Direzione fornita dal cliente
+${hasText ? `### Modalità: testo\n\n> ${order.videoScript!.split("\n").join("\n> ")}\n` : ""}${hasImages ? `### Modalità: immagini hi-res\nIl cliente ha caricato ${entranceImageListMd(order)} (vedi file in questa cartella).\nLa porta deve essere **perfettamente al centro** nel video, fedele a queste immagini.\n` : ""}${!hasText && !hasImages ? "### Nessuna direzione esplicita\nIl cliente non ha fornito né testo né immagini d'ingresso. Direzione libera basata su brief + foto del sito (in public/uploads/).\n" : ""}
+## Output atteso
+Salvare i 2 video in:
+- \`public/uploads/intro_mobile.mp4\` (codec H.264, max 5MB ideale)
+- \`public/uploads/intro_desktop.mp4\` (codec H.264, max 8MB ideale)
+
+(opzionale, per fallback browser più datati):
+- \`public/uploads/intro_mobile.webm\`
+- \`public/uploads/intro_desktop.webm\`
+
+Una volta caricati, \`git push origin main\` — Vercel redeploya automaticamente.
+`;
+}
+
+function entranceImageListMd(order: OrderPayload): string {
+  const items: string[] = [];
+  if (order.entranceImageMobileUrl) items.push("`entrance_mobile`");
+  if (order.entranceImageDesktopUrl) items.push("`entrance_desktop`");
+  return items.join(" + ");
 }

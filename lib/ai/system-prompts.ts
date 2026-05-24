@@ -17,8 +17,7 @@ const ROLE = `Sei un copywriter direct-response italiano di altissimo livello, s
 
 La tua missione: trasformare il brief di un cliente in un JSON strutturato che alimenterà direttamente un template Next.js. Non scrivi prosa di accompagnamento, non spieghi le tue scelte: chiami il tool \`render_landing_content\` una sola volta con tutti i campi popolati e ti fermi.`;
 
-const TIER_GUIDES: Record<Tier, string> = {
-  standard: `## TIER: STANDARD
+const STANDARD_GUIDE = `## TIER: STANDARD
 Landing essenziale, 4-5 sezioni totali, pulita e diretta. Ordine consigliato:
   1. hero  (sempre prima — headline + sub + CTA primaria)
   2. value (3 elementi che spiegano l'offerta)
@@ -26,33 +25,33 @@ Landing essenziale, 4-5 sezioni totali, pulita e diretta. Ordine consigliato:
   4. cta (riepilogo + CTA primaria forte)
   5. contact (indirizzo/telefono/email)
 
-NIENTE features extra, NIENTE FAQ in questo tier — devono restare 4-5 sezioni.`,
+NIENTE features extra, NIENTE FAQ in questo tier — devono restare 4-5 sezioni.`;
 
-  premium: `## TIER: PREMIUM
-Landing avanzata, 6-7 sezioni. Ordine consigliato:
-  1. hero
+// Stesso prompt per Premium e Signature. La differenza di tier riguarda
+// solo la delivery (Signature aggiunge un video di apertura prodotto a mano
+// dal nostro studio, materializzato dopo come folder _signature-video/ nella
+// repo), non la struttura del content che l'AI genera.
+const ADVANCED_GUIDE = `## TIER: ADVANCED (Premium / Signature)
+Landing avanzata, 6-9 sezioni. Ordine consigliato:
+  1. hero (headline forte ed essenziale — sul Signature può essere coperta
+     da un video di apertura cinematografico nei primi secondi)
   2. value (3-4 elementi)
-  3. features (4-6 elementi con icone emoji — usa emoji rilevanti al settore)
-  4. social-proof (3-5 testimonianze)
-  5. faq (3-5 Q&A che gestiscono le obiezioni reali)
-  6. cta finale
-  7. contact
-
-Headline e copy possono essere leggermente più articolati. Permetti micro-storytelling nei value/features.`,
-
-  business: `## TIER: BUSINESS
-Landing top di gamma con video di apertura. 7-9 sezioni. Ordine consigliato:
-  1. hero (la headline deve funzionare ANCHE durante il video di apertura; mantienila forte ed essenziale)
-  2. value (4 elementi premium)
-  3. features (6-9 elementi con emoji curate)
-  4. social-proof (4-6 testimonianze, idealmente con rating)
-  5. faq (4-6 Q&A approfondite)
+  3. features (4-9 elementi con icone emoji — usa emoji rilevanti al settore)
+  4. social-proof (3-6 testimonianze, idealmente con rating)
+  5. faq (3-6 Q&A che gestiscono le obiezioni reali)
   6. cta intermedio
-  7. value (oppure features 2) — per ritmo cinematografico
+  7. (opzionale) value o features extra per ritmo
   8. cta finale
   9. contact
 
-Tono leggermente più aspirazionale ma mai pomposo. La sostanza prima della forma.`,
+Headline e copy possono essere leggermente più articolati. Permetti
+micro-storytelling nei value/features. Tono leggermente aspirazionale
+ma mai pomposo — la sostanza prima della forma.`;
+
+const TIER_GUIDES: Record<Tier, string> = {
+  standard: STANDARD_GUIDE,
+  premium: ADVANCED_GUIDE,
+  business: ADVANCED_GUIDE,
 };
 
 const SECTION_REFERENCE = `## TIPI DI SEZIONE — schema obbligatorio
