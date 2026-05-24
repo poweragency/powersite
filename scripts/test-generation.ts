@@ -27,6 +27,7 @@ import { resolve } from "node:path";
 import { generateLandingContent } from "../lib/ai/generate-content";
 import { buildProject } from "../lib/orchestrator/steps/build-project";
 import { createGithubRepo } from "../lib/orchestrator/steps/create-github-repo";
+import { deployToVercel } from "../lib/orchestrator/steps/deploy-vercel";
 import type { OrderPayload, Tier, ToneOfVoice } from "../lib/types";
 
 // Carica .env.local
@@ -63,7 +64,8 @@ function makeFakeOrder(tier: Tier, company: string): OrderPayload {
 
 async function main() {
   const [tierArg = "standard", companyArg = "Studio Bianchi", flagArg] = process.argv.slice(2);
-  const doGithub = flagArg === "github";
+  const doGithub = flagArg === "github" || flagArg === "all";
+  const doVercel = flagArg === "all";
 
   if (!TIERS_VALID.includes(tierArg as Tier)) {
     console.error(`Tier invalido: ${tierArg}. Usa: ${TIERS_VALID.join(", ")}`);
@@ -86,7 +88,7 @@ async function main() {
   const content = await generateLandingContent(order);
   console.log(`   ✓ ${Date.now() - t0}ms — ${content.sections.length} sezioni\n`);
 
-  const totalSteps = doGithub ? 3 : 2;
+  const totalSteps = doVercel ? 4 : doGithub ? 3 : 2;
 
   console.log(`📦 [2/${totalSteps}] Build del progetto...`);
   const t1 = Date.now();
@@ -109,12 +111,29 @@ async function main() {
     console.log(`✅ Repo ${repo.alreadyExisted ? "trovata (idempotenza)" : "creata"}:`);
     console.log(`   ${repo.url}`);
     console.log(`   ${repo.filesPushed} file pushati su ${repo.defaultBranch}\n`);
+
+    if (doVercel) {
+      if (!process.env.VERCEL_TOKEN) {
+        console.error("❌ Per testare Vercel serve VERCEL_TOKEN in .env.local");
+        process.exit(1);
+      }
+      console.log(`▲ [4/${totalSteps}] Deploy su Vercel...`);
+      const t3 = Date.now();
+      const deploy = await deployToVercel({ order, repoFullName: repo.fullName });
+      console.log(`   ✓ ${Date.now() - t3}ms\n`);
+
+      console.log(`✅ Project Vercel ${deploy.alreadyExisted ? "trovato" : "creato"}:`);
+      console.log(`   ${deploy.url}`);
+      if (deploy.inspectorUrl) console.log(`   Inspector: ${deploy.inspectorUrl}`);
+      console.log(`\n   (build in corso — Vercel impiega ~30-60s per completare il primo deploy)`);
+    }
   } else {
     console.log(`Per testarlo:`);
     console.log(`   cd "${result.path}"`);
     console.log(`   npm install`);
     console.log(`   npm run dev\n`);
-    console.log(`(Per pushare anche su GitHub: aggiungi 'github' come 3° arg)\n`);
+    console.log(`(Per pushare anche su GitHub: aggiungi 'github' come 3° arg)`);
+    console.log(`(Per fare tutto incluso deploy Vercel: aggiungi 'all')\n`);
   }
 }
 

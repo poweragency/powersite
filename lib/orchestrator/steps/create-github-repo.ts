@@ -76,15 +76,40 @@ async function walkDir(dir: string, base: string): Promise<RepoFile[]> {
   return out;
 }
 
+type OwnerType = "user" | "org";
+
+async function resolveOwner(
+  octokit: Octokit,
+  type: OwnerType,
+): Promise<string> {
+  if (type === "org") {
+    const explicit = process.env.GITHUB_OWNER ?? process.env.GITHUB_ORG;
+    if (!explicit) {
+      throw new Error(
+        "[create-github-repo] GITHUB_OWNER_TYPE=org richiede GITHUB_OWNER (o GITHUB_ORG)",
+      );
+    }
+    return explicit;
+  }
+  // user mode: l'owner è SEMPRE l'utente proprietario del PAT
+  // (createForAuthenticatedUser crea nella sua personal account)
+  const { data } = await octokit.rest.users.getAuthenticated();
+  return data.login;
+}
+
 export async function createGithubRepo(args: {
   order: OrderPayload;
   localPath: string;
 }): Promise<CreatedRepo> {
   const token = process.env.GITHUB_TOKEN;
-  const org = process.env.GITHUB_ORG;
-  if (!token || !org) {
-    throw new Error("[create-github-repo] GITHUB_TOKEN o GITHUB_ORG mancanti");
+  if (!token) {
+    throw new Error("[create-github-repo] GITHUB_TOKEN mancante");
   }
+
+  // user mode (default) = repo nel personal account proprietario del PAT
+  // org mode = repo nell'org GITHUB_OWNER (richiede Vercel Pro per private repo)
+  const ownerType: OwnerType =
+    (process.env.GITHUB_OWNER_TYPE as OwnerType | undefined) ?? "user";
 
   const repoName = buildClientRepoName(args.order.companySlug, args.order.nonce);
   if (!isClientRepoName(repoName)) {
@@ -92,6 +117,7 @@ export async function createGithubRepo(args: {
   }
 
   const octokit = new Octokit({ auth: token });
+  const owner = await resolveOwner(octokit, ownerType);
 
   // 1. Idempotenza: la repo esiste già?
   let repoInfo: {
@@ -103,15 +129,13 @@ export async function createGithubRepo(args: {
   let alreadyExisted = false;
 
   try {
-    const { data } = await octokit.rest.repos.get({ owner: org, repo: repoName });
+    const { data } = await octokit.rest.repos.get({ owner, repo: repoName });
     repoInfo = data;
     alreadyExisted = true;
 
-    // Se la repo esiste E ha già il branch main popolato, assumiamo deploy
-    // precedente ok → restituiamo subito senza ricreare commit (idempotenza)
     try {
-      await octokit.rest.repos.getBranch({ owner: org, repo: repoName, branch: BRANCH });
-      console.log(`[create-github-repo] ${org}/${repoName} esiste già con branch ${BRANCH} popolato, skip push`);
+      await octokit.rest.repos.getBranch({ owner, repo: repoName, branch: BRANCH });
+      console.log(`[create-github-repo] ${owner}/${repoName} esiste già con branch ${BRANCH} popolato, skip push`);
       return {
         id: data.id,
         name: repoName,
@@ -124,16 +148,14 @@ export async function createGithubRepo(args: {
     } catch (err) {
       const status = (err as { status?: number }).status;
       if (status !== 404) throw err;
-      // branch non esiste → continuiamo col push iniziale
-      console.log(`[create-github-repo] ${org}/${repoName} esiste ma è vuota, proseguo col push iniziale`);
+      console.log(`[create-github-repo] ${owner}/${repoName} esiste ma è vuota, proseguo col push iniziale`);
     }
   } catch (err) {
     const status = (err as { status?: number }).status;
     if (status !== 404) throw err;
 
-    // 2. Repo non esistente → crea NUOVA repo privata nell'org
-    const { data } = await octokit.rest.repos.createInOrg({
-      org,
+    // 2. Repo non esistente → crea NUOVA repo privata
+    const repoOpts = {
       name: repoName,
       description: `Sito web per ${args.order.company} — consegnato da Power Agency.`,
       private: true,
@@ -141,9 +163,15 @@ export async function createGithubRepo(args: {
       has_issues: false,
       has_projects: false,
       has_wiki: false,
-    });
+    };
+
+    const { data } =
+      ownerType === "org"
+        ? await octokit.rest.repos.createInOrg({ org: owner, ...repoOpts })
+        : await octokit.rest.repos.createForAuthenticatedUser(repoOpts);
+
     repoInfo = data;
-    console.log(`[create-github-repo] creata ${data.full_name}`);
+    console.log(`[create-github-repo] creata ${data.full_name} (mode=${ownerType})`);
   }
 
   if (!repoInfo) {
@@ -169,7 +197,7 @@ export async function createGithubRepo(args: {
   };
 
   const { data: seedRes } = await octokit.rest.repos.createOrUpdateFileContents({
-    owner: org,
+    owner,
     repo: repoName,
     path: seedFile.relPath,
     message: `Initial commit — sito ${args.order.company}`,
@@ -194,7 +222,7 @@ export async function createGithubRepo(args: {
 
   for (const file of remainingFiles) {
     const { data } = await octokit.rest.git.createBlob({
-      owner: org,
+      owner,
       repo: repoName,
       content: file.content.toString("base64"),
       encoding: "base64",
@@ -209,14 +237,14 @@ export async function createGithubRepo(args: {
 
   // 6. Recupera tree del seed commit per "ereditare" il .gitignore già pushato
   const { data: seedCommit } = await octokit.rest.git.getCommit({
-    owner: org,
+    owner,
     repo: repoName,
     commit_sha: seedCommitSha,
   });
 
   // 7. Crea tree con base_tree del seed (così .gitignore resta + aggiungiamo tutto)
   const { data: treeData } = await octokit.rest.git.createTree({
-    owner: org,
+    owner,
     repo: repoName,
     base_tree: seedCommit.tree.sha,
     tree,
@@ -224,7 +252,7 @@ export async function createGithubRepo(args: {
 
   // 8. Crea commit di aggiunta files (parent = seed commit)
   const { data: commitData } = await octokit.rest.git.createCommit({
-    owner: org,
+    owner,
     repo: repoName,
     message: `Aggiunti ${remainingFiles.length} file del sito`,
     tree: treeData.sha,
@@ -234,7 +262,7 @@ export async function createGithubRepo(args: {
 
   // 9. Fast-forward update di main (no force, è un fast-forward legittimo)
   await octokit.rest.git.updateRef({
-    owner: org,
+    owner,
     repo: repoName,
     ref: `heads/${BRANCH}`,
     sha: commitData.sha,
@@ -243,7 +271,7 @@ export async function createGithubRepo(args: {
   // 10. Imposta main come default branch (se necessario)
   if (repoInfo.default_branch !== BRANCH) {
     await octokit.rest.repos.update({
-      owner: org,
+      owner,
       repo: repoName,
       default_branch: BRANCH,
     });
