@@ -158,7 +158,33 @@ export async function createGithubRepo(args: {
     throw new Error(`[create-github-repo] nessun file in ${args.localPath}`);
   }
 
-  // 4. Crea blob per ogni file (base64 per supportare binari come immagini)
+  // 4. SEED: la Git Data API (blob/tree/commit) non funziona su repo vuote.
+  //    Creiamo il primo commit via Contents API con UN file (preferito:
+  //    .gitignore, sempre presente nei template). Questo stabilisce il branch
+  //    main + ci dà un parent SHA per il commit successivo.
+  const seedFile = files.find((f) => f.relPath === ".gitignore") ?? files[0];
+  const author = {
+    name: "Power Agency",
+    email: "delivery@poweragency.it",
+  };
+
+  const { data: seedRes } = await octokit.rest.repos.createOrUpdateFileContents({
+    owner: org,
+    repo: repoName,
+    path: seedFile.relPath,
+    message: `Initial commit — sito ${args.order.company}`,
+    content: seedFile.content.toString("base64"),
+    branch: BRANCH,
+    committer: author,
+    author,
+  });
+  const seedCommitSha = seedRes.commit.sha!;
+  console.log(`[create-github-repo] seed commit ${seedCommitSha.slice(0, 7)} via ${seedFile.relPath}`);
+
+  // 5. PUSH RESTO: ora la repo non è più vuota → Git Data API funziona.
+  //    Creiamo blob per tutti gli altri file (escludendo il seed già presente).
+  const remainingFiles = files.filter((f) => f.relPath !== seedFile.relPath);
+
   const tree: Array<{
     path: string;
     mode: "100644";
@@ -166,7 +192,7 @@ export async function createGithubRepo(args: {
     sha: string;
   }> = [];
 
-  for (const file of files) {
+  for (const file of remainingFiles) {
     const { data } = await octokit.rest.git.createBlob({
       owner: org,
       repo: repoName,
@@ -181,36 +207,40 @@ export async function createGithubRepo(args: {
     });
   }
 
-  // 5. Crea tree (snapshot del filesystem)
+  // 6. Recupera tree del seed commit per "ereditare" il .gitignore già pushato
+  const { data: seedCommit } = await octokit.rest.git.getCommit({
+    owner: org,
+    repo: repoName,
+    commit_sha: seedCommitSha,
+  });
+
+  // 7. Crea tree con base_tree del seed (così .gitignore resta + aggiungiamo tutto)
   const { data: treeData } = await octokit.rest.git.createTree({
     owner: org,
     repo: repoName,
+    base_tree: seedCommit.tree.sha,
     tree,
   });
 
-  // 6. Crea commit iniziale (no parent perché repo vuota)
+  // 8. Crea commit di aggiunta files (parent = seed commit)
   const { data: commitData } = await octokit.rest.git.createCommit({
     owner: org,
     repo: repoName,
-    message: `Initial commit — sito ${args.order.company}`,
+    message: `Aggiunti ${remainingFiles.length} file del sito`,
     tree: treeData.sha,
-    parents: [],
-    author: {
-      name: "Power Agency",
-      email: "delivery@poweragency.it",
-      date: new Date().toISOString(),
-    },
+    parents: [seedCommitSha],
+    author: { ...author, date: new Date().toISOString() },
   });
 
-  // 7. Crea ref refs/heads/main puntando al commit
-  await octokit.rest.git.createRef({
+  // 9. Fast-forward update di main (no force, è un fast-forward legittimo)
+  await octokit.rest.git.updateRef({
     owner: org,
     repo: repoName,
-    ref: `refs/heads/${BRANCH}`,
+    ref: `heads/${BRANCH}`,
     sha: commitData.sha,
   });
 
-  // 8. Imposta main come default branch (se non già)
+  // 10. Imposta main come default branch (se necessario)
   if (repoInfo.default_branch !== BRANCH) {
     await octokit.rest.repos.update({
       owner: org,
@@ -220,7 +250,7 @@ export async function createGithubRepo(args: {
   }
 
   console.log(
-    `[create-github-repo] ${repoInfo.full_name} pushato: ${files.length} file, commit ${commitData.sha.slice(0, 7)}`,
+    `[create-github-repo] ${repoInfo.full_name} pushato: ${files.length} file (seed + ${remainingFiles.length}), HEAD ${commitData.sha.slice(0, 7)}`,
   );
 
   return {
