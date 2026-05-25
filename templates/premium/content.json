@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "title": "Studio Dentistico Bianchi — Sorrisi che durano una vita",
+    "description": "Studio dentistico a Milano: implantologia, ortodonzia invisibile, igiene professionale. Prima visita gratuita.",
+    "ogTitle": "Studio Dentistico Bianchi",
+    "ogDescription": "Prima visita gratuita a Milano"
+  },
+  "brand": {
+    "name": "Studio Bianchi",
+    "tone": "professional",
+    "palette": ["#0a3d62", "#f5f6fa", "#ff6b6b"]
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "headline": "Sorrisi che durano una vita.",
+      "subheadline": "20 anni di esperienza in odontoiatria, in pieno centro a Milano.",
+      "ctaPrimary": { "label": "Prenota visita gratuita", "href": "#contatti" },
+      "ctaSecondary": { "label": "Scopri i servizi", "href": "#servizi" }
+    },
+    {
+      "type": "value",
+      "title": "Cosa offriamo",
+      "items": [
+        { "title": "Implantologia avanzata", "body": "Tecnica all-on-4 con guarigione rapida e risultati naturali." },
+        { "title": "Ortodonzia invisibile", "body": "Allineatori trasparenti Invisalign per allineamenti senza compromessi estetici." },
+        { "title": "Igiene professionale", "body": "Pulizia, sbiancamento, ablazione tartaro con tecnologie all'avanguardia." }
+      ]
+    },
+    {
+      "type": "social-proof",
+      "title": "Cosa dicono i nostri pazienti",
+      "testimonials": [
+        { "name": "Maria R.", "quote": "Mi sono trovata benissimo, staff competente e ambiente accogliente.", "rating": 5 },
+        { "name": "Luca T.", "quote": "Esperti, puntuali, prezzi onesti. Lo consiglio senza riserve.", "rating": 5 },
+        { "name": "Giulia M.", "quote": "Finalmente uno studio dentistico dove non ho paura di tornare.", "rating": 5 }
+      ]
+    },
+    {
+      "type": "faq",
+      "title": "Domande frequenti",
+      "items": [
+        { "q": "La prima visita è davvero gratuita?", "a": "Sì, include consulto e piano cure preventivo. Nessun costo nascosto." },
+        { "q": "Accettate pagamenti rateali?", "a": "Sì, offriamo finanziamenti a tasso zero fino a 24 mesi." },
+        { "q": "Avete parcheggio?", "a": "Parcheggio convenzionato a 50 metri dallo studio." }
+      ]
+    },
+    {
+      "type": "cta",
+      "title": "Pronto per il tuo nuovo sorriso?",
+      "body": "Prenota la tua prima visita gratuita senza impegno.",
+      "ctaPrimary": { "label": "Prenota ora", "href": "#contatti" }
+    },
+    {
+      "type": "contact",
+      "title": "Contatti",
+      "address": "Via Roma 1, 20100 Milano",
+      "phone": "+39 02 1234 5678",
+      "email": "info@studiobianchi.it"
+    }
+  ],
+  "images": {
+    "forceAll": false,
+    "selected": [],
+    "unused": []
+  }
+}

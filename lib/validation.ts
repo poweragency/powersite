@@ -21,8 +21,15 @@ export const orderIntakeSchema = z.object({
   tier: z.enum(["standard", "premium", "business"]),
   addons: z.array(z.enum([
     "seo","geo","gaio","analytics","chatbot","email_funnel",
-    "booking","domain",
-  ])).default([]),
+    "booking","domain","contact_form_integration","contact_form_bespoke",
+  ]))
+    .default([])
+    // Mutual exclusivity: solo UNA delle 2 varianti "Modulo contatti" può
+    // essere attiva (il form è uno solo, varia dove arrivano le richieste).
+    .refine(
+      (addons) => !(addons.includes("contact_form_integration") && addons.includes("contact_form_bespoke")),
+      { message: "Scegli solo UNA opzione per il modulo contatti: collegamento al tuo gestionale OPPURE gestionale su misura" },
+    ),
 
   // Immagini
   forceAllImages: z.boolean().default(false),

@@ -74,7 +74,11 @@ function buildUserMessage(order: OrderPayload): string {
     "",
     `<force_all_images>${order.forceAllImages}</force_all_images>`,
     "",
-    "Genera ora il contenuto della landing chiamando `render_landing_content` con tutti i campi popolati secondo le regole del system prompt.",
+    "<addon_attivi>",
+    JSON.stringify(order.addons),
+    "</addon_attivi>",
+    "",
+    "Genera ora il contenuto della landing chiamando `render_landing_content` con tutti i campi popolati secondo le regole del system prompt. Applica SOLO le regole degli addon presenti in `<addon_attivi>`; ignora le regole degli altri addon.",
   ].join("\n");
 }
 

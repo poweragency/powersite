@@ -8,7 +8,9 @@ export type AddonKey =
   | "chatbot"
   | "email_funnel"
   | "booking"
-  | "domain";
+  | "domain"
+  | "contact_form_integration"
+  | "contact_form_bespoke";
 
 export type ToneOfVoice =
   | "professional"

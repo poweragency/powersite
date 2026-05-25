@@ -141,10 +141,46 @@ export async function deployToVercel(args: {
           type: "github",
           repo: args.repoFullName,
         },
+        // Disattiva Vercel Authentication / SSO Protection: i siti cliente
+        // sono landing page pubbliche, devono essere accessibili a chiunque
+        // senza login Vercel.
+        ssoProtection: null,
       }),
     });
     console.log(`[deploy-vercel] project ${project.name} creato (id: ${project.id})`);
   }
+
+  // 2bis. Assicura che la protezione SSO sia OFF anche su project già esistenti
+  //       (es. create prima di questa modifica, o se Vercel cambia il default).
+  //       Idempotente: noop se già null.
+  try {
+    await vercelRequest<unknown>(`/v9/projects/${project.id}`, {
+      token,
+      teamId,
+      method: "PATCH",
+      body: JSON.stringify({ ssoProtection: null }),
+    });
+  } catch (err) {
+    // Non bloccante: se Vercel rifiuta l'update, almeno logghiamo
+    console.warn(`[deploy-vercel] disable ssoProtection fallito:`, err);
+  }
+
+  // 2ter. Inietta env vars Supabase nel project cliente, così il form contatti
+  //       del template può fare INSERT su power-hub.landing_contact_submissions.
+  //       Idempotente: usa `upsert=true` su POST /v10/projects/{id}/env.
+  //       Niente bloccante: se fallisce, il form locale logga in console del
+  //       sito cliente — non è critico per il deploy.
+  await injectClientEnvVars({
+    token,
+    teamId,
+    projectId: project.id,
+    nonce: args.order.nonce,
+    contactFormEnabled:
+      args.order.addons.includes("contact_form_integration") ||
+      args.order.addons.includes("contact_form_bespoke"),
+  }).catch((err) => {
+    console.warn(`[deploy-vercel] inject env vars fallito (non bloccante):`, err);
+  });
 
   // 3. Triggera deployment da main HEAD (i commit erano già lì prima della
   //    creazione del project, quindi Vercel via webhook non li ha rilevati).
@@ -179,4 +215,63 @@ export async function deployToVercel(args: {
     deploymentId: deployment.id,
     alreadyExisted,
   };
+}
+
+/**
+ * Inietta env vars Supabase nel project Vercel cliente.
+ *
+ * Vars settate:
+ *   - NEXT_PUBLIC_POWERHUB_URL          (URL Supabase pubblico)
+ *   - NEXT_PUBLIC_POWERHUB_ANON_KEY     (publishable key, RLS-protected)
+ *   - POWERSITE_NONCE                   (riferimento al lead originale)
+ *
+ * Le prime 2 sono read sia da .env del SaaS (POWERHUB_SUPABASE_URL +
+ * un nuovo POWERHUB_ANON_KEY per uso template), così il backend non duplica
+ * costanti hardcoded.
+ *
+ * Vercel POST /v10/projects/{id}/env supporta `upsert=true` per essere
+ * idempotente sui rilanci pipeline.
+ */
+async function injectClientEnvVars(args: {
+  token: string;
+  teamId?: string;
+  projectId: string;
+  nonce: string;
+  contactFormEnabled: boolean;
+}): Promise<void> {
+  const supabaseUrl = process.env.POWERHUB_SUPABASE_URL;
+  const anonKey = process.env.POWERHUB_ANON_KEY;
+
+  if (!supabaseUrl || !anonKey) {
+    console.warn(
+      "[deploy-vercel] POWERHUB_SUPABASE_URL o POWERHUB_ANON_KEY mancanti — anche con addon contact_form attivo il form non potrà salvare richieste (cadrà sul fallback console.log)",
+    );
+    // Iniettiamo comunque NEXT_PUBLIC_CONTACT_FORM così il template renderizza
+    // il form (l'utente può comunque vedere le richieste in console Vercel).
+  }
+
+  const envs: Array<{ key: string; value: string }> = [
+    { key: "POWERSITE_NONCE", value: args.nonce },
+    { key: "NEXT_PUBLIC_CONTACT_FORM", value: args.contactFormEnabled ? "true" : "false" },
+  ];
+  if (supabaseUrl) envs.push({ key: "NEXT_PUBLIC_POWERHUB_URL", value: supabaseUrl });
+  if (anonKey) envs.push({ key: "NEXT_PUBLIC_POWERHUB_ANON_KEY", value: anonKey });
+
+  for (const env of envs) {
+    await vercelRequest<unknown>(
+      `/v10/projects/${args.projectId}/env?upsert=true`,
+      {
+        token: args.token,
+        teamId: args.teamId,
+        method: "POST",
+        body: JSON.stringify({
+          key: env.key,
+          value: env.value,
+          type: "encrypted",
+          target: ["production", "preview", "development"],
+        }),
+      },
+    );
+  }
+  console.log(`[deploy-vercel] env vars iniettate (${envs.length}) su project ${args.projectId}`);
 }

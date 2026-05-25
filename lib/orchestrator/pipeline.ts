@@ -1,8 +1,9 @@
 /**
- * Pipeline orchestratore stateless.
+ * Pipeline orchestratore.
  *
  * Input: OrderPayload completo (letto dal manifest su Vercel Blob).
- * Nessun database. Output: URL del sito deployato.
+ * Pipeline runtime stateless (non legge mai dal DB). Output finale → INSERT
+ * lead nel CRM "power-hub" (Supabase) per delivery manuale WhatsApp/call.
  *
  * Step:
  *   1. Genera contenuto con Claude (testi + struttura sezioni)
@@ -10,7 +11,7 @@
  *   3. Compila il template col content
  *   4. Crea NUOVA repo GitHub e push
  *   5. Crea project Vercel + deploy
- *   6. Email cliente + admin
+ *   6. INSERT lead nel CRM power-hub (Supabase) — non bloccante
  *   7. Cleanup Vercel Blob (manifest + immagini effimere)
  */
 
@@ -20,7 +21,7 @@ import { generateVideo } from "./steps/generate-video";
 import { buildProject } from "./steps/build-project";
 import { createGithubRepo } from "./steps/create-github-repo";
 import { deployToVercel } from "./steps/deploy-vercel";
-import { sendPreviewEmail, sendAdminAlert } from "./steps/send-email";
+import { insertCrmLead } from "./steps/insert-crm-lead";
 import { cleanupOrderBlobs } from "@/lib/blob";
 
 export interface PipelineResult {
@@ -64,19 +65,16 @@ export async function runPipeline(order: OrderPayload): Promise<PipelineResult> 
     });
     console.log(`[pipeline:${order.nonce}] deployed ${deploy.url}`);
 
-    // 6. Email cliente + admin
-    await sendPreviewEmail({
-      to: order.email,
-      company: order.company,
-      previewUrl: deploy.url,
-    });
-    await sendAdminAlert({
-      nonce: order.nonce,
-      company: order.company,
-      tier: order.tier,
+    // 6. INSERT lead nel CRM power-hub (Supabase). Non bloccante: se fallisce,
+    //    il sito è comunque deployato e il payload completo finisce nei log.
+    const lead = await insertCrmLead({
+      order,
       previewUrl: deploy.url,
       repoUrl: repo.url,
     });
+    console.log(
+      `[pipeline:${order.nonce}] crm lead ${lead.ok ? `ok (${lead.leadId})` : "FAILED — vedi log"}`,
+    );
 
     // 7. Cleanup
     const deleted = await cleanupOrderBlobs(order.nonce).catch((e) => {
@@ -89,12 +87,6 @@ export async function runPipeline(order: OrderPayload): Promise<PipelineResult> 
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(`[pipeline:${order.nonce}] FAILED:`, message);
-    await sendAdminAlert({
-      nonce: order.nonce,
-      company: order.company,
-      tier: order.tier,
-      error: message,
-    }).catch(() => {});
     throw err;
   }
 }

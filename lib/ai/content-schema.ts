@@ -159,6 +159,64 @@ const sectionContact = {
   },
 } as const;
 
+// Tipo dedicato per "METODO step-by-step" (PREMIUM/SIGNATURE).
+// Distinto da `features`: ogni step ha icon OBBLIGATORIO (settoriale o
+// simbolico). Permette al template di renderizzarli con stile lineare
+// (linea verticale di connessione, numerazione visiva implicita).
+const sectionProcess = {
+  type: "object",
+  additionalProperties: false,
+  required: ["type", "title", "steps"],
+  properties: {
+    type: { type: "string", enum: ["process"] },
+    title: { type: "string", minLength: 4, maxLength: 80 },
+    steps: {
+      type: "array",
+      minItems: 3,
+      maxItems: 6,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["title", "body", "icon"],
+        properties: {
+          title: { type: "string", minLength: 4, maxLength: 60 },
+          body: { type: "string", minLength: 20, maxLength: 200 },
+          icon: { type: "string", minLength: 1, maxLength: 6, description: "Emoji obbligatoria" },
+        },
+      },
+    },
+  },
+} as const;
+
+// Tipo dedicato per "TRUST SIGNALS / Credenziali" (PREMIUM/SIGNATURE).
+// Distinto da `value`: ogni badge è {label, value, detail?} dove value è
+// IL DATO CONCRETO ("20+", "ISO 9001", "150+"). Il template lo renderizza
+// in griglia numerica visivamente forte (numero grande, label piccola).
+const sectionTrust = {
+  type: "object",
+  additionalProperties: false,
+  required: ["type", "title", "badges"],
+  properties: {
+    type: { type: "string", enum: ["trust"] },
+    title: { type: "string", minLength: 4, maxLength: 80 },
+    badges: {
+      type: "array",
+      minItems: 3,
+      maxItems: 8,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["label", "value"],
+        properties: {
+          label: { type: "string", minLength: 4, maxLength: 60, description: "Es. 'Anni di esperienza'" },
+          value: { type: "string", minLength: 1, maxLength: 30, description: "Es. '20+', 'ISO 9001'" },
+          detail: { type: "string", maxLength: 120, description: "Opzionale: contestualizza il dato" },
+        },
+      },
+    },
+  },
+} as const;
+
 export const CONTENT_JSON_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -206,6 +264,8 @@ export const CONTENT_JSON_SCHEMA = {
           sectionHero,
           sectionValue,
           sectionFeatures,
+          sectionProcess,
+          sectionTrust,
           sectionSocialProof,
           sectionCta,
           sectionFaq,

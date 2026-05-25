@@ -18,8 +18,14 @@ import type { OrderPayload } from "@/lib/types";
 const TEMPLATE_ROOT = path.join(process.cwd(), "templates");
 
 function templateDirFor(tier: OrderPayload["tier"]): string {
-  // I 3 tier mappano direttamente alle 3 cartelle template
-  return path.join(TEMPLATE_ROOT, tier);
+  // Mapping tier → cartella template:
+  //   standard → templates/standard (look essenziale)
+  //   premium  → templates/premium  (look atelier, Fraunces, spacing dilatato)
+  //   business → templates/premium  (alias di premium, DRY — il differenziatore
+  //              Business è il video di apertura, materializzato dopo come
+  //              _signature-video/, NON il template visuale)
+  const folder = tier === "business" ? "premium" : tier;
+  return path.join(TEMPLATE_ROOT, folder);
 }
 
 function outDirFor(nonce: string): string {

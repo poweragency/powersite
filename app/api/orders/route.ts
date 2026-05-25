@@ -120,8 +120,44 @@ export async function POST(req: NextRequest) {
     };
     const manifest = await uploadManifest(payload);
 
-    // 3. Crea Stripe Checkout Session
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3002";
+    // appUrl per redirect Stripe + per chiamata interna /api/orchestrate.
+    // In prod usa NEXT_PUBLIC_APP_URL; in dev locale fallback all'origin
+    // della request stessa (così funziona su qualsiasi porta del dev server).
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? req.nextUrl.origin;
+
+    // 3a. Modalità BYPASS_STRIPE: salta pagamento, triggera pipeline async
+    //     e reindirizza a /grazie. Pipeline gira in background su /api/orchestrate.
+    if (process.env.BYPASS_STRIPE === "true") {
+      const secret = process.env.ORCHESTRATE_SECRET || process.env.CRON_SECRET;
+      if (!secret) {
+        console.error("[/api/orders] BYPASS_STRIPE attivo ma ORCHESTRATE_SECRET mancante");
+        return NextResponse.json(
+          { error: "Configurazione server incompleta (ORCHESTRATE_SECRET)" },
+          { status: 500 },
+        );
+      }
+
+      // Fire-and-forget: NON awaitiamo. Catch silenzia errori di rete iniziali.
+      // La pipeline poi gestisce i propri errori internamente.
+      fetch(`${appUrl}/api/orchestrate`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${secret}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ manifestUrl: manifest.url, nonce }),
+      }).catch((e) => {
+        console.error(`[/api/orders] orchestrate trigger fallito per ${nonce}:`, e);
+      });
+
+      console.log(`[/api/orders] BYPASS_STRIPE — pipeline triggered for ${nonce}`);
+      return NextResponse.json({
+        orderId: nonce,
+        redirectUrl: `/grazie?nonce=${nonce}`,
+      });
+    }
+
+    // 3b. Modalità Stripe normale (default): crea Checkout Session
     const session = await stripe().checkout.sessions.create({
       mode: "payment",
       customer_email: data.email,

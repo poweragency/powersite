@@ -228,9 +228,20 @@ export default function OrderForm() {
   const total = useMemo(() => calculateTotal(tier, addons), [tier, addons]);
 
   function toggleAddon(key: AddonKey) {
-    setAddons((curr) =>
-      curr.includes(key) ? curr.filter((k) => k !== key) : [...curr, key],
-    );
+    // Mutual exclusivity per i 2 addon "Modulo contatti": cliccandone uno,
+    // l'altro si deseleziona automaticamente (è UNA scelta tra due opzioni
+    // di delivery, non due cose acquistabili insieme).
+    const CONTACT_FORM_PAIR: AddonKey[] = ["contact_form_integration", "contact_form_bespoke"];
+    setAddons((curr) => {
+      if (curr.includes(key)) {
+        return curr.filter((k) => k !== key);
+      }
+      if (CONTACT_FORM_PAIR.includes(key)) {
+        const other = CONTACT_FORM_PAIR.find((k) => k !== key)!;
+        return [...curr.filter((k) => k !== other), key];
+      }
+      return [...curr, key];
+    });
   }
 
   function onImagesSelected(e: React.ChangeEvent<HTMLInputElement>) {
@@ -332,6 +343,8 @@ export default function OrderForm() {
 
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
+      } else if (data.redirectUrl) {
+        router.push(data.redirectUrl);
       } else {
         router.push(`/grazie?nonce=${data.orderId}`);
       }

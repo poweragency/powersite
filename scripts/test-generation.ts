@@ -28,6 +28,7 @@ import { generateLandingContent } from "../lib/ai/generate-content";
 import { buildProject } from "../lib/orchestrator/steps/build-project";
 import { createGithubRepo } from "../lib/orchestrator/steps/create-github-repo";
 import { deployToVercel } from "../lib/orchestrator/steps/deploy-vercel";
+import { insertCrmLead } from "../lib/orchestrator/steps/insert-crm-lead";
 import type { OrderPayload, Tier, ToneOfVoice } from "../lib/types";
 
 // Carica .env.local
@@ -88,7 +89,7 @@ async function main() {
   const content = await generateLandingContent(order);
   console.log(`   ✓ ${Date.now() - t0}ms — ${content.sections.length} sezioni\n`);
 
-  const totalSteps = doVercel ? 4 : doGithub ? 3 : 2;
+  const totalSteps = doVercel ? 5 : doGithub ? 3 : 2;
 
   console.log(`📦 [2/${totalSteps}] Build del progetto...`);
   const t1 = Date.now();
@@ -129,7 +130,22 @@ async function main() {
       console.log(`✅ Project Vercel ${deploy.alreadyExisted ? "trovato" : "creato"}:`);
       console.log(`   ${deploy.url}`);
       if (deploy.inspectorUrl) console.log(`   Inspector: ${deploy.inspectorUrl}`);
-      console.log(`\n   (build in corso — Vercel impiega ~30-60s per completare il primo deploy)`);
+      console.log(`\n   (build in corso — Vercel impiega ~30-60s per completare il primo deploy)\n`);
+
+      console.log(`📇 [5/5] INSERT lead nel CRM power-hub...`);
+      const t4 = Date.now();
+      const lead = await insertCrmLead({
+        order,
+        previewUrl: deploy.url,
+        repoUrl: repo.url,
+      });
+      console.log(`   ✓ ${Date.now() - t4}ms\n`);
+      if (lead.ok) {
+        console.log(`✅ Lead ${lead.alreadyExisted ? "aggiornato" : "creato"}: id=${lead.leadId}`);
+        console.log(`   Vai su Supabase Studio → table powersites_leads per vederlo`);
+      } else {
+        console.log(`⚠️  Lead NON inserito (vedi log sopra per il recovery payload)`);
+      }
     }
   } else {
     console.log(`Per testarlo:`);

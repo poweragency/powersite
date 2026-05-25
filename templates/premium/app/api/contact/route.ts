@@ -20,9 +20,7 @@ export const runtime = "nodejs";
  *   si limita a loggare il payload e rispondere ok.
  */
 export async function POST(req: NextRequest) {
-  // Gating: il form-contatti è disponibile SOLO se il cliente ha comprato
-  // uno dei 2 addon Modulo Contatti (env iniettata da deploy-vercel). Senza
-  // addon, l'endpoint non è disponibile.
+  // Gating: form-contatti disponibile SOLO con uno dei 2 addon Modulo Contatti.
   if (process.env.NEXT_PUBLIC_CONTACT_FORM !== "true") {
     return NextResponse.json({ error: "Form contatti non attivo" }, { status: 404 });
   }

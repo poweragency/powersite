@@ -1,16 +1,17 @@
-# Template Premium
+# Template Standard
 
-Template Next.js per il tier **Premium**.
+Template Next.js minimale per il tier **Standard** del SaaS Power Agency.
 
 **Status**: scaffold da creare.
 
-## Differenze vs Standard
+## Da implementare
 
-- Animazioni Framer Motion sulle sezioni (entrance, parallax)
-- Multilingua: routing `/[lang]/` con `next-intl`, switch lingua nell'header
-- A/B varianti hero/CTA (random rendering, log evento su `/api/track`)
-- Integrazione Calendly / WhatsApp embed
-- Open Graph + favicon generati dinamicamente
-- Sezioni extra: `<Features>`, `<Faq>`
+- [ ] `package.json` indipendente (Next.js 15 + Tailwind + Framer Motion)
+- [ ] `app/page.tsx` che importa `content.json` e renderizza le sezioni
+- [ ] Componenti: `<Hero>`, `<Value>`, `<SocialProof>`, `<Cta>`, `<Contact>`
+- [ ] `globals.css` con palette parametrizzata via variabili CSS
+- [ ] Componente form contatto che POSTa a Formspree o a una API route locale
+- [ ] Mobile-first, Lighthouse 90+
+- [ ] Pubblicare come template repo GitHub: `power-agency/template-standard`
 
-Pubblicare come template repo GitHub: `power-agency/template-premium`
+Vedi `content.example.json` per la struttura dati attesa.

@@ -7,10 +7,10 @@ export const TIERS: TierSpec[] = [
     priceEur: 397,
     description: "Landing essenziale ad alta conversione. Consegna in 48h.",
     features: [
-      "5 sezioni (hero, valore, prova, CTA, contatti)",
+      "6 sezioni (hero, valore, prova, FAQ, CTA, contatti)",
       "Copywriting su misura, scritto a mano",
       "Mobile responsive",
-      "Form contatti integrato",
+      "Contatti via telefono/email/WhatsApp diretti",
       "Deploy su sottodominio Power Agency",
     ],
     templateRepo: "power-agency/template-standard",
@@ -104,7 +104,31 @@ export const ADDONS: AddonSpec[] = [
     description: "Compriamo per te il nome del sito (es. tuonegozio.it) con email professionale (info@tuonegozio.it). Tutto incluso per il primo anno.",
     icon: "AtSign",
   },
+  // ───────────────────────────────────────────────────────────────
+  // Modulo Contatti — 2 varianti mutually exclusive.
+  // Di default il sito NON ha un form: i visitatori contattano via
+  // telefono/email/WhatsApp. Il form viene aggiunto solo con uno
+  // di questi addon, in base a dove devono arrivare le richieste.
+  // ───────────────────────────────────────────────────────────────
+  {
+    key: "contact_form_integration",
+    name: "Modulo contatti → tuo gestionale",
+    priceEur: 197,
+    description: "Sul sito aggiungiamo un form dove i clienti lasciano nome, telefono e messaggio. Le richieste arrivano dritte nel gestionale CRM che già usi (Salesforce, HubSpot, Pipedrive, il tuo gestionale custom). Configuriamo noi il collegamento in fase di consegna.",
+    icon: "Inbox",
+  },
+  {
+    key: "contact_form_bespoke",
+    name: "Modulo contatti + gestionale su misura",
+    priceEur: 1799,
+    description: "Form contatti sul sito + sviluppiamo per te un gestionale dedicato accessibile da web e smartphone. Vedi tutte le richieste in un'unica dashboard, segui lo stato di ogni cliente, esporti i contatti. Pensato attorno al tuo flusso di lavoro, non un software generico.",
+    icon: "Database",
+  },
 ];
+
+// Le 2 varianti "Modulo contatti" sono mutually exclusive: non ha senso
+// comprarle entrambe (il form è uno solo, varia dove arrivano i dati).
+export const CONTACT_FORM_ADDONS = ["contact_form_integration", "contact_form_bespoke"] as const;
 
 export function getTier(key: string): TierSpec | undefined {
   return TIERS.find((t) => t.key === key);

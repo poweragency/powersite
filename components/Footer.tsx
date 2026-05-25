@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Zap } from "lucide-react";
 import { Logo } from "./Logo";
 
 export function Footer() {
@@ -44,6 +45,20 @@ export function Footer() {
         </div>
 
         <div className="hairline mt-12 md:mt-16" />
+
+        {/* Badge "POWERED BY POWERAGENCY" — firma centrale, cliccabile,
+            glow brass on hover. Link al sito principale per backlink. */}
+        <div className="mt-8 flex justify-center">
+          <a
+            href="https://poweragency.it"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-2 whitespace-nowrap rounded border border-brass/30 bg-obsidian px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brass/80 transition-all duration-300 hover:border-brass hover:bg-obsidian hover:text-brass hover:shadow-[0_0_20px_rgba(184,150,93,0.45)]"
+          >
+            <Zap className="h-3 w-3 fill-brass text-brass transition-transform duration-300 group-hover:scale-110" strokeWidth={0} />
+            Powered by <span className="text-brass">PowerAgency</span>
+          </a>
+        </div>
 
         <div className="mt-6 flex flex-col items-start justify-between gap-3 text-xs text-smoke md:flex-row md:items-center">
           <span>© {new Date().getFullYear()} Power Agency. Tutti i diritti riservati.</span>
