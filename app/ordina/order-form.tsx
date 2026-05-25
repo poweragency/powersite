@@ -773,15 +773,19 @@ export default function OrderForm() {
                 </label>
               </section>
 
-              {/* CTA mobile-only */}
-              <div className="md:hidden">
-                <button type="submit" form={FORM_ID} className="btn-flame btn-lg w-full">
+              {/* CTA finale — visibile a tutte le risoluzioni, così non serve
+                  risalire alla sidebar per proseguire dopo un form lungo. */}
+              <div className="pt-4">
+                <button type="submit" form={FORM_ID} className="btn-flame btn-lg w-full md:w-auto md:px-12">
                   Continua ai pacchetti
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12" />
                     <polyline points="12 5 19 12 12 19" />
                   </svg>
                 </button>
+                <p className="mt-3 text-xs text-mist">
+                  Avrai ancora modo di rivedere e modificare il brief.
+                </p>
               </div>
             </>
           ) : (
