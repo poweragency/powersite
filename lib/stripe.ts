@@ -28,6 +28,7 @@ const ADDON_PRICE_ENV: Record<AddonKey, string> = {
   domain: "STRIPE_PRICE_ADDON_DOMAIN",
   contact_form_integration: "STRIPE_PRICE_ADDON_CONTACT_FORM_INTEGRATION",
   contact_form_bespoke: "STRIPE_PRICE_ADDON_CONTACT_FORM_BESPOKE",
+  logo_design: "STRIPE_PRICE_ADDON_LOGO_DESIGN",
 };
 
 function priceFor(envVar: string, label: string): string {

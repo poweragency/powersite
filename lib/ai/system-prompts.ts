@@ -374,6 +374,12 @@ Il sito avrà un MODULO CONTATTI nella sezione finale (form con nome / telefono 
 Identico effetto sul content rispetto a \`contact_form_integration\` (template aggiunge il form nella sezione contatti). Differenza è SOLO operativa lato Power Agency: qui sviluppiamo un gestionale dedicato per il cliente, ma dal punto di vista del SITO è uguale.
 - Stesse regole di \`contact_form_integration\` su \`contact.title\` e CTA hero.
 - NON menzionare mai nel copy "gestionale", "CRM", "dashboard" — il visitatore non deve vederlo, è uno strumento interno del cliente.`,
+
+  logo_design: `### Quando \`logo_design\` è attivo
+Il cliente NON ha ancora un logo: il team Power Agency ne disegnerà uno dopo la delivery. Significa che la pipeline non ha un asset logo da inserire nell'hero/nav.
+- Genera il content normalmente: NON inserire campi \`hero.image\` riferiti a un logo (non esiste).
+- Il copy può comunque menzionare il brand name (\`brand.name\`) come elemento centrale dell'identità visiva.
+- Niente impatto su altri tipi di sezione.`,
 };
 
 const ADDON_REFERENCE = `## ADDON ATTIVABILI

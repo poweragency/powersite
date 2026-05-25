@@ -21,12 +21,34 @@ export const orderIntakeSchema = z.object({
   toneOfVoice: z.enum(["professional", "friendly", "luxury", "energetic", "minimal"]),
   preferredColors: z.string().max(120).optional(),
   contentNotes: z.string().max(2000).optional(),
+  avoidInCopy: z.string().max(1000).optional(),
+
+  // Indirizzo strutturato (opzionali; obbligatori solo se NON works_remotely)
+  worksRemotely: z.boolean().default(false),
+  addressStreet: z.string().max(120).optional(),
+  addressNumber: z.string().max(10).optional(),
+  addressCity: z.string().max(80).optional(),
+  addressCap: z.string().regex(/^\d{5}$/, "CAP non valido (5 cifre)").optional().or(z.literal("")),
+  addressProvince: z.string().regex(/^[A-Z]{2}$/, "Sigla provincia (2 lettere maiuscole, es. MI)").optional().or(z.literal("")),
+  openingHours: z.string().max(400).optional(),
+
+  // Trust signals (opzionali — meglio vuoto che inventato)
+  yearsExperience: z.number().int().min(0).max(150).optional(),
+  clientsServed: z.number().int().min(0).max(10_000_000).optional(),
+  certifications: z.string().max(1000).optional(),
+
+  // Social media (URL opzionali)
+  socialInstagram: z.string().url().max(200).optional().or(z.literal("")),
+  socialFacebook: z.string().url().max(200).optional().or(z.literal("")),
+  socialLinkedin: z.string().url().max(200).optional().or(z.literal("")),
+  socialTiktok: z.string().url().max(200).optional().or(z.literal("")),
 
   // Pacchetto
   tier: z.enum(["standard", "premium", "business"]),
   addons: z.array(z.enum([
     "seo","geo","gaio","analytics","chatbot","email_funnel",
     "booking","domain","contact_form_integration","contact_form_bespoke",
+    "logo_design",
   ]))
     .default([])
     // Mutual exclusivity: solo UNA delle 2 varianti "Modulo contatti" può

@@ -43,6 +43,22 @@ export interface GeneratedContent {
 import type { OrderPayload } from "@/lib/types";
 
 function buildUserMessage(order: OrderPayload): string {
+  // Indirizzo composto SOLO se ha sede fisica
+  const indirizzo = order.worksRemotely
+    ? null
+    : [order.addressStreet, order.addressNumber, order.addressCap, order.addressCity, order.addressProvince]
+        .filter(Boolean)
+        .join(" ")
+        .trim() || null;
+
+  const social = {
+    instagram: order.socialInstagram || null,
+    facebook: order.socialFacebook || null,
+    linkedin: order.socialLinkedin || null,
+    tiktok: order.socialTiktok || null,
+  };
+  const hasSocial = Object.values(social).some(Boolean);
+
   const brief = {
     azienda: order.company,
     settore: order.sector,
@@ -53,9 +69,19 @@ function buildUserMessage(order: OrderPayload): string {
     tono_di_voce: order.toneOfVoice,
     colori_preferiti: order.preferredColors ?? null,
     note_contenuto: order.contentNotes ?? null,
+    cose_da_evitare_nel_copy: order.avoidInCopy ?? null,
     telefono: order.phone ?? null,
     sito: order.website ?? null,
     email_contatto: order.email,
+    // Indirizzo (alimenta sezione contact + addon GEO)
+    sede_fisica: order.worksRemotely ? "no — solo online" : indirizzo,
+    orari_apertura: order.openingHours ?? null,
+    // Trust signals quantitativi (alimentano tier Premium sezione TRUST)
+    anni_esperienza: order.yearsExperience ?? null,
+    clienti_serviti: order.clientsServed ?? null,
+    certificazioni: order.certifications ?? null,
+    // Social (footer del template)
+    social: hasSocial ? social : null,
   };
 
   const imageManifest = order.imageBlobUrls.map((url, i) => ({

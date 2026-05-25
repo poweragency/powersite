@@ -56,6 +56,7 @@ export interface BuildResult {
   path: string;
   imagesDownloaded: number;
   entranceImagesDownloaded: number;
+  logoDownloaded: boolean;
 }
 
 export async function buildProject(
@@ -97,6 +98,14 @@ export async function buildProject(
     imagesDownloaded++;
   }
 
+  // 4b. Logo cliente (se caricato) → public/uploads/logo.<ext>
+  let logoDownloaded = false;
+  if (order.logoBlobUrl) {
+    const ext = extractExt(order.logoBlobUrl);
+    await downloadTo(order.logoBlobUrl, path.join(uploadsDir, `logo.${ext}`));
+    logoDownloaded = true;
+  }
+
   // 5. (Solo Signature) materializza _signature-video/ con brief + assets
   //    NON in public/, così non finisce nel sito pubblico. Cartella privata
   //    dedicata al video editor che produrrà il video manualmente.
@@ -123,7 +132,7 @@ export async function buildProject(
     );
   }
 
-  return { path: outDir, imagesDownloaded, entranceImagesDownloaded };
+  return { path: outDir, imagesDownloaded, entranceImagesDownloaded, logoDownloaded };
 }
 
 function buildSignatureVideoBrief(order: OrderPayload): string {

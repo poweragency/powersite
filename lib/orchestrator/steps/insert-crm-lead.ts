@@ -40,6 +40,9 @@ export async function insertCrmLead(args: InsertCrmLeadArgs): Promise<InsertCrmL
   if (order.addons.includes("contact_form_bespoke")) {
     tags.push("modulo-contatti:gestionale-su-misura-da-sviluppare");
   }
+  if (order.addons.includes("logo_design")) {
+    tags.push("logo:da-disegnare");
+  }
 
   const row = {
     nonce: order.nonce,
@@ -56,6 +59,31 @@ export async function insertCrmLead(args: InsertCrmLeadArgs): Promise<InsertCrmL
     tone_of_voice: order.toneOfVoice || null,
     preferred_colors: order.preferredColors || null,
     content_notes: order.contentNotes || null,
+    avoid_in_copy: order.avoidInCopy || null,
+
+    // Indirizzo strutturato
+    works_remotely: order.worksRemotely ?? false,
+    address_street: order.addressStreet || null,
+    address_number: order.addressNumber || null,
+    address_city: order.addressCity || null,
+    address_cap: order.addressCap || null,
+    address_province: order.addressProvince || null,
+    opening_hours: order.openingHours || null,
+
+    // Trust signals quantitativi
+    years_experience: order.yearsExperience ?? null,
+    clients_served: order.clientsServed ?? null,
+    certifications: order.certifications || null,
+
+    // Logo (vuoto se cliente ha scelto addon logo_design)
+    logo_url: order.logoBlobUrl || null,
+
+    // Social
+    social_instagram: order.socialInstagram || null,
+    social_facebook: order.socialFacebook || null,
+    social_linkedin: order.socialLinkedin || null,
+    social_tiktok: order.socialTiktok || null,
+
     tier: order.tier,
     addons: order.addons,
     total_eur: order.totalEur,

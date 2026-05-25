@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { orderIntakeSchema } from "@/lib/validation";
 import { calculateTotal } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
-import { uploadImage, uploadEntranceImage, uploadManifest } from "@/lib/blob";
+import { uploadImage, uploadEntranceImage, uploadLogo, uploadManifest } from "@/lib/blob";
 import { stripe, buildLineItems } from "@/lib/stripe";
 import type { OrderPayload } from "@/lib/types";
 
@@ -12,10 +12,18 @@ export const maxDuration = 60;
 const MAX_IMAGES = 30;
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_ENTRANCE_IMAGE_BYTES = 15 * 1024 * 1024;
+const MAX_LOGO_BYTES = 5 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
   try {
     const form = await req.formData();
+
+    const parseIntOpt = (v: FormDataEntryValue | null): number | undefined => {
+      const s = v?.toString().trim();
+      if (!s) return undefined;
+      const n = Number.parseInt(s, 10);
+      return Number.isFinite(n) && n >= 0 ? n : undefined;
+    };
 
     const raw = {
       firstName: form.get("firstName")?.toString().trim() ?? "",
@@ -32,7 +40,29 @@ export async function POST(req: NextRequest) {
       toneOfVoice: form.get("toneOfVoice")?.toString() ?? "professional",
       preferredColors: form.get("preferredColors")?.toString() || undefined,
       contentNotes: form.get("contentNotes")?.toString() || undefined,
+      avoidInCopy: form.get("avoidInCopy")?.toString() || undefined,
       videoScript: form.get("videoScript")?.toString() || undefined,
+
+      // Indirizzo strutturato
+      worksRemotely: form.get("worksRemotely")?.toString() === "true",
+      addressStreet: form.get("addressStreet")?.toString() || undefined,
+      addressNumber: form.get("addressNumber")?.toString() || undefined,
+      addressCity: form.get("addressCity")?.toString() || undefined,
+      addressCap: form.get("addressCap")?.toString() || undefined,
+      addressProvince: form.get("addressProvince")?.toString().toUpperCase() || undefined,
+      openingHours: form.get("openingHours")?.toString() || undefined,
+
+      // Trust signals quantitativi
+      yearsExperience: parseIntOpt(form.get("yearsExperience")),
+      clientsServed: parseIntOpt(form.get("clientsServed")),
+      certifications: form.get("certifications")?.toString() || undefined,
+
+      // Social media
+      socialInstagram: form.get("socialInstagram")?.toString() || undefined,
+      socialFacebook: form.get("socialFacebook")?.toString() || undefined,
+      socialLinkedin: form.get("socialLinkedin")?.toString() || undefined,
+      socialTiktok: form.get("socialTiktok")?.toString() || undefined,
+
       tier: form.get("tier")?.toString() ?? "standard",
       addons: JSON.parse(form.get("addons")?.toString() || "[]"),
       forceAllImages: form.get("forceAllImages")?.toString() === "true",
@@ -75,6 +105,20 @@ export async function POST(req: NextRequest) {
       imageBlobUrls.push(result.url);
     }
 
+    // 1a-bis. Logo cliente (opzionale, separato dalle altre immagini)
+    let logoBlobUrl: string | undefined;
+    const logoFile = form.get("logo");
+    if (logoFile instanceof File && logoFile.size > 0) {
+      if (logoFile.size > MAX_LOGO_BYTES) {
+        return NextResponse.json(
+          { error: `Logo supera 5MB (${(logoFile.size / 1024 / 1024).toFixed(1)}MB)` },
+          { status: 413 },
+        );
+      }
+      const uploaded = await uploadLogo(nonce, logoFile);
+      logoBlobUrl = uploaded.url;
+    }
+
     // 1b. (Solo Signature) due immagini ingresso hi-res (mobile + desktop)
     let entranceImageMobileUrl: string | undefined;
     let entranceImageDesktopUrl: string | undefined;
@@ -114,6 +158,27 @@ export async function POST(req: NextRequest) {
       preferredColors: data.preferredColors,
       contentNotes: data.contentNotes,
       videoScript: data.videoScript,
+      avoidInCopy: data.avoidInCopy,
+
+      worksRemotely: data.worksRemotely,
+      addressStreet: data.addressStreet,
+      addressNumber: data.addressNumber,
+      addressCity: data.addressCity,
+      addressCap: data.addressCap || undefined,
+      addressProvince: data.addressProvince || undefined,
+      openingHours: data.openingHours,
+
+      yearsExperience: data.yearsExperience,
+      clientsServed: data.clientsServed,
+      certifications: data.certifications,
+
+      socialInstagram: data.socialInstagram || undefined,
+      socialFacebook: data.socialFacebook || undefined,
+      socialLinkedin: data.socialLinkedin || undefined,
+      socialTiktok: data.socialTiktok || undefined,
+
+      logoBlobUrl,
+
       tier: data.tier,
       addons: data.addons,
       totalEur,

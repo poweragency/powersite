@@ -10,7 +10,8 @@ export type AddonKey =
   | "booking"
   | "domain"
   | "contact_form_integration"
-  | "contact_form_bespoke";
+  | "contact_form_bespoke"
+  | "logo_design";
 
 export type ToneOfVoice =
   | "professional"
@@ -66,6 +67,31 @@ export interface OrderPayload {
   preferredColors?: string;
   contentNotes?: string;
   videoScript?: string;
+  avoidInCopy?: string;
+
+  // Indirizzo strutturato (opzionale: businesses online non hanno sede)
+  worksRemotely?: boolean;
+  addressStreet?: string;
+  addressNumber?: string;
+  addressCity?: string;
+  addressCap?: string;
+  addressProvince?: string;
+  openingHours?: string;
+
+  // Trust signals (alimentano sezione TRUST badges del tier Premium)
+  yearsExperience?: number;
+  clientsServed?: number;
+  certifications?: string;
+
+  // Social media (footer + schema markup)
+  socialInstagram?: string;
+  socialFacebook?: string;
+  socialLinkedin?: string;
+  socialTiktok?: string;
+
+  // Logo: o ha il proprio file e lo carica, OPPURE seleziona addon
+  // "logo_design" per farselo fare. Mutually exclusive lato form.
+  logoBlobUrl?: string;
 
   // Pacchetto
   tier: Tier;

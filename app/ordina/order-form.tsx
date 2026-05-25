@@ -222,8 +222,22 @@ export default function OrderForm() {
   const [entranceDesktop, setEntranceDesktop] = useState<File | null>(null);
   const [entranceDesktopMeta, setEntranceDesktopMeta] = useState<{ w: number; h: number } | null>(null);
   const [entranceDesktopError, setEntranceDesktopError] = useState<string | null>(null);
+  const [worksRemotely, setWorksRemotely] = useState(false);
+  const [logoChoice, setLogoChoice] = useState<"upload" | "design" | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Quando l'utente sceglie "voglio un logo nuovo" → seleziona auto addon
+  // logo_design; quando deseleziona o sceglie "upload" → rimuovi addon.
+  function chooseLogoOption(option: "upload" | "design" | null) {
+    setLogoChoice(option);
+    setAddons((curr) => {
+      if (option === "design") return curr.includes("logo_design") ? curr : [...curr, "logo_design"];
+      return curr.filter((k) => k !== "logo_design");
+    });
+    if (option !== "upload") setLogoFile(null);
+  }
 
   const total = useMemo(() => calculateTotal(tier, addons), [tier, addons]);
 
@@ -395,6 +409,15 @@ export default function OrderForm() {
                   Cinque minuti di brief. Quello che ci dici qui diventa il sito
                   che riceverai entro 48 ore. Dopo, scegli il pacchetto.
                 </p>
+                <div className="mt-6 inline-flex items-center gap-3 rounded-2xl border border-brass/30 bg-brass/5 px-5 py-3">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-brass">
+                    Consiglio
+                  </span>
+                  <p className="text-sm text-bone">
+                    <strong className="text-cream">Più compili, più preciso sarà il tuo sito.</strong>{" "}
+                    Ogni campo aiuta il copy a raccontarti meglio.
+                  </p>
+                </div>
               </header>
 
               {/* ─── I. CONTATTI ──────────────────────── */}
@@ -448,9 +471,176 @@ export default function OrderForm() {
                 </div>
               </section>
 
-              {/* ─── II. BRIEF ────────────────────────── */}
+              {/* ─── II. SEDE & ORARI ───────────────── */}
               <section>
-                <SectionHeader n="II" title="Il tuo brand" />
+                <SectionHeader n="II" title="Sede & orari" hint="opz." />
+                <label className="mb-5 flex cursor-pointer items-center gap-3 rounded-xl border border-bone/10 bg-coal/50 p-4 text-sm text-mist transition-colors hover:bg-coal">
+                  <input
+                    type="checkbox"
+                    checked={worksRemotely}
+                    onChange={(e) => setWorksRemotely(e.target.checked)}
+                    className="h-4 w-4 accent-brass"
+                  />
+                  <span>
+                    <strong className="text-cream">Lavoro solo online</strong> — niente sede fisica
+                  </span>
+                </label>
+                <input type="hidden" name="worksRemotely" value={String(worksRemotely)} />
+                {!worksRemotely && (
+                  <div className="grid gap-5 md:grid-cols-3">
+                    <div className="md:col-span-2">
+                      <label className="label">Via</label>
+                      <input name="addressStreet" type="text" placeholder="es. Via Brera" className="input" autoComplete="address-line1" />
+                    </div>
+                    <div>
+                      <label className="label">N° civico</label>
+                      <input name="addressNumber" type="text" placeholder="12" className="input" />
+                    </div>
+                    <div>
+                      <label className="label">CAP</label>
+                      <input name="addressCap" type="text" maxLength={5} pattern="\d{5}" placeholder="20121" className="input" autoComplete="postal-code" />
+                    </div>
+                    <div className="md:col-span-1">
+                      <label className="label">Città</label>
+                      <input name="addressCity" type="text" placeholder="Milano" className="input" autoComplete="address-level2" />
+                    </div>
+                    <div>
+                      <label className="label">Prov.</label>
+                      <input name="addressProvince" type="text" maxLength={2} pattern="[A-Za-z]{2}" placeholder="MI" className="input uppercase" />
+                    </div>
+                    <div className="md:col-span-3">
+                      <label className="label">Orari di apertura (opz.)</label>
+                      <textarea
+                        name="openingHours"
+                        rows={3}
+                        placeholder={"Lun-Ven: 9:00 - 19:00\nSab: 9:00 - 13:00\nDom: chiuso"}
+                        className="textarea font-mono text-xs"
+                      />
+                      <p className="mt-2 text-xs text-mist">Aiuta i clienti a sapere quando contattarti. Finisce nel footer + FAQ.</p>
+                    </div>
+                  </div>
+                )}
+              </section>
+
+              {/* ─── III. ESPERIENZA ──────────────────── */}
+              <section>
+                <SectionHeader n="III" title="La tua esperienza" hint="opz. ma fortemente consigliato" />
+                <p className="mb-5 text-xs text-mist">
+                  Numeri e credenziali alimentano la sezione &ldquo;perché fidarsi di te&rdquo; del sito.
+                  <strong className="text-bone"> Non inventiamo dati</strong>: lascia vuoto se non hai certezze.
+                </p>
+                <div className="grid gap-5 md:grid-cols-2">
+                  <div>
+                    <label className="label">Anni di esperienza (opz.)</label>
+                    <input name="yearsExperience" type="number" min={0} max={150} placeholder="es. 20" className="input" />
+                  </div>
+                  <div>
+                    <label className="label">Clienti / pazienti / progetti totali (opz.)</label>
+                    <input name="clientsServed" type="number" min={0} placeholder="es. 500" className="input" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="label">Certificazioni, qualifiche, iscrizioni albi (opz.)</label>
+                    <textarea
+                      name="certifications"
+                      rows={3}
+                      placeholder="es. Iscritto Albo Odontoiatri MI n. 12345&#10;ISO 9001 dal 2018&#10;Laurea in Odontoiatria — Milano 2003"
+                      className="textarea"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              {/* ─── IV. LOGO ──────────────────────────── */}
+              <section>
+                <SectionHeader n="IV" title="Logo aziendale" hint="scegli un'opzione" />
+                <input type="hidden" name="logoChoice" value={logoChoice ?? ""} />
+                <div className="grid gap-3 md:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => chooseLogoOption("upload")}
+                    className={cn(
+                      "flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all",
+                      logoChoice === "upload"
+                        ? "border-brass bg-brass/10"
+                        : "border-bone/10 bg-coal/60 hover:border-bone/30",
+                    )}
+                  >
+                    <span className="font-semibold text-cream">Ho già il mio logo</span>
+                    <span className="text-xs text-mist">Lo carichi tu, lo metto nel sito.</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => chooseLogoOption("design")}
+                    className={cn(
+                      "flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all",
+                      logoChoice === "design"
+                        ? "border-brass bg-brass/10"
+                        : "border-bone/10 bg-coal/60 hover:border-bone/30",
+                    )}
+                  >
+                    <span className="flex w-full items-baseline justify-between">
+                      <span className="font-semibold text-cream">Non ho un logo</span>
+                      <span className="font-mono text-xs text-brass">+{formatEur(197)}</span>
+                    </span>
+                    <span className="text-xs text-mist">Te lo disegniamo noi — addon &ldquo;Logo design su misura&rdquo;.</span>
+                  </button>
+                </div>
+                {logoChoice === "upload" && (
+                  <div className="mt-5">
+                    <label className="flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed border-brass/30 bg-coal/40 px-4 py-3 transition-all hover:border-brass hover:bg-brass/10">
+                      <input
+                        type="file"
+                        name="logo"
+                        accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                        onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
+                        className="sr-only"
+                      />
+                      <span className="grid h-10 w-10 place-items-center rounded border border-brass/40 bg-brass/15 text-brass">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="17 8 12 3 7 8" />
+                          <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                      </span>
+                      <div className="flex-1">
+                        <div className="text-sm font-semibold text-cream">
+                          {logoFile ? logoFile.name : "Carica il logo"}
+                        </div>
+                        <div className="text-[10px] text-mist">PNG, JPG, SVG, WEBP · max 5MB</div>
+                      </div>
+                    </label>
+                  </div>
+                )}
+              </section>
+
+              {/* ─── V. SOCIAL ─────────────────────────── */}
+              <section>
+                <SectionHeader n="V" title="Social media" hint="opz." />
+                <p className="mb-5 text-xs text-mist">
+                  Quelli che hai. Finiscono nel footer del sito + danno credibilità.
+                </p>
+                <div className="grid gap-5 md:grid-cols-2">
+                  <div>
+                    <label className="label">Instagram</label>
+                    <input name="socialInstagram" type="url" placeholder="https://instagram.com/..." className="input" />
+                  </div>
+                  <div>
+                    <label className="label">Facebook</label>
+                    <input name="socialFacebook" type="url" placeholder="https://facebook.com/..." className="input" />
+                  </div>
+                  <div>
+                    <label className="label">LinkedIn</label>
+                    <input name="socialLinkedin" type="url" placeholder="https://linkedin.com/..." className="input" />
+                  </div>
+                  <div>
+                    <label className="label">TikTok</label>
+                    <input name="socialTiktok" type="url" placeholder="https://tiktok.com/@..." className="input" />
+                  </div>
+                </div>
+              </section>
+
+              {/* ─── VI. BRIEF ────────────────────────── */}
+              <section>
+                <SectionHeader n="VI" title="Il tuo brand" />
                 <div className="space-y-5">
                   <div>
                     <label className="label">Settore / nicchia *</label>
@@ -506,16 +696,26 @@ export default function OrderForm() {
                     <textarea
                       name="contentNotes"
                       rows={3}
-                      placeholder="Testimonianze, prezzi, FAQ specifiche, link social..."
+                      placeholder="Testimonianze, prezzi, FAQ specifiche..."
                       className="textarea"
                     />
+                  </div>
+                  <div>
+                    <label className="label">Cosa NON vuoi nel sito (opz.)</label>
+                    <textarea
+                      name="avoidInCopy"
+                      rows={2}
+                      placeholder="es. evitare la parola &ldquo;low cost&rdquo;, non parlare di promozioni, niente toni aggressivi..."
+                      className="textarea"
+                    />
+                    <p className="mt-2 text-xs text-mist">Aiutaci a non andare in direzioni sbagliate.</p>
                   </div>
                 </div>
               </section>
 
-              {/* ─── III. IMMAGINI ────────────────────── */}
+              {/* ─── VII. IMMAGINI ────────────────────── */}
               <section>
-                <SectionHeader n="III" title="Le tue foto" hint={`${images.length}/30`} />
+                <SectionHeader n="VII" title="Le tue foto" hint={`${images.length}/30`} />
                 <p className="mb-5 text-sm text-mist">
                   Solo le tue foto. Niente stock photography, niente archivio.
                   Max 30 file, 10MB l&apos;uno.

@@ -124,6 +124,13 @@ export const ADDONS: AddonSpec[] = [
     description: "Form contatti sul sito + sviluppiamo per te un gestionale dedicato accessibile da web e smartphone. Vedi tutte le richieste in un'unica dashboard, segui lo stato di ogni cliente, esporti i contatti. Pensato attorno al tuo flusso di lavoro, non un software generico.",
     icon: "Database",
   },
+  {
+    key: "logo_design",
+    name: "Logo design su misura",
+    priceEur: 197,
+    description: "Non hai un logo? Te lo disegniamo noi. Un logo pulito, scalabile, in vettoriale (utilizzabile per stampa, social, biglietti da visita), coerente col tuo settore e il tono del sito. Consegna in 3 varianti tra cui scegliere.",
+    icon: "Sparkles",
+  },
 ];
 
 // Le 2 varianti "Modulo contatti" sono mutually exclusive: non ha senso

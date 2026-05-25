@@ -108,6 +108,16 @@ export async function uploadEntranceImage(
   });
 }
 
+export async function uploadLogo(nonce: string, file: File): Promise<PutBlobResult> {
+  const ext = (file.name.split(".").pop()?.toLowerCase() ?? "png").replace(/[^a-z0-9]/g, "");
+  const path = blobPath(nonce, `logo.${ext || "png"}`);
+  return put(path, file, {
+    access: "public",
+    contentType: file.type || "image/png",
+    addRandomSuffix: false,
+  });
+}
+
 export async function uploadManifest(payload: OrderPayload): Promise<PutBlobResult> {
   const path = blobPath(payload.nonce, "manifest.json");
   return put(path, JSON.stringify(payload), {
