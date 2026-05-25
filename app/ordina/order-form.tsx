@@ -7,6 +7,8 @@ import { ADDONS, TIERS, calculateTotal } from "@/lib/catalog";
 import type { AddonKey, Tier } from "@/lib/types";
 import { cn, formatEur } from "@/lib/utils";
 import { ShowcaseModal } from "@/components/ShowcaseModal";
+import { LegalDialog } from "@/components/legal/LegalDialog";
+import type { LegalDocKey } from "@/components/legal/bodies";
 
 const FORM_ID = "order-form";
 
@@ -268,6 +270,7 @@ export default function OrderForm() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [legalDialog, setLegalDialog] = useState<LegalDocKey | null>(null);
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -474,6 +477,11 @@ export default function OrderForm() {
   return (
     <div className="mx-auto max-w-6xl">
       <ShowcaseModal tier={showcaseTier} onClose={() => setShowcaseTier(null)} />
+      <LegalDialog
+        open={legalDialog !== null}
+        onClose={() => setLegalDialog(null)}
+        docKey={legalDialog ?? "termini"}
+      />
       <StepIndicator current={step} />
 
       <div className="grid gap-12 md:grid-cols-[2fr_1fr]">
@@ -1240,7 +1248,31 @@ export default function OrderForm() {
                       onChange={(e) => setAcceptedTerms(e.target.checked)}
                       className="mt-0.5 h-4 w-4 accent-brass"
                     />
-                    <span>Accetto i <a href="/termini" target="_blank" className="text-brass hover:underline">termini di servizio</a> e le <a href="/legal" target="_blank" className="text-brass hover:underline">note legali</a> *</span>
+                    <span>
+                      Accetto i{" "}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setLegalDialog("termini");
+                        }}
+                        className="text-brass underline-offset-2 hover:underline"
+                      >
+                        termini di servizio
+                      </button>{" "}
+                      e le{" "}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setLegalDialog("legal");
+                        }}
+                        className="text-brass underline-offset-2 hover:underline"
+                      >
+                        note legali
+                      </button>{" "}
+                      *
+                    </span>
                   </label>
 
                   <button
