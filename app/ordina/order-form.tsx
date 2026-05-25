@@ -235,6 +235,10 @@ export default function OrderForm() {
   const [draftRestored, setDraftRestored] = useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
+  // Guard: TRUE = restore in corso, il persist effect NON deve salvare snapshot
+  // iniziale (sovrascriverebbe il draft con form ancora "vuoto" pre-restore).
+  // Si abbassa dopo il primo successful persist post-restore.
+  const restoringRef = useRef(false);
 
   // ────────────────────────────────────────────────────────────
   // PERSISTENZA BRIEF (localStorage). Evita di perdere tutto se
@@ -257,7 +261,31 @@ export default function OrderForm() {
       return;
     }
 
-    // Ripristina React state
+    // Alziamo subito il guard: il persist effect che runna in parallelo NON
+    // deve fare lo snapshot iniziale (form ancora non-restored).
+    restoringRef.current = true;
+
+    // STEP 1 — Ripristina HTML inputs SUBITO, sync. Il form è già mounted
+    // (useEffect runna post-paint). Evitiamo queueMicrotask perché creava
+    // race condition col persist effect.
+    const form = formRef.current;
+    const formFields = data.formFields as Record<string, string> | undefined;
+    if (form && formFields) {
+      for (const [name, value] of Object.entries(formFields)) {
+        const el = form.elements.namedItem(name) as
+          | HTMLInputElement
+          | HTMLTextAreaElement
+          | HTMLSelectElement
+          | null;
+        if (!el) continue;
+        const t = (el as HTMLInputElement).type;
+        if (t === "file" || t === "submit" || t === "button" || t === "checkbox" || t === "radio") continue;
+        if (typeof value === "string") el.value = value;
+      }
+    }
+
+    // STEP 2 — Ripristina React state (può triggerare re-render: form values
+    // restano perché gli input sono uncontrolled).
     const urlTier = params.get("tier");
     if (!urlTier && (data.tier === "standard" || data.tier === "premium" || data.tier === "business")) {
       setTier(data.tier);
@@ -275,27 +303,14 @@ export default function OrderForm() {
     }
     if (typeof data.videoScript === "string") setVideoScript(data.videoScript);
 
-    // Ripristina valori HTML inputs (form mounted after this microtask)
-    queueMicrotask(() => {
-      const form = formRef.current;
-      const formFields = data.formFields as Record<string, string> | undefined;
-      if (!form || !formFields) return;
-      for (const [name, value] of Object.entries(formFields)) {
-        const el = form.elements.namedItem(name) as
-          | HTMLInputElement
-          | HTMLTextAreaElement
-          | HTMLSelectElement
-          | null;
-        if (!el) continue;
-        const t = (el as HTMLInputElement).type;
-        if (t === "file" || t === "submit" || t === "button" || t === "checkbox" || t === "radio") continue;
-        el.value = value;
-      }
-    });
-
     setDraftRestored(true);
     // Auto-hide del banner dopo 6 secondi
     setTimeout(() => setDraftRestored(false), 6000);
+    // Abbassiamo il guard al prossimo tick: a quel punto persist può salvare
+    // legittimamente lo stato post-restore.
+    setTimeout(() => {
+      restoringRef.current = false;
+    }, 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -305,6 +320,9 @@ export default function OrderForm() {
     if (!form) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
     function persist() {
+      // Guard: durante il restore non scriviamo (eviteremmo di sovrascrivere
+      // un draft buono con uno snapshot in cui i values sono ancora vuoti).
+      if (restoringRef.current) return;
       const formFields: Record<string, string> = {};
       for (const el of Array.from(form!.elements)) {
         const input = el as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -337,7 +355,7 @@ export default function OrderForm() {
     }
     form.addEventListener("input", handler);
     form.addEventListener("change", handler);
-    persist(); // snapshot subito quando cambia uno stato React
+    persist(); // snapshot subito quando cambia uno stato React (guarded)
     return () => {
       form.removeEventListener("input", handler);
       form.removeEventListener("change", handler);
