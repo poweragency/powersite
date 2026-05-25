@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ADDONS, TIERS, calculateTotal } from "@/lib/catalog";
@@ -9,6 +9,11 @@ import { cn, formatEur } from "@/lib/utils";
 import { ShowcaseModal } from "@/components/ShowcaseModal";
 
 const FORM_ID = "order-form";
+
+// Chiave localStorage per persistere il brief mentre l'utente compila o
+// torna indietro dal checkout. Cancellata al submit andato a buon fine.
+// Bumpare il "v" quando lo schema cambia in modo incompatibile.
+const DRAFT_KEY = "pa-order-draft-v1";
 const MIN_ENTRANCE_DIMENSION = 1920;
 const MAX_ENTRANCE_BYTES = 15 * 1024 * 1024;
 
@@ -227,6 +232,118 @@ export default function OrderForm() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [draftRestored, setDraftRestored] = useState(false);
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // ────────────────────────────────────────────────────────────
+  // PERSISTENZA BRIEF (localStorage). Evita di perdere tutto se
+  // l'utente torna indietro dal checkout o ricarica la pagina.
+  // I file (immagini, logo) NON sono persistibili → vanno
+  // ricaricati. Glielo segnaliamo con un banner se rilevato.
+  // ────────────────────────────────────────────────────────────
+  useEffect(() => {
+    let raw: string | null = null;
+    try {
+      raw = localStorage.getItem(DRAFT_KEY);
+    } catch {
+      return;
+    }
+    if (!raw) return;
+    let data: Record<string, unknown>;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      return;
+    }
+
+    // Ripristina React state
+    const urlTier = params.get("tier");
+    if (!urlTier && (data.tier === "standard" || data.tier === "premium" || data.tier === "business")) {
+      setTier(data.tier);
+    }
+    if (Array.isArray(data.addons)) setAddons(data.addons as AddonKey[]);
+    if (typeof data.forceAllImages === "boolean") setForceAllImages(data.forceAllImages);
+    if (typeof data.acceptedTerms === "boolean") setAcceptedTerms(data.acceptedTerms);
+    if (typeof data.worksRemotely === "boolean") setWorksRemotely(data.worksRemotely);
+    if (data.logoChoice === "upload" || data.logoChoice === "design") {
+      setLogoChoice(data.logoChoice);
+    }
+    if (data.step === 1 || data.step === 2) setStep(data.step);
+    if (data.signatureMode === "text" || data.signatureMode === "image") {
+      setSignatureMode(data.signatureMode);
+    }
+    if (typeof data.videoScript === "string") setVideoScript(data.videoScript);
+
+    // Ripristina valori HTML inputs (form mounted after this microtask)
+    queueMicrotask(() => {
+      const form = formRef.current;
+      const formFields = data.formFields as Record<string, string> | undefined;
+      if (!form || !formFields) return;
+      for (const [name, value] of Object.entries(formFields)) {
+        const el = form.elements.namedItem(name) as
+          | HTMLInputElement
+          | HTMLTextAreaElement
+          | HTMLSelectElement
+          | null;
+        if (!el) continue;
+        const t = (el as HTMLInputElement).type;
+        if (t === "file" || t === "submit" || t === "button" || t === "checkbox" || t === "radio") continue;
+        el.value = value;
+      }
+    });
+
+    setDraftRestored(true);
+    // Auto-hide del banner dopo 6 secondi
+    setTimeout(() => setDraftRestored(false), 6000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Salva ad ogni cambio (debounce 300ms su input, immediato su state React)
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    function persist() {
+      const formFields: Record<string, string> = {};
+      for (const el of Array.from(form!.elements)) {
+        const input = el as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+        if (!input.name) continue;
+        const t = (input as HTMLInputElement).type;
+        if (t === "file" || t === "submit" || t === "button" || t === "checkbox" || t === "radio") continue;
+        formFields[input.name] = input.value;
+      }
+      const data = {
+        tier,
+        addons,
+        forceAllImages,
+        acceptedTerms,
+        worksRemotely,
+        logoChoice,
+        step,
+        signatureMode,
+        videoScript,
+        formFields,
+      };
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+      } catch {
+        // localStorage può fallire (quota, modalità privata): non bloccante
+      }
+    }
+    function handler() {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(persist, 300);
+    }
+    form.addEventListener("input", handler);
+    form.addEventListener("change", handler);
+    persist(); // snapshot subito quando cambia uno stato React
+    return () => {
+      form.removeEventListener("input", handler);
+      form.removeEventListener("change", handler);
+      if (timer) clearTimeout(timer);
+    };
+  }, [tier, addons, forceAllImages, acceptedTerms, worksRemotely, logoChoice, step, signatureMode, videoScript]);
 
   // Quando l'utente sceglie "voglio un logo nuovo" → seleziona auto addon
   // logo_design; quando deseleziona o sceglie "upload" → rimuovi addon.
@@ -355,6 +472,11 @@ export default function OrderForm() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Errore nell'invio dell'ordine");
 
+      // Brief accettato dal server. NON cancelliamo qui il draft localStorage:
+      // se l'utente annulla il checkout Stripe e torna indietro deve poter
+      // ritrovare tutto compilato. La pulizia avviene su /grazie (mount
+      // della pagina di conferma = ordine effettivamente arrivato a buon fine).
+
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
       } else if (data.redirectUrl) {
@@ -375,7 +497,30 @@ export default function OrderForm() {
 
       <div className="grid gap-12 md:grid-cols-[2fr_1fr]">
         {/* ─── FORM PRINCIPALE ─────────────────────────── */}
-        <form id={FORM_ID} onSubmit={handleSubmit} className="space-y-16">
+        {draftRestored && (
+          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-brass/30 bg-brass/5 p-4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 flex-none text-brass">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <div className="text-sm text-bone">
+              <strong className="text-cream">Bentornato.</strong> Abbiamo
+              recuperato il brief che stavi compilando.
+              <span className="block text-xs text-mist mt-1">
+                I file caricati (foto, logo) devi ri-selezionarli — il browser
+                non li conserva.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDraftRestored(false)}
+              className="ml-auto flex-none text-xs text-mist hover:text-bone"
+              aria-label="Chiudi"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+        <form ref={formRef} id={FORM_ID} onSubmit={handleSubmit} className="space-y-16">
           {step === 1 ? (
             <>
               <header>

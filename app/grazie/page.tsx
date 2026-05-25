@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { Reveal } from "@/components/Reveal";
+import { DraftCleanup } from "./draft-cleanup";
 
 export default async function GraziePage({
   searchParams,
@@ -11,6 +12,7 @@ export default async function GraziePage({
   const { nonce } = await searchParams;
   return (
     <>
+      <DraftCleanup />
       <Nav />
       <main className="relative isolate overflow-hidden">
         <div className="glow-orb top-[-10%] right-[10%] h-[500px] w-[500px] animate-glow bg-flame/25" />
