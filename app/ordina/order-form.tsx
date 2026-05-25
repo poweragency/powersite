@@ -663,14 +663,14 @@ export default function OrderForm() {
                     />
                   </div>
                   <div>
-                    <label className="label">USP — Cosa ti rende unico *</label>
+                    <label className="label">USP — Cosa ti rende unico (opz.)</label>
                     <textarea
                       name="uniqueSellingProposition"
-                      required
                       rows={2}
                       placeholder="Qual è il valore che offri e che la concorrenza non offre?"
                       className="textarea"
                     />
+                    <p className="mt-2 text-xs text-mist">Se non sai cosa scrivere lascia vuoto, lo deduciamo noi dal settore + target.</p>
                   </div>
                   <div className="grid gap-5 md:grid-cols-2">
                     <div>

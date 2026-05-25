@@ -63,7 +63,7 @@ function buildUserMessage(order: OrderPayload): string {
     azienda: order.company,
     settore: order.sector,
     target: order.targetAudience,
-    proposta_unica: order.uniqueSellingProposition,
+    proposta_unica: order.uniqueSellingProposition ?? null,
     cta_primaria: order.primaryCta ?? null,
     cta_secondaria: order.secondaryCta ?? null,
     tono_di_voce: order.toneOfVoice,

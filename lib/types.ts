@@ -60,7 +60,7 @@ export interface OrderPayload {
   // Brief
   sector: string;
   targetAudience: string;
-  uniqueSellingProposition: string;
+  uniqueSellingProposition?: string;
   primaryCta?: string;
   secondaryCta?: string;
   toneOfVoice: ToneOfVoice;

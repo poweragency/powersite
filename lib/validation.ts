@@ -15,7 +15,7 @@ export const orderIntakeSchema = z.object({
   // Brief
   sector: z.string().min(2, "Settore obbligatorio").max(80),
   targetAudience: z.string().min(10, "Descrivi il target in almeno 10 caratteri").max(500),
-  uniqueSellingProposition: z.string().min(10, "Descrivi la USP in almeno 10 caratteri").max(500),
+  uniqueSellingProposition: z.string().max(500).optional().or(z.literal("")),
   primaryCta: z.string().max(60).optional(),
   secondaryCta: z.string().max(60).optional(),
   toneOfVoice: z.enum(["professional", "friendly", "luxury", "energetic", "minimal"]),
