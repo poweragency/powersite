@@ -36,6 +36,7 @@ export default function LegalPage() {
           <li><strong className="text-bone">Iscrizione REA:</strong> [DA INSERIRE]</li>
           <li><strong className="text-bone">PEC:</strong> [DA INSERIRE]</li>
           <li><strong className="text-bone">Email:</strong> info@poweragency.it</li>
+          <li><strong className="text-bone">Regime fiscale:</strong> Forfettario — operazioni non soggette a IVA (art. 1, comma 58, L. 190/2014)</li>
         </ul>
       </section>
 

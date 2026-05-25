@@ -34,9 +34,10 @@ export default function TerminiPage() {
           contatta il cliente tramite il canale indicato (telefono / WhatsApp /
           email) per concordare modalità di pagamento e tempi di delivery.
           Il prezzo del pacchetto e degli add-on selezionati è visibile prima
-          dell&apos;invio del brief. Prezzi e IVA esclusi salvo diversa indicazione.
-          Nessun abbonamento ricorrente, salvo add-on esplicitamente marcati
-          come &ldquo;mensile&rdquo;.
+          dell&apos;invio del brief. I prezzi sono finali: operazione non soggetta
+          a IVA ai sensi dell&apos;art. 1, comma 58, della L. 190/2014 (regime
+          forfettario). Nessun abbonamento ricorrente, salvo add-on esplicitamente
+          marcati come &ldquo;mensile&rdquo;.
         </p>
       </section>
 

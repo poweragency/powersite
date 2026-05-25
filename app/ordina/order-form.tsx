@@ -1119,7 +1119,7 @@ export default function OrderForm() {
                     <span className="text-sm text-mist">Totale</span>
                     <span className="display text-4xl font-bold tracking-tightest text-cream">{formatEur(total)}</span>
                   </div>
-                  <p className="mt-1 text-right text-[10px] uppercase tracking-widest text-smoke">IVA esclusa</p>
+                  <p className="mt-1 text-right text-[10px] uppercase tracking-widest text-smoke">Operazione non soggetta a IVA</p>
 
                   <label className="mt-7 mb-5 flex items-start gap-3 text-xs text-mist cursor-pointer">
                     <input
@@ -1148,9 +1148,6 @@ export default function OrderForm() {
             </div>
           </div>
 
-          <p className="mt-6 text-center text-xs text-mist">
-            Hai dubbi? <a href="mailto:info@poweragency.it" className="text-brass hover:underline">Scrivici</a>
-          </p>
         </aside>
       </div>
     </div>
