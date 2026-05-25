@@ -18,12 +18,16 @@ export default function LegalPage() {
           Titolare
         </h2>
         <p className="mt-3">
-          Power Agency — Atelier digitale, con sede in Firenze, Italia.
-          Per qualsiasi questione legale, scrivere a{" "}
-          <a href="mailto:hello@poweragency.it" className="text-brass hover:underline">
-            hello@poweragency.it
+          Per qualsiasi questione legale o relativa al trattamento dati, scrivere a{" "}
+          <a href="mailto:info@poweragency.it" className="text-brass hover:underline">
+            info@poweragency.it
           </a>.
         </p>
+        {/*
+          TODO (PRIMA DEL GO-LIVE): inserire i dati identificativi reali
+          dell'azienda. I valori sotto sono placeholder. Obbligatorio per
+          imprese italiane ex D.lgs 70/2003 art. 7.
+        */}
         <ul className="mt-4 space-y-2 text-sm text-mist">
           <li><strong className="text-bone">Ragione sociale:</strong> [DA INSERIRE]</li>
           <li><strong className="text-bone">Sede legale:</strong> [Via, n°, CAP, Città, Provincia]</li>
@@ -31,6 +35,7 @@ export default function LegalPage() {
           <li><strong className="text-bone">Codice Fiscale:</strong> [DA INSERIRE]</li>
           <li><strong className="text-bone">Iscrizione REA:</strong> [DA INSERIRE]</li>
           <li><strong className="text-bone">PEC:</strong> [DA INSERIRE]</li>
+          <li><strong className="text-bone">Email:</strong> info@poweragency.it</li>
         </ul>
       </section>
 

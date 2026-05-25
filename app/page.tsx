@@ -375,7 +375,7 @@ export default function HomePage() {
             <Reveal delay={300}>
               <p className="mt-6 text-pretty text-mist">
                 Se la tua domanda non c&apos;è qui sotto, scrivici una
-                mail a <a href="mailto:hello@poweragency.it" className="text-brass hover:underline">hello@poweragency.it</a>.
+                mail a <a href="mailto:info@poweragency.it" className="text-brass hover:underline">info@poweragency.it</a>.
                 Rispondiamo entro qualche ora.
               </p>
             </Reveal>

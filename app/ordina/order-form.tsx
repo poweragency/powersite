@@ -919,7 +919,7 @@ export default function OrderForm() {
           </div>
 
           <p className="mt-6 text-center text-xs text-mist">
-            Hai dubbi? <a href="mailto:hello@poweragency.it" className="text-brass hover:underline">Scrivici</a>
+            Hai dubbi? <a href="mailto:info@poweragency.it" className="text-brass hover:underline">Scrivici</a>
           </p>
         </aside>
       </div>

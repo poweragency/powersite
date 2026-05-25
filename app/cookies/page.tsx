@@ -78,8 +78,8 @@ export default function CookiesPage() {
         <p className="mt-3">
           Per qualsiasi domanda relativa al trattamento dei tuoi dati,
           scrivici a{" "}
-          <a href="mailto:hello@poweragency.it" className="text-brass hover:underline">
-            hello@poweragency.it
+          <a href="mailto:info@poweragency.it" className="text-brass hover:underline">
+            info@poweragency.it
           </a>.
         </p>
       </section>

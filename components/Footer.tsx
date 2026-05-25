@@ -26,8 +26,8 @@ export function Footer() {
             </h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <a href="mailto:hello@poweragency.it" className="break-all text-mist hover:text-bone">
-                  hello@poweragency.it
+                <a href="mailto:info@poweragency.it" className="break-all text-mist hover:text-bone">
+                  info@poweragency.it
                 </a>
               </li>
             </ul>
