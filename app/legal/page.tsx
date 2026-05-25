@@ -24,6 +24,14 @@ export default function LegalPage() {
             hello@poweragency.it
           </a>.
         </p>
+        <ul className="mt-4 space-y-2 text-sm text-mist">
+          <li><strong className="text-bone">Ragione sociale:</strong> [DA INSERIRE]</li>
+          <li><strong className="text-bone">Sede legale:</strong> [Via, n°, CAP, Città, Provincia]</li>
+          <li><strong className="text-bone">Partita IVA:</strong> [DA INSERIRE]</li>
+          <li><strong className="text-bone">Codice Fiscale:</strong> [DA INSERIRE]</li>
+          <li><strong className="text-bone">Iscrizione REA:</strong> [DA INSERIRE]</li>
+          <li><strong className="text-bone">PEC:</strong> [DA INSERIRE]</li>
+        </ul>
       </section>
 
       <section>

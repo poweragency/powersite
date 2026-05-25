@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { CookieBanner } from "@/components/CookieBanner";
 
 const sans = Inter({
   subsets: ["latin"],
@@ -44,6 +45,7 @@ export default function RootLayout({
     <html lang="it" className={`${sans.variable} ${display.variable} ${mono.variable}`}>
       <body className="min-h-screen font-sans antialiased bg-obsidian text-bone">
         {children}
+        <CookieBanner />
       </body>
     </html>
   );

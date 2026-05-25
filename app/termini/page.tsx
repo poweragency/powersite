@@ -30,9 +30,11 @@ export default function TerminiPage() {
           2. Ordine e pagamento
         </h2>
         <p className="mt-3">
-          L&apos;ordine si perfeziona con il pagamento tramite Stripe.
+          Il cliente compila il brief tramite il form d&apos;ordine. Power Agency
+          contatta il cliente tramite il canale indicato (telefono / WhatsApp /
+          email) per concordare modalità di pagamento e tempi di delivery.
           Il prezzo del pacchetto e degli add-on selezionati è visibile prima
-          del checkout. Prezzi e IVA esclusi salvo diversa indicazione.
+          dell&apos;invio del brief. Prezzi e IVA esclusi salvo diversa indicazione.
           Nessun abbonamento ricorrente, salvo add-on esplicitamente marcati
           come &ldquo;mensile&rdquo;.
         </p>

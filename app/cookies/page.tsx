@@ -30,9 +30,9 @@ export default function CookiesPage() {
         </h2>
         <p className="mt-3">
           Power Agency utilizza esclusivamente cookie tecnici necessari al
-          funzionamento del sito (preferenze sessione, sicurezza, integrazione
-          Stripe per il checkout). Non utilizziamo cookie di profilazione né
-          di terze parti per finalità pubblicitarie.
+          funzionamento del sito (preferenze sessione, sicurezza). Non
+          utilizziamo cookie di profilazione né di terze parti per finalità
+          pubblicitarie.
         </p>
         <ul className="mt-4 space-y-3 text-sm">
           <li className="rounded-xl border border-bone/10 bg-coal/40 p-4">
@@ -43,20 +43,17 @@ export default function CookiesPage() {
             </p>
           </li>
           <li className="rounded-xl border border-bone/10 bg-coal/40 p-4">
-            <strong className="font-mono text-xs uppercase tracking-widest text-brass">Stripe</strong>
+            <strong className="font-mono text-xs uppercase tracking-widest text-brass">Preferenza cookie banner</strong>
             <p className="mt-2 text-mist">
-              Il processo di pagamento avviene su dominio Stripe, che imposta
-              propri cookie tecnici. Vedi{" "}
-              <a href="https://stripe.com/cookies-policy/legal" className="text-brass hover:underline" target="_blank" rel="noreferrer">
-                Stripe Cookie Policy
-              </a>.
+              La tua scelta sul banner cookie è salvata in <code>localStorage</code>
+              (non in un cookie). Nessun identificatore persistente associato.
             </p>
           </li>
           <li className="rounded-xl border border-bone/10 bg-coal/40 p-4">
             <strong className="font-mono text-xs uppercase tracking-widest text-brass">Vercel Analytics (opz.)</strong>
             <p className="mt-2 text-mist">
-              Se abilitato, raccoglie statistiche anonime sulle visite (no
-              cookie persistenti, no identificatori univoci).
+              Se abilitato in futuro, raccoglierà statistiche anonime sulle
+              visite (no cookie persistenti, no identificatori univoci).
             </p>
           </li>
         </ul>
