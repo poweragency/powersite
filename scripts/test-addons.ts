@@ -18,6 +18,8 @@ function makeOrder(addons: AddonKey[]): OrderPayload {
   return {
     nonce: `addon-test-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     createdAt: new Date().toISOString(),
+    firstName: "Mario",
+    lastName: "Rossi",
     email: "test@example.com",
     company: "Studio Conti",
     companySlug: "studio-conti",

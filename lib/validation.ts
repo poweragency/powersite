@@ -1,10 +1,15 @@
 import { z } from "zod";
 
 export const orderIntakeSchema = z.object({
-  // Contatti
+  // Contatti (decision maker)
+  firstName: z.string().min(2, "Nome obbligatorio").max(60),
+  lastName: z.string().min(2, "Cognome obbligatorio").max(60),
   email: z.string().email("Email non valida"),
   company: z.string().min(2, "Nome azienda obbligatorio").max(100),
-  phone: z.string().min(6, "Telefono obbligatorio (serve per la delivery)").max(30),
+  phone: z
+    .string()
+    .min(8, "Telefono obbligatorio: il sito ti verrà inviato su WhatsApp")
+    .max(30),
   website: z.string().url().optional().or(z.literal("")),
 
   // Brief

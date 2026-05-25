@@ -43,6 +43,8 @@ export async function insertCrmLead(args: InsertCrmLeadArgs): Promise<InsertCrmL
 
   const row = {
     nonce: order.nonce,
+    first_name: order.firstName || null,
+    last_name: order.lastName || null,
     email: order.email,
     phone: order.phone || null,
     company: order.company,

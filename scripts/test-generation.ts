@@ -41,6 +41,8 @@ function makeFakeOrder(tier: Tier, company: string): OrderPayload {
   return {
     nonce,
     createdAt: new Date().toISOString(),
+    firstName: "Mario",
+    lastName: "Rossi",
     email: "test@example.com",
     company,
     companySlug: company.toLowerCase().replace(/[^a-z0-9]+/g, "-"),

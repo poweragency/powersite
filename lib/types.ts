@@ -47,7 +47,9 @@ export interface OrderPayload {
   nonce: string;             // UUID univoco generato all'invio del form
   createdAt: string;         // ISO timestamp
 
-  // Contatti cliente
+  // Contatti cliente (decision maker — chi compila il form, non il brand)
+  firstName: string;
+  lastName: string;
   email: string;
   company: string;
   companySlug: string;

@@ -23,6 +23,8 @@ function makeOrder(tier: Tier, scenario: "dentista" | "ristorante" = "dentista")
     return {
       nonce: `tier-test-${tier}-rist-${Date.now()}`,
       createdAt: new Date().toISOString(),
+    firstName: "Mario",
+    lastName: "Rossi",
       email: "test@example.com",
       company: "Trattoria del Borgo",
       companySlug: "trattoria-del-borgo",
@@ -46,6 +48,8 @@ function makeOrder(tier: Tier, scenario: "dentista" | "ristorante" = "dentista")
   return {
     nonce: `tier-test-${tier}-dent-${Date.now()}`,
     createdAt: new Date().toISOString(),
+    firstName: "Mario",
+    lastName: "Rossi",
     email: "test@example.com",
     company: "Studio Conti",
     companySlug: "studio-conti",

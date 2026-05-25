@@ -18,6 +18,8 @@ export async function POST(req: NextRequest) {
     const form = await req.formData();
 
     const raw = {
+      firstName: form.get("firstName")?.toString().trim() ?? "",
+      lastName: form.get("lastName")?.toString().trim() ?? "",
       email: form.get("email")?.toString() ?? "",
       company: form.get("company")?.toString() ?? "",
       website: form.get("website")?.toString() || undefined,
@@ -96,6 +98,8 @@ export async function POST(req: NextRequest) {
     const payload: OrderPayload = {
       nonce,
       createdAt: new Date().toISOString(),
+      firstName: data.firstName,
+      lastName: data.lastName,
       email: data.email,
       company: data.company,
       companySlug,

@@ -402,22 +402,48 @@ export default function OrderForm() {
                 <SectionHeader n="I" title="I tuoi contatti" />
                 <div className="grid gap-5 md:grid-cols-2">
                   <div>
+                    <label className="label">Nome *</label>
+                    <input name="firstName" type="text" required placeholder="Mario" className="input" autoComplete="given-name" />
+                  </div>
+                  <div>
+                    <label className="label">Cognome *</label>
+                    <input name="lastName" type="text" required placeholder="Rossi" className="input" autoComplete="family-name" />
+                  </div>
+                  <div>
                     <label className="label">Email *</label>
-                    <input name="email" type="email" required placeholder="tu@azienda.it" className="input" />
-                    <p className="mt-2 text-xs text-mist">Riceverai qui il link al sito.</p>
+                    <input name="email" type="email" required placeholder="tu@azienda.it" className="input" autoComplete="email" />
+                    <p className="mt-2 text-xs text-mist">Conferma dell&apos;ordine e riferimenti.</p>
                   </div>
                   <div>
                     <label className="label">Nome azienda *</label>
                     <input name="company" type="text" required placeholder="es. Studio Bianchi" className="input" />
                   </div>
-                  <div>
-                    <label className="label">Sito attuale (opz.)</label>
-                    <input name="website" type="url" placeholder="https://" className="input" />
+                  <div className="md:col-span-2">
+                    <label className="label flex items-baseline gap-2">
+                      <span>Telefono *</span>
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-brass">WhatsApp</span>
+                    </label>
+                    <input
+                      name="phone"
+                      type="tel"
+                      required
+                      placeholder="+39 333 1234567"
+                      className="input"
+                      autoComplete="tel"
+                    />
+                    <div className="mt-2 rounded-lg border border-brass/30 bg-brass/5 p-3">
+                      <p className="text-xs leading-relaxed text-bone">
+                        <strong className="text-brass">Importante:</strong> il
+                        sito finito ti verrà inviato direttamente su WhatsApp
+                        da uno dei nostri tecnici. Assicurati di scrivere un
+                        numero <strong>raggiungibile su WhatsApp</strong>,
+                        completo di prefisso (+39 per l&apos;Italia).
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <label className="label">Telefono *</label>
-                    <input name="phone" type="tel" required placeholder="+39..." className="input" />
-                    <p className="mt-2 text-xs text-mist">Serve per coordinare la delivery del sito.</p>
+                  <div className="md:col-span-2">
+                    <label className="label">Sito attuale (opz.)</label>
+                    <input name="website" type="url" placeholder="https://" className="input" autoComplete="url" />
                   </div>
                 </div>
               </section>
