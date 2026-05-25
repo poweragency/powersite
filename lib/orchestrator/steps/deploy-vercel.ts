@@ -95,7 +95,8 @@ async function vercelRequest<T>(
 
 export async function deployToVercel(args: {
   order: OrderPayload;
-  repoFullName: string; // "power-agency-clients/client-studio-bianchi-xxx"
+  repoFullName: string; // "owner/client-studio-bianchi-xxx"
+  repoId: number;       // numeric GitHub repo id (Vercel deployments richiede questo)
 }): Promise<DeployResult> {
   const token = process.env.VERCEL_TOKEN;
   const teamId = process.env.VERCEL_TEAM_ID || undefined;
@@ -146,7 +147,8 @@ export async function deployToVercel(args: {
   }
 
   // 3. Triggera deployment da main HEAD (i commit erano già lì prima della
-  //    creazione del project, quindi Vercel via webhook non li ha rilevati)
+  //    creazione del project, quindi Vercel via webhook non li ha rilevati).
+  //    `gitSource` richiede l'ID numerico GitHub della repo, NON owner/name.
   const deployment = await vercelRequest<VercelDeployment>(`/v13/deployments`, {
     token,
     teamId,
@@ -157,7 +159,7 @@ export async function deployToVercel(args: {
       target: "production",
       gitSource: {
         type: "github",
-        repo: args.repoFullName,
+        repoId: args.repoId,
         ref: "main",
       },
     }),

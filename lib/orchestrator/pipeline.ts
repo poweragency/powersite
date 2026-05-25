@@ -57,7 +57,11 @@ export async function runPipeline(order: OrderPayload): Promise<PipelineResult> 
     console.log(`[pipeline:${order.nonce}] repo created ${repo.url}`);
 
     // 5. Deploy Vercel
-    const deploy = await deployToVercel({ order, repoFullName: repo.fullName });
+    const deploy = await deployToVercel({
+      order,
+      repoFullName: repo.fullName,
+      repoId: repo.id,
+    });
     console.log(`[pipeline:${order.nonce}] deployed ${deploy.url}`);
 
     // 6. Email cliente + admin

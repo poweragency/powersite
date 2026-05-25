@@ -119,7 +119,11 @@ async function main() {
       }
       console.log(`▲ [4/${totalSteps}] Deploy su Vercel...`);
       const t3 = Date.now();
-      const deploy = await deployToVercel({ order, repoFullName: repo.fullName });
+      const deploy = await deployToVercel({
+        order,
+        repoFullName: repo.fullName,
+        repoId: repo.id,
+      });
       console.log(`   ✓ ${Date.now() - t3}ms\n`);
 
       console.log(`✅ Project Vercel ${deploy.alreadyExisted ? "trovato" : "creato"}:`);
