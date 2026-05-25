@@ -210,119 +210,82 @@ export default function OrderForm() {
   const params = useSearchParams();
   const router = useRouter();
 
-  const initialTier = (params.get("tier") as Tier) ?? "premium";
+  // Lazy init di TUTTO lo state dal localStorage (UNA SOLA volta al primo render).
+  // Se la URL ha ?tier=xxx, l'URL vince sul draft.
+  const draftState = useMemo<Record<string, unknown>>(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY);
+      if (!raw) return {};
+      return JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      return {};
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const [step, setStep] = useState<Step>(1);
+  const initialTier =
+    (params.get("tier") as Tier | null) ??
+    (draftState.tier === "standard" || draftState.tier === "premium" || draftState.tier === "business"
+      ? (draftState.tier as Tier)
+      : "premium");
+
+  const [step, setStep] = useState<Step>(draftState.step === 2 ? 2 : 1);
   const [tier, setTier] = useState<Tier>(initialTier);
-  const [addons, setAddons] = useState<AddonKey[]>([]);
-  const [forceAllImages, setForceAllImages] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [addons, setAddons] = useState<AddonKey[]>(
+    Array.isArray(draftState.addons) ? (draftState.addons as AddonKey[]) : [],
+  );
+  const [forceAllImages, setForceAllImages] = useState(
+    typeof draftState.forceAllImages === "boolean" ? draftState.forceAllImages : false,
+  );
+  const [acceptedTerms, setAcceptedTerms] = useState(
+    typeof draftState.acceptedTerms === "boolean" ? draftState.acceptedTerms : false,
+  );
   const [images, setImages] = useState<File[]>([]);
-  const [signatureMode, setSignatureMode] = useState<"text" | "image" | null>(null);
+  const [signatureMode, setSignatureMode] = useState<"text" | "image" | null>(
+    draftState.signatureMode === "text" || draftState.signatureMode === "image"
+      ? (draftState.signatureMode as "text" | "image")
+      : null,
+  );
   const [showcaseTier, setShowcaseTier] = useState<Tier | null>(null);
-  const [videoScript, setVideoScript] = useState("");
+  const [videoScript, setVideoScript] = useState(
+    typeof draftState.videoScript === "string" ? draftState.videoScript : "",
+  );
   const [entranceMobile, setEntranceMobile] = useState<File | null>(null);
   const [entranceMobileMeta, setEntranceMobileMeta] = useState<{ w: number; h: number } | null>(null);
   const [entranceMobileError, setEntranceMobileError] = useState<string | null>(null);
   const [entranceDesktop, setEntranceDesktop] = useState<File | null>(null);
   const [entranceDesktopMeta, setEntranceDesktopMeta] = useState<{ w: number; h: number } | null>(null);
   const [entranceDesktopError, setEntranceDesktopError] = useState<string | null>(null);
-  const [worksRemotely, setWorksRemotely] = useState(false);
-  const [logoChoice, setLogoChoice] = useState<"upload" | "design" | null>(null);
+  const [worksRemotely, setWorksRemotely] = useState(
+    typeof draftState.worksRemotely === "boolean" ? draftState.worksRemotely : false,
+  );
+  const [logoChoice, setLogoChoice] = useState<"upload" | "design" | null>(
+    draftState.logoChoice === "upload" || draftState.logoChoice === "design"
+      ? (draftState.logoChoice as "upload" | "design")
+      : null,
+  );
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [draftRestored, setDraftRestored] = useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
-  // Guard: TRUE = restore in corso, il persist effect NON deve salvare snapshot
-  // iniziale (sovrascriverebbe il draft con form ancora "vuoto" pre-restore).
-  // Si abbassa dopo il primo successful persist post-restore.
-  const restoringRef = useRef(false);
+
+  // Valori HTML inputs pre-compilati (uncontrolled + defaultValue idiomatico).
+  const draftValues: Record<string, string> =
+    (draftState.formFields as Record<string, string>) ?? {};
 
   // ────────────────────────────────────────────────────────────
-  // PERSISTENZA BRIEF (localStorage). Evita di perdere tutto se
-  // l'utente torna indietro dal checkout o ricarica la pagina.
-  // I file (immagini, logo) NON sono persistibili → vanno
-  // ricaricati. Glielo segnaliamo con un banner se rilevato.
+  // PERSISTENZA BRIEF — Salva ad ogni cambio (debounce 300ms su input,
+  // immediato su cambio di React state). Il restore avviene SOPRA via
+  // lazy init di useState + defaultValue sugli HTML inputs (pattern React
+  // idiomatico per uncontrolled inputs, niente DOM manipulation/race).
   // ────────────────────────────────────────────────────────────
-  useEffect(() => {
-    let raw: string | null = null;
-    try {
-      raw = localStorage.getItem(DRAFT_KEY);
-    } catch {
-      return;
-    }
-    if (!raw) return;
-    let data: Record<string, unknown>;
-    try {
-      data = JSON.parse(raw);
-    } catch {
-      return;
-    }
-
-    // Alziamo subito il guard: il persist effect che runna in parallelo NON
-    // deve fare lo snapshot iniziale (form ancora non-restored).
-    restoringRef.current = true;
-
-    // STEP 1 — Ripristina HTML inputs SUBITO, sync. Il form è già mounted
-    // (useEffect runna post-paint). Evitiamo queueMicrotask perché creava
-    // race condition col persist effect.
-    const form = formRef.current;
-    const formFields = data.formFields as Record<string, string> | undefined;
-    if (form && formFields) {
-      for (const [name, value] of Object.entries(formFields)) {
-        const el = form.elements.namedItem(name) as
-          | HTMLInputElement
-          | HTMLTextAreaElement
-          | HTMLSelectElement
-          | null;
-        if (!el) continue;
-        const t = (el as HTMLInputElement).type;
-        if (t === "file" || t === "submit" || t === "button" || t === "checkbox" || t === "radio") continue;
-        if (typeof value === "string") el.value = value;
-      }
-    }
-
-    // STEP 2 — Ripristina React state (può triggerare re-render: form values
-    // restano perché gli input sono uncontrolled).
-    const urlTier = params.get("tier");
-    if (!urlTier && (data.tier === "standard" || data.tier === "premium" || data.tier === "business")) {
-      setTier(data.tier);
-    }
-    if (Array.isArray(data.addons)) setAddons(data.addons as AddonKey[]);
-    if (typeof data.forceAllImages === "boolean") setForceAllImages(data.forceAllImages);
-    if (typeof data.acceptedTerms === "boolean") setAcceptedTerms(data.acceptedTerms);
-    if (typeof data.worksRemotely === "boolean") setWorksRemotely(data.worksRemotely);
-    if (data.logoChoice === "upload" || data.logoChoice === "design") {
-      setLogoChoice(data.logoChoice);
-    }
-    if (data.step === 1 || data.step === 2) setStep(data.step);
-    if (data.signatureMode === "text" || data.signatureMode === "image") {
-      setSignatureMode(data.signatureMode);
-    }
-    if (typeof data.videoScript === "string") setVideoScript(data.videoScript);
-
-    setDraftRestored(true);
-    // Auto-hide del banner dopo 6 secondi
-    setTimeout(() => setDraftRestored(false), 6000);
-    // Abbassiamo il guard al prossimo tick: a quel punto persist può salvare
-    // legittimamente lo stato post-restore.
-    setTimeout(() => {
-      restoringRef.current = false;
-    }, 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Salva ad ogni cambio (debounce 300ms su input, immediato su state React)
   useEffect(() => {
     const form = formRef.current;
     if (!form) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
     function persist() {
-      // Guard: durante il restore non scriviamo (eviteremmo di sovrascrivere
-      // un draft buono con uno snapshot in cui i values sono ancora vuoti).
-      if (restoringRef.current) return;
       const formFields: Record<string, string> = {};
       for (const el of Array.from(form!.elements)) {
         const input = el as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -355,7 +318,7 @@ export default function OrderForm() {
     }
     form.addEventListener("input", handler);
     form.addEventListener("change", handler);
-    persist(); // snapshot subito quando cambia uno stato React (guarded)
+    persist(); // snapshot subito quando cambia uno stato React
     return () => {
       form.removeEventListener("input", handler);
       form.removeEventListener("change", handler);
@@ -515,29 +478,6 @@ export default function OrderForm() {
 
       <div className="grid gap-12 md:grid-cols-[2fr_1fr]">
         {/* ─── FORM PRINCIPALE ─────────────────────────── */}
-        {draftRestored && (
-          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-brass/30 bg-brass/5 p-4">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 flex-none text-brass">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-            <div className="text-sm text-bone">
-              <strong className="text-cream">Bentornato.</strong> Abbiamo
-              recuperato il brief che stavi compilando.
-              <span className="block text-xs text-mist mt-1">
-                I file caricati (foto, logo) devi ri-selezionarli — il browser
-                non li conserva.
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setDraftRestored(false)}
-              className="ml-auto flex-none text-xs text-mist hover:text-bone"
-              aria-label="Chiudi"
-            >
-              ✕
-            </button>
-          </div>
-        )}
         <form ref={formRef} id={FORM_ID} onSubmit={handleSubmit} className="space-y-16">
           {step === 1 ? (
             <>
@@ -589,20 +529,20 @@ export default function OrderForm() {
                 <div className="grid gap-5 md:grid-cols-2">
                   <div>
                     <label className="label">Nome *</label>
-                    <input name="firstName" type="text" required placeholder="Mario" className="input" autoComplete="given-name" />
+                    <input name="firstName" type="text" required placeholder="Mario" className="input" autoComplete="given-name" defaultValue={draftValues.firstName ?? ""} />
                   </div>
                   <div>
                     <label className="label">Cognome *</label>
-                    <input name="lastName" type="text" required placeholder="Rossi" className="input" autoComplete="family-name" />
+                    <input name="lastName" type="text" required placeholder="Rossi" className="input" autoComplete="family-name" defaultValue={draftValues.lastName ?? ""} />
                   </div>
                   <div>
                     <label className="label">Email *</label>
-                    <input name="email" type="email" required placeholder="tu@azienda.it" className="input" autoComplete="email" />
+                    <input name="email" type="email" required placeholder="tu@azienda.it" className="input" autoComplete="email" defaultValue={draftValues.email ?? ""} />
                     <p className="mt-2 text-xs text-mist">Conferma dell&apos;ordine e riferimenti.</p>
                   </div>
                   <div>
                     <label className="label">Nome azienda *</label>
-                    <input name="company" type="text" required placeholder="es. Studio Bianchi" className="input" />
+                    <input name="company" type="text" required placeholder="es. Studio Bianchi" className="input" defaultValue={draftValues.company ?? ""} />
                   </div>
                   <div className="md:col-span-2">
                     <label className="label flex items-baseline gap-2">
@@ -616,6 +556,7 @@ export default function OrderForm() {
                       placeholder="+39 333 1234567"
                       className="input"
                       autoComplete="tel"
+                      defaultValue={draftValues.phone ?? ""}
                     />
                     <div className="mt-2 rounded-lg border border-brass/30 bg-brass/5 p-3">
                       <p className="text-xs leading-relaxed text-bone">
@@ -629,7 +570,7 @@ export default function OrderForm() {
                   </div>
                   <div className="md:col-span-2">
                     <label className="label">Sito attuale (opz.)</label>
-                    <input name="website" type="url" placeholder="https://" className="input" autoComplete="url" />
+                    <input name="website" type="url" placeholder="https://" className="input" autoComplete="url" defaultValue={draftValues.website ?? ""} />
                   </div>
                 </div>
               </section>
@@ -653,23 +594,23 @@ export default function OrderForm() {
                   <div className="grid gap-5 md:grid-cols-3">
                     <div className="md:col-span-2">
                       <label className="label">Via</label>
-                      <input name="addressStreet" type="text" placeholder="es. Via Brera" className="input" autoComplete="address-line1" />
+                      <input name="addressStreet" type="text" placeholder="es. Via Brera" className="input" autoComplete="address-line1" defaultValue={draftValues.addressStreet ?? ""} />
                     </div>
                     <div>
                       <label className="label">N° civico</label>
-                      <input name="addressNumber" type="text" placeholder="12" className="input" />
+                      <input name="addressNumber" type="text" placeholder="12" className="input" defaultValue={draftValues.addressNumber ?? ""} />
                     </div>
                     <div>
                       <label className="label">CAP</label>
-                      <input name="addressCap" type="text" maxLength={5} pattern="\d{5}" placeholder="20121" className="input" autoComplete="postal-code" />
+                      <input name="addressCap" type="text" maxLength={5} pattern="\d{5}" placeholder="20121" className="input" autoComplete="postal-code" defaultValue={draftValues.addressCap ?? ""} />
                     </div>
                     <div className="md:col-span-1">
                       <label className="label">Città</label>
-                      <input name="addressCity" type="text" placeholder="Milano" className="input" autoComplete="address-level2" />
+                      <input name="addressCity" type="text" placeholder="Milano" className="input" autoComplete="address-level2" defaultValue={draftValues.addressCity ?? ""} />
                     </div>
                     <div>
                       <label className="label">Prov.</label>
-                      <input name="addressProvince" type="text" maxLength={2} pattern="[A-Za-z]{2}" placeholder="MI" className="input uppercase" />
+                      <input name="addressProvince" type="text" maxLength={2} pattern="[A-Za-z]{2}" placeholder="MI" className="input uppercase" defaultValue={draftValues.addressProvince ?? ""} />
                     </div>
                     <div className="md:col-span-3">
                       <label className="label">Orari di apertura (opz.)</label>
@@ -678,6 +619,7 @@ export default function OrderForm() {
                         rows={3}
                         placeholder={"Lun-Ven: 9:00 - 19:00\nSab: 9:00 - 13:00\nDom: chiuso"}
                         className="textarea font-mono text-xs"
+                        defaultValue={draftValues.openingHours ?? ""}
                       />
                       <p className="mt-2 text-xs text-mist">Aiuta i clienti a sapere quando contattarti. Finisce nel footer + FAQ.</p>
                     </div>
@@ -695,11 +637,11 @@ export default function OrderForm() {
                 <div className="grid gap-5 md:grid-cols-2">
                   <div>
                     <label className="label">Anni di esperienza (opz.)</label>
-                    <input name="yearsExperience" type="number" min={0} max={150} placeholder="es. 20" className="input" />
+                    <input name="yearsExperience" type="number" min={0} max={150} placeholder="es. 20" className="input" defaultValue={draftValues.yearsExperience ?? ""} />
                   </div>
                   <div>
                     <label className="label">Clienti / pazienti / progetti totali (opz.)</label>
-                    <input name="clientsServed" type="number" min={0} placeholder="es. 500" className="input" />
+                    <input name="clientsServed" type="number" min={0} placeholder="es. 500" className="input" defaultValue={draftValues.clientsServed ?? ""} />
                   </div>
                   <div className="md:col-span-2">
                     <label className="label">Certificazioni, qualifiche, iscrizioni albi (opz.)</label>
@@ -708,6 +650,7 @@ export default function OrderForm() {
                       rows={3}
                       placeholder="es. Iscritto Albo Odontoiatri MI n. 12345&#10;ISO 9001 dal 2018&#10;Laurea in Odontoiatria — Milano 2003"
                       className="textarea"
+                      defaultValue={draftValues.certifications ?? ""}
                     />
                   </div>
                 </div>
@@ -784,19 +727,19 @@ export default function OrderForm() {
                 <div className="grid gap-5 md:grid-cols-2">
                   <div>
                     <label className="label">Instagram</label>
-                    <input name="socialInstagram" type="url" placeholder="https://instagram.com/..." className="input" />
+                    <input name="socialInstagram" type="url" placeholder="https://instagram.com/..." className="input" defaultValue={draftValues.socialInstagram ?? ""} />
                   </div>
                   <div>
                     <label className="label">Facebook</label>
-                    <input name="socialFacebook" type="url" placeholder="https://facebook.com/..." className="input" />
+                    <input name="socialFacebook" type="url" placeholder="https://facebook.com/..." className="input" defaultValue={draftValues.socialFacebook ?? ""} />
                   </div>
                   <div>
                     <label className="label">LinkedIn</label>
-                    <input name="socialLinkedin" type="url" placeholder="https://linkedin.com/..." className="input" />
+                    <input name="socialLinkedin" type="url" placeholder="https://linkedin.com/..." className="input" defaultValue={draftValues.socialLinkedin ?? ""} />
                   </div>
                   <div>
                     <label className="label">TikTok</label>
-                    <input name="socialTiktok" type="url" placeholder="https://tiktok.com/@..." className="input" />
+                    <input name="socialTiktok" type="url" placeholder="https://tiktok.com/@..." className="input" defaultValue={draftValues.socialTiktok ?? ""} />
                   </div>
                 </div>
               </section>
@@ -813,6 +756,7 @@ export default function OrderForm() {
                       required
                       placeholder="es. Ristorante stellato, Studio dentistico, SaaS B2B..."
                       className="input"
+                      defaultValue={draftValues.sector ?? ""}
                     />
                   </div>
                   <div>
@@ -823,6 +767,7 @@ export default function OrderForm() {
                       rows={2}
                       placeholder="Chi è il tuo cliente tipo? Età, professione, esigenze..."
                       className="textarea"
+                      defaultValue={draftValues.targetAudience ?? ""}
                     />
                   </div>
                   <div>
@@ -832,13 +777,14 @@ export default function OrderForm() {
                       rows={2}
                       placeholder="Qual è il valore che offri e che la concorrenza non offre?"
                       className="textarea"
+                      defaultValue={draftValues.uniqueSellingProposition ?? ""}
                     />
                     <p className="mt-2 text-xs text-mist">Se non sai cosa scrivere lascia vuoto, lo deduciamo noi dal settore + target.</p>
                   </div>
                   <div className="grid gap-5 md:grid-cols-2">
                     <div>
                       <label className="label">Tono di voce *</label>
-                      <select name="toneOfVoice" required defaultValue="professional" className="input">
+                      <select name="toneOfVoice" required defaultValue={draftValues.toneOfVoice ?? "professional"} className="input">
                         {TONE_OPTIONS.map((o) => (
                           <option key={o.value} value={o.value} className="bg-obsidian">{o.label}</option>
                         ))}
@@ -851,6 +797,7 @@ export default function OrderForm() {
                         type="text"
                         placeholder="es. nero + oro, oppure HEX (#000, #d4af37)"
                         className="input"
+                        defaultValue={draftValues.preferredColors ?? ""}
                       />
                     </div>
                   </div>
@@ -861,6 +808,7 @@ export default function OrderForm() {
                       rows={3}
                       placeholder="Testimonianze, prezzi, FAQ specifiche..."
                       className="textarea"
+                      defaultValue={draftValues.contentNotes ?? ""}
                     />
                   </div>
                   <div>
@@ -870,6 +818,7 @@ export default function OrderForm() {
                       rows={2}
                       placeholder="es. evitare la parola &ldquo;low cost&rdquo;, non parlare di promozioni, niente toni aggressivi..."
                       className="textarea"
+                      defaultValue={draftValues.avoidInCopy ?? ""}
                     />
                     <p className="mt-2 text-xs text-mist">Aiutaci a non andare in direzioni sbagliate.</p>
                   </div>
