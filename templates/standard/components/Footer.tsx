@@ -30,6 +30,13 @@ export function Footer({ brandName }: { brandName: string }) {
           </svg>
           Powered by <span className="text-accent">PowerAgency</span>
         </a>
+        <nav className="flex flex-wrap items-center justify-center gap-4 text-[11px] uppercase tracking-widest opacity-80">
+          <a href="/legal" className="hover:opacity-100 hover:text-accent transition-colors">Note legali</a>
+          <span aria-hidden className="opacity-40">·</span>
+          <a href="/privacy" className="hover:opacity-100 hover:text-accent transition-colors">Privacy</a>
+          <span aria-hidden className="opacity-40">·</span>
+          <a href="/cookies" className="hover:opacity-100 hover:text-accent transition-colors">Cookie policy</a>
+        </nav>
         <span className="opacity-70 text-xs text-center">
           © {new Date().getFullYear()} {brandName}. Tutti i diritti riservati.
         </span>

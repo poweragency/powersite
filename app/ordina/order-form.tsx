@@ -1080,9 +1080,94 @@ export default function OrderForm() {
                 </div>
               </section>
 
-              {/* ─── VII. IMMAGINI ────────────────────── */}
+              {/* ─── VII. DATI LEGALI ────────────────── */}
               <section>
-                <SectionHeader n="VII" title="Le tue foto" hint={`${images.length}/30`} />
+                <SectionHeader n="VII" title="Dati legali azienda" hint="opz. ma necessari per pubblicare" />
+                <p className="mb-5 text-xs leading-relaxed text-mist">
+                  Servono per generare automaticamente le pagine{" "}
+                  <strong className="text-bone">Note legali</strong>,{" "}
+                  <strong className="text-bone">Privacy</strong> e{" "}
+                  <strong className="text-bone">Cookie policy</strong> del tuo
+                  sito (obbligatorie per legge in Italia — D.lgs 70/2003).
+                  Puoi anche inviarceli via WhatsApp dopo il brief.
+                </p>
+                <div className="grid gap-5 md:grid-cols-2">
+                  <div className="md:col-span-2">
+                    <label className="label">Ragione sociale completa</label>
+                    <input
+                      name="legalCompanyName"
+                      type="text"
+                      maxLength={200}
+                      placeholder="es. Studio Bianchi S.r.l. / Mario Rossi Ditta Individuale"
+                      className="input"
+                      defaultValue={draftValues.legalCompanyName ?? ""}
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Partita IVA</label>
+                    <input
+                      name="legalVatNumber"
+                      type="text"
+                      maxLength={11}
+                      pattern="\d{11}"
+                      placeholder="01234567890"
+                      className="input"
+                      defaultValue={draftValues.legalVatNumber ?? ""}
+                      title="P.IVA: 11 cifre senza spazi"
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Codice Fiscale</label>
+                    <input
+                      name="legalFiscalCode"
+                      type="text"
+                      maxLength={16}
+                      placeholder="RSSMRA80A01F205Z (o uguale a P.IVA)"
+                      className="input uppercase"
+                      defaultValue={draftValues.legalFiscalCode ?? ""}
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Iscrizione REA</label>
+                    <input
+                      name="legalRea"
+                      type="text"
+                      maxLength={50}
+                      placeholder="es. MI-1234567"
+                      className="input"
+                      defaultValue={draftValues.legalRea ?? ""}
+                      title="Formato: SIGLA_PROVINCIA-NUMERO (es. MI-1234567)"
+                    />
+                  </div>
+                  <div>
+                    <label className="label">PEC</label>
+                    <input
+                      name="legalPec"
+                      type="email"
+                      maxLength={200}
+                      placeholder="azienda@pec.it"
+                      className="input"
+                      defaultValue={draftValues.legalPec ?? ""}
+                      title="Email PEC obbligatoria per imprese italiane"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="label">Capitale sociale (opz., solo SRL/SPA)</label>
+                    <input
+                      name="legalShareCapital"
+                      type="text"
+                      maxLength={50}
+                      placeholder='es. "10.000 € i.v." (interamente versato)'
+                      className="input"
+                      defaultValue={draftValues.legalShareCapital ?? ""}
+                    />
+                  </div>
+                </div>
+              </section>
+
+              {/* ─── VIII. IMMAGINI ────────────────────── */}
+              <section>
+                <SectionHeader n="VIII" title="Le tue foto" hint={`${images.length}/30`} />
                 <p className="mb-5 text-sm text-mist">
                   Solo le tue foto. Niente stock photography, niente archivio.
                   Max 30 file, 10MB l&apos;uno.

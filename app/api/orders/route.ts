@@ -64,6 +64,14 @@ export async function POST(req: NextRequest) {
       socialLinkedin: form.get("socialLinkedin")?.toString() || undefined,
       socialTiktok: form.get("socialTiktok")?.toString() || undefined,
 
+      // Dati legali (footer GDPR + pagine /legal/privacy/cookies del sito)
+      legalCompanyName: form.get("legalCompanyName")?.toString() || undefined,
+      legalVatNumber: form.get("legalVatNumber")?.toString().replace(/\D/g, "") || undefined,
+      legalFiscalCode: form.get("legalFiscalCode")?.toString().toUpperCase() || undefined,
+      legalRea: form.get("legalRea")?.toString() || undefined,
+      legalPec: form.get("legalPec")?.toString() || undefined,
+      legalShareCapital: form.get("legalShareCapital")?.toString() || undefined,
+
       tier: form.get("tier")?.toString() ?? "standard",
       addons: JSON.parse(form.get("addons")?.toString() || "[]"),
       forceAllImages: form.get("forceAllImages")?.toString() === "true",
@@ -177,6 +185,13 @@ export async function POST(req: NextRequest) {
       socialFacebook: data.socialFacebook || undefined,
       socialLinkedin: data.socialLinkedin || undefined,
       socialTiktok: data.socialTiktok || undefined,
+
+      legalCompanyName: data.legalCompanyName || undefined,
+      legalVatNumber: data.legalVatNumber || undefined,
+      legalFiscalCode: data.legalFiscalCode || undefined,
+      legalRea: data.legalRea || undefined,
+      legalPec: data.legalPec || undefined,
+      legalShareCapital: data.legalShareCapital || undefined,
 
       logoBlobUrl,
 

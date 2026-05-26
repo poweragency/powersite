@@ -106,6 +106,16 @@ export interface OrderPayload {
   // "logo_design" per farselo fare. Mutually exclusive lato form.
   logoBlobUrl?: string;
 
+  // Dati legali aziendali (per pagine /legal /privacy /cookies generate
+  // automaticamente nel sito cliente). Tutti opzionali nel form ma
+  // necessari per pubblicazione GDPR-compliant.
+  legalCompanyName?: string;
+  legalVatNumber?: string;
+  legalFiscalCode?: string;
+  legalRea?: string;
+  legalPec?: string;
+  legalShareCapital?: string;
+
   // Pacchetto
   tier: Tier;
   addons: AddonKey[];

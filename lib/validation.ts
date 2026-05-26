@@ -43,6 +43,14 @@ export const orderIntakeSchema = z.object({
   socialLinkedin: z.string().url().max(200).optional().or(z.literal("")),
   socialTiktok: z.string().url().max(200).optional().or(z.literal("")),
 
+  // Dati legali (tutti opzionali; necessari per footer GDPR)
+  legalCompanyName: z.string().max(200).optional(),
+  legalVatNumber: z.string().regex(/^\d{11}$/, "P.IVA non valida (11 cifre)").optional().or(z.literal("")),
+  legalFiscalCode: z.string().max(16).optional(),
+  legalRea: z.string().max(50).optional(),
+  legalPec: z.string().email("PEC non valida").optional().or(z.literal("")),
+  legalShareCapital: z.string().max(50).optional(),
+
   // Pacchetto
   tier: z.enum(["standard", "premium", "business"]),
   addons: z.array(z.enum([

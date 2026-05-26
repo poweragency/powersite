@@ -84,6 +84,14 @@ export async function insertCrmLead(args: InsertCrmLeadArgs): Promise<InsertCrmL
     social_linkedin: order.socialLinkedin || null,
     social_tiktok: order.socialTiktok || null,
 
+    // Dati legali (footer + pagine legal del sito cliente)
+    legal_company_name: order.legalCompanyName || null,
+    legal_vat_number: order.legalVatNumber || null,
+    legal_fiscal_code: order.legalFiscalCode || null,
+    legal_rea: order.legalRea || null,
+    legal_pec: order.legalPec || null,
+    legal_share_capital: order.legalShareCapital || null,
+
     tier: order.tier,
     addons: order.addons,
     total_eur: order.totalEur,

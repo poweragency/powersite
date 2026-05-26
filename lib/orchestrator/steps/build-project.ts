@@ -79,10 +79,36 @@ export async function buildProject(
     },
   });
 
-  // 3. Sovrascrivi content.json
+  // 3. Sovrascrivi content.json — arricchito con dati legali del cliente
+  //    per generare /legal /privacy /cookies del sito automaticamente.
+  const sedeLegale = order.worksRemotely
+    ? null
+    : [order.addressStreet, order.addressNumber, order.addressCap, order.addressCity, order.addressProvince]
+        .filter(Boolean)
+        .join(" ")
+        .trim() || null;
+
+  const enrichedContent = {
+    ...(content as Record<string, unknown>),
+    legal: {
+      companyName: order.legalCompanyName || order.company,
+      vatNumber: order.legalVatNumber ?? null,
+      fiscalCode: order.legalFiscalCode ?? null,
+      rea: order.legalRea ?? null,
+      pec: order.legalPec ?? null,
+      shareCapital: order.legalShareCapital ?? null,
+      sedeLegale,
+      email: order.email,
+      phone: order.phone,
+      hasContactForm:
+        order.addons.includes("contact_form_integration") ||
+        order.addons.includes("contact_form_bespoke"),
+    },
+  };
+
   await writeFile(
     path.join(outDir, "content.json"),
-    JSON.stringify(content, null, 2),
+    JSON.stringify(enrichedContent, null, 2),
     "utf-8",
   );
 

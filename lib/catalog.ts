@@ -13,7 +13,7 @@ export const TIERS: TierSpec[] = [
     name: "Standard",
     priceEur: 397,
     priceEurOriginal: 549,
-    description: "Sito essenziale ad alta conversione. Consegna in 48h.",
+    description: "Sito essenziale ad alta conversione.",
     features: [
       "Sito a pagina unica con 6 sezioni",
       "Hero, sezione servizi, recensioni clienti, FAQ, contatti",
@@ -34,6 +34,7 @@ export const TIERS: TierSpec[] = [
     recommended: true,
     description: "Sito multi-pagina con identità più ricca e percorso narrativo studiato.",
     features: [
+      "Tutto quello che c'è nello Standard +",
       "Sito multi-pagina (Home, Servizi, Chi siamo, Contatti)",
       "Navigazione fluida con transizioni soft tra pagine",
       "Sezione metodo step-by-step + credenziali aziendali",
@@ -42,7 +43,6 @@ export const TIERS: TierSpec[] = [
       "Doppia CTA strategica per massimizzare conversione",
       "Typography premium (Fraunces serif) + spacing dilatato",
       "✓ Dominio + SSL INCLUSO",
-      "Tutto quello che c'è nello Standard +",
     ],
     templateRepo: "power-agency/template-premium",
   },

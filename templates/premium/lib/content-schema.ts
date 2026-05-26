@@ -39,9 +39,23 @@ export interface ImagesMeta {
   unused: string[];
 }
 
+export interface LegalContent {
+  companyName: string;
+  vatNumber: string | null;
+  fiscalCode: string | null;
+  rea: string | null;
+  pec: string | null;
+  shareCapital: string | null;
+  sedeLegale: string | null;
+  email: string;
+  phone: string;
+  hasContactForm: boolean;
+}
+
 export interface Content {
   meta: MetaContent;
   brand: BrandContent;
   sections: Section[];
   images: ImagesMeta;
+  legal?: LegalContent;
 }
