@@ -438,14 +438,16 @@ export default function OrderForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    console.log("[SUBMIT] handleSubmit triggered, step=", step);
 
     if (step !== 2) {
-      // Step 1 completato → vai a step 2 (validation HTML5 ha già verificato i required)
+      console.log("[SUBMIT] step != 2 → goToStep2");
       goToStep2();
       return;
     }
 
     if (!acceptedTerms) {
+      console.warn("[SUBMIT] acceptedTerms=false → blocked");
       setError("Devi accettare i termini per procedere.");
       return;
     }
@@ -465,24 +467,33 @@ export default function OrderForm() {
       formData.delete("videoScript");
     }
 
+    // DEBUG: stampa tutti i campi che mando al server
+    const debugFields: Record<string, string> = {};
+    for (const [k, v] of formData.entries()) {
+      debugFields[k] = v instanceof File ? `<file: ${v.name} ${v.size}b>` : String(v).slice(0, 60);
+    }
+    console.log("[SUBMIT] FormData →", debugFields);
+
     try {
+      console.log("[SUBMIT] fetch /api/orders…");
       const res = await fetch("/api/orders", { method: "POST", body: formData });
+      console.log("[SUBMIT] response status:", res.status);
       const data = await res.json();
+      console.log("[SUBMIT] response body:", data);
       if (!res.ok) throw new Error(data.error ?? "Errore nell'invio dell'ordine");
 
-      // Brief accettato dal server. NON cancelliamo qui il draft localStorage:
-      // se l'utente annulla il checkout Stripe e torna indietro deve poter
-      // ritrovare tutto compilato. La pulizia avviene su /grazie (mount
-      // della pagina di conferma = ordine effettivamente arrivato a buon fine).
-
       if (data.checkoutUrl) {
+        console.log("[SUBMIT] redirecting to checkoutUrl:", data.checkoutUrl);
         window.location.href = data.checkoutUrl;
       } else if (data.redirectUrl) {
+        console.log("[SUBMIT] router.push to:", data.redirectUrl);
         router.push(data.redirectUrl);
       } else {
+        console.log("[SUBMIT] fallback router.push to /grazie?nonce=", data.orderId);
         router.push(`/grazie?nonce=${data.orderId}`);
       }
     } catch (err) {
+      console.error("[SUBMIT] caught error:", err);
       setError(err instanceof Error ? err.message : "Errore sconosciuto");
       setSubmitting(false);
     }
@@ -496,6 +507,30 @@ export default function OrderForm() {
         onClose={() => setLegalDialog(null)}
         docKey={legalDialog ?? "termini"}
       />
+      {/* Banner errore overlay GROSSO e visibile, sopra tutto.
+          Si chiude con la X. Comparso sopra al viewport anche se sei
+          in fondo al form. */}
+      {error && (
+        <div className="fixed inset-x-0 top-4 z-[200] mx-auto flex max-w-2xl items-start gap-3 rounded-2xl border-2 border-flame bg-flame/95 px-5 py-4 shadow-2xl backdrop-blur-md">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 flex-none text-obsidian">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <div className="flex-1">
+            <div className="font-semibold text-obsidian">Errore durante l&apos;invio</div>
+            <div className="mt-1 text-sm text-obsidian/90">{error}</div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            aria-label="Chiudi"
+            className="flex-none text-obsidian/80 transition-colors hover:text-obsidian"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       {logoPreviewOpen && logoPreviewUrl && (
         <div
           role="dialog"
@@ -1379,9 +1414,22 @@ export default function OrderForm() {
                   </label>
 
                   <button
-                    type="submit"
-                    form={FORM_ID}
+                    type="button"
                     disabled={submitting || !acceptedTerms}
+                    onClick={() => {
+                      console.log("[BTN] Procedi click, formRef=", formRef.current);
+                      if (!formRef.current) {
+                        console.error("[BTN] form ref nullo!");
+                        setError("Errore interno: form non disponibile. Ricarica la pagina.");
+                        return;
+                      }
+                      try {
+                        formRef.current.requestSubmit();
+                      } catch (err) {
+                        console.error("[BTN] requestSubmit ha lanciato:", err);
+                        setError("Errore nell'invio. Apri la console (F12) e contattaci con lo screenshot.");
+                      }
+                    }}
                     className="btn-flame btn-lg w-full disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {submitting ? "Invio in corso..." : "Procedi al pagamento"}
