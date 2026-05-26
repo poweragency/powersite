@@ -7,6 +7,9 @@ import {
   markEventProcessed,
 } from "@/lib/blob";
 import { runPipeline } from "@/lib/orchestrator/pipeline";
+import { sendEmail } from "@/lib/email/send";
+import { orderConfirmation } from "@/lib/email/templates";
+import { TIERS } from "@/lib/catalog";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 min, serve pipeline + GitHub + Vercel + email
@@ -58,6 +61,22 @@ export async function POST(req: NextRequest) {
 
   try {
     const payload = await readManifest(manifestUrl);
+
+    // Mail conferma ordine — no-op se RESEND_API_KEY non è settata.
+    const tierName = TIERS.find((t) => t.key === payload.tier)?.name ?? payload.tier;
+    const totalEur = Number(session.metadata?.total_eur ?? 0);
+    sendEmail({
+      to: payload.email,
+      subject: `Ordine ricevuto — ${payload.company}`,
+      html: orderConfirmation({
+        firstName: payload.firstName || payload.company,
+        company: payload.company,
+        tier: tierName,
+        totalEur,
+        orderId: payload.nonce,
+      }),
+    }).catch((e) => console.warn("[stripe webhook] order confirmation email error:", e));
+
     const result = await runPipeline(payload);
 
     // Marker scritto DOPO il successo — se la pipeline fallisce

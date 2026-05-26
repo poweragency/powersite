@@ -5,6 +5,9 @@ import { calculateTotal } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
 import { uploadImage, uploadEntranceImage, uploadLogo, uploadManifest } from "@/lib/blob";
 import { stripe, buildLineItems } from "@/lib/stripe";
+import { sendEmail } from "@/lib/email/send";
+import { orderConfirmation } from "@/lib/email/templates";
+import { TIERS } from "@/lib/catalog";
 import type { OrderPayload } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -228,6 +231,21 @@ export async function POST(req: NextRequest) {
       // L'URL del manifest e il secret vanno catturati ora.
       const manifestUrl = manifest.url;
       const orchestrateSecret = secret;
+
+      // Mail conferma — no-op se RESEND_API_KEY non è settata.
+      const tierName = TIERS.find((t) => t.key === payload.tier)?.name ?? payload.tier;
+      sendEmail({
+        to: payload.email,
+        subject: `Ordine ricevuto — ${payload.company}`,
+        html: orderConfirmation({
+          firstName: payload.firstName || payload.company,
+          company: payload.company,
+          tier: tierName,
+          totalEur,
+          orderId: payload.nonce,
+        }),
+      }).catch((e) => console.warn("[/api/orders] order confirmation email error:", e));
+
       after(async () => {
         try {
           const res = await fetch(`${appUrl}/api/orchestrate`, {

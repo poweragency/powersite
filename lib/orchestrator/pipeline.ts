@@ -22,6 +22,7 @@ import { buildProject } from "./steps/build-project";
 import { createGithubRepo } from "./steps/create-github-repo";
 import { deployToVercel } from "./steps/deploy-vercel";
 import { insertCrmLead } from "./steps/insert-crm-lead";
+import { sendPreviewEmail } from "./steps/send-preview-email";
 import { cleanupOrderBlobs } from "@/lib/blob";
 
 export interface PipelineResult {
@@ -74,6 +75,12 @@ export async function runPipeline(order: OrderPayload): Promise<PipelineResult> 
     });
     console.log(
       `[pipeline:${order.nonce}] crm lead ${lead.ok ? `ok (${lead.leadId})` : "FAILED — vedi log"}`,
+    );
+
+    // 6.5 Mail anteprima (no-op finché RESEND_API_KEY non è settata)
+    const mail = await sendPreviewEmail({ order, previewUrl: deploy.url });
+    console.log(
+      `[pipeline:${order.nonce}] preview email ${mail.sent ? "sent" : `skipped (${mail.reason ?? "n/a"})`}`,
     );
 
     // 7. Cleanup

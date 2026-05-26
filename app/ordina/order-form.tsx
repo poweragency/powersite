@@ -486,16 +486,12 @@ export default function OrderForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    console.log("[SUBMIT] handleSubmit triggered, step=", step);
 
     if (step !== 2) {
-      // Validation custom telefono: HTML5 pattern già blocca, ma se per
-      // qualche motivo è passato (es. browser obsoleto) blocchiamo qui.
       const form = e.currentTarget;
       const phoneEl = form.elements.namedItem("phone") as HTMLInputElement | null;
       const phoneVal = phoneEl?.value.trim() ?? "";
       if (!/^\+\d[\d\s\-()]{7,}$/.test(phoneVal)) {
-        console.warn("[SUBMIT] phone invalido:", phoneVal);
         setError(
           "Il numero di telefono non è valido. Inserisci il prefisso internazionale (es. +39 333 1234567).",
         );
@@ -503,13 +499,11 @@ export default function OrderForm() {
         phoneEl?.scrollIntoView({ behavior: "smooth", block: "center" });
         return;
       }
-      console.log("[SUBMIT] step != 2 → goToStep2");
       goToStep2();
       return;
     }
 
     if (!acceptedTerms) {
-      console.warn("[SUBMIT] acceptedTerms=false → blocked");
       setError("Devi accettare i termini per procedere.");
       return;
     }
@@ -529,33 +523,19 @@ export default function OrderForm() {
       formData.delete("videoScript");
     }
 
-    // DEBUG: stampa tutti i campi che mando al server
-    const debugFields: Record<string, string> = {};
-    for (const [k, v] of formData.entries()) {
-      debugFields[k] = v instanceof File ? `<file: ${v.name} ${v.size}b>` : String(v).slice(0, 60);
-    }
-    console.log("[SUBMIT] FormData →", debugFields);
-
     try {
-      console.log("[SUBMIT] fetch /api/orders…");
       const res = await fetch("/api/orders", { method: "POST", body: formData });
-      console.log("[SUBMIT] response status:", res.status);
       const data = await res.json();
-      console.log("[SUBMIT] response body:", data);
       if (!res.ok) throw new Error(data.error ?? "Errore nell'invio dell'ordine");
 
       if (data.checkoutUrl) {
-        console.log("[SUBMIT] redirecting to checkoutUrl:", data.checkoutUrl);
         window.location.href = data.checkoutUrl;
       } else if (data.redirectUrl) {
-        console.log("[SUBMIT] router.push to:", data.redirectUrl);
         router.push(data.redirectUrl);
       } else {
-        console.log("[SUBMIT] fallback router.push to /grazie?nonce=", data.orderId);
         router.push(`/grazie?nonce=${data.orderId}`);
       }
     } catch (err) {
-      console.error("[SUBMIT] caught error:", err);
       setError(err instanceof Error ? err.message : "Errore sconosciuto");
       setSubmitting(false);
     }
@@ -1689,18 +1669,11 @@ export default function OrderForm() {
                     type="button"
                     disabled={submitting || !acceptedTerms}
                     onClick={() => {
-                      console.log("[BTN] Procedi click, formRef=", formRef.current);
                       if (!formRef.current) {
-                        console.error("[BTN] form ref nullo!");
                         setError("Errore interno: form non disponibile. Ricarica la pagina.");
                         return;
                       }
-                      try {
-                        formRef.current.requestSubmit();
-                      } catch (err) {
-                        console.error("[BTN] requestSubmit ha lanciato:", err);
-                        setError("Errore nell'invio. Apri la console (F12) e contattaci con lo screenshot.");
-                      }
+                      formRef.current.requestSubmit();
                     }}
                     className="btn-flame btn-lg w-full disabled:cursor-not-allowed disabled:opacity-50"
                   >
