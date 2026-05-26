@@ -35,6 +35,28 @@ body {
   html { scroll-behavior: auto; }
 }
 
+/* Scrollbar custom coerente con la palette del sito generato.
+   Usa --color-accent (thumb) + --color-primary (track). */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--color-accent) / 0.4) hsl(var(--color-primary) / 0.1);
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--color-primary) / 0.08);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--color-accent) / 0.35);
+  border-radius: 5px;
+  border: 2px solid hsl(var(--color-canvas));
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--color-accent) / 0.6);
+}
+
 h1, h2, h3 {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
