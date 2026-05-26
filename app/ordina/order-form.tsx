@@ -1198,7 +1198,7 @@ export default function OrderForm() {
                           <div className="mt-3 flex items-baseline gap-2">
                             <span className="display text-3xl font-bold tracking-tightest text-cream">{formatEur(t.priceEur)}</span>
                             {t.priceEurOriginal && t.priceEurOriginal > t.priceEur && (
-                              <span className="font-mono text-sm text-mist line-through decoration-flame/70 decoration-2">
+                              <span className="font-mono text-sm text-mist line-through decoration-flame/70 decoration-[1.5px]">
                                 {formatEur(t.priceEurOriginal)}
                               </span>
                             )}
@@ -1493,7 +1493,7 @@ export default function OrderForm() {
                           return (
                             <>
                               {orig && orig > (t?.priceEur ?? 0) && (
-                                <span className="font-mono text-sm font-semibold text-flame/90 line-through decoration-flame decoration-[2.5px]">
+                                <span className="font-mono text-sm font-semibold text-flame/90 line-through decoration-flame decoration-[1.5px]">
                                   {formatEur(orig)}
                                 </span>
                               )}
@@ -1515,7 +1515,7 @@ export default function OrderForm() {
                           <span className="text-xs text-mist">+ {addon.name}</span>
                           {isIncluded ? (
                             <span className="flex items-baseline gap-2">
-                              <span className="font-mono text-xs text-flame line-through decoration-flame decoration-2">
+                              <span className="font-mono text-xs text-flame line-through decoration-flame decoration-[1.5px]">
                                 {formatEur(addon.priceEur)}
                               </span>
                               <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-emerald-300">
@@ -1536,7 +1536,7 @@ export default function OrderForm() {
                     <span className="text-sm text-mist">Totale oggi</span>
                     <span className="flex items-baseline gap-3">
                       {originalTotal > total && (
-                        <span className="display text-2xl font-bold text-flame/85 line-through decoration-flame decoration-[3px]">
+                        <span className="display text-2xl font-bold text-flame/85 line-through decoration-flame decoration-[1.5px]">
                           {formatEur(originalTotal)}
                         </span>
                       )}
