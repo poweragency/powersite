@@ -1,6 +1,7 @@
 import content from "../content.json";
 import type { Content, Section } from "../lib/content-schema";
 import { BrandStyle } from "../components/BrandStyle";
+import { Nav } from "../components/Nav";
 import { Hero } from "../components/sections/Hero";
 import { Value } from "../components/sections/Value";
 import { Features } from "../components/sections/Features";
@@ -14,53 +15,93 @@ import { Footer } from "../components/Footer";
 
 const data = content as unknown as Content;
 
-function renderSection(section: Section, brandName: string, i: number) {
+/**
+ * Mapping tipo-sezione → ancora HTML usata dalla Nav per scroll.
+ * Le voci che non hanno una sezione corrispondente nel content vengono
+ * filtrate via — niente link rotti nella nav.
+ */
+const SECTION_ANCHORS: Record<Section["type"], { id: string; label: string }> = {
+  hero: { id: "hero", label: "Home" },
+  value: { id: "servizi", label: "Servizi" },
+  features: { id: "caratteristiche", label: "Caratteristiche" },
+  process: { id: "metodo", label: "Metodo" },
+  trust: { id: "credenziali", label: "Credenziali" },
+  "social-proof": { id: "recensioni", label: "Recensioni" },
+  cta: { id: "cta", label: "" },
+  faq: { id: "faq", label: "FAQ" },
+  contact: { id: "contatti", label: "Contatti" },
+};
+
+function buildNavLinks(sections: Section[]) {
+  const seen = new Set<string>();
+  const links: { label: string; href: string }[] = [];
+  for (const s of sections) {
+    const anchor = SECTION_ANCHORS[s.type];
+    if (!anchor || !anchor.label || seen.has(anchor.id)) continue;
+    seen.add(anchor.id);
+    links.push({ label: anchor.label, href: `#${anchor.id}` });
+  }
+  return links;
+}
+
+function sectionId(s: Section, index: number, sections: Section[]): string {
+  const anchor = SECTION_ANCHORS[s.type];
+  if (!anchor) return `section-${index}`;
+  // Se ci sono duplicati dello stesso tipo (es. 2x value), il secondo
+  // ha un id derivato per non collidere.
+  const firstOfType = sections.findIndex((x) => x.type === s.type);
+  return firstOfType === index ? anchor.id : `${anchor.id}-${index}`;
+}
+
+function renderSection(section: Section, brandName: string, i: number, all: Section[]) {
+  const id = sectionId(section, i, all);
+  const wrap = (node: React.ReactNode) => <div key={i} id={id} className="scroll-mt-20">{node}</div>;
   switch (section.type) {
     case "hero":
-      return (
+      return wrap(
         <Hero
-          key={i}
           brandName={brandName}
           headline={section.headline}
           subheadline={section.subheadline}
           ctaPrimary={section.ctaPrimary}
           ctaSecondary={section.ctaSecondary}
           image={section.image}
-        />
+        />,
       );
     case "value":
-      return <Value key={i} title={section.title} items={section.items} />;
+      return wrap(<Value title={section.title} items={section.items} />);
     case "features":
-      return <Features key={i} title={section.title} items={section.items} />;
+      return wrap(<Features title={section.title} items={section.items} />);
     case "process":
-      return <Process key={i} title={section.title} steps={section.steps} />;
+      return wrap(<Process title={section.title} steps={section.steps} />);
     case "trust":
-      return <Trust key={i} title={section.title} badges={section.badges} />;
+      return wrap(<Trust title={section.title} badges={section.badges} />);
     case "social-proof":
-      return <SocialProof key={i} title={section.title} testimonials={section.testimonials} />;
+      return wrap(<SocialProof title={section.title} testimonials={section.testimonials} />);
     case "cta":
-      return <CtaBlock key={i} title={section.title} body={section.body} ctaPrimary={section.ctaPrimary} />;
+      return wrap(<CtaBlock title={section.title} body={section.body} ctaPrimary={section.ctaPrimary} />);
     case "faq":
-      return <Faq key={i} title={section.title} items={section.items} />;
+      return wrap(<Faq title={section.title} items={section.items} />);
     case "contact":
-      return (
+      return wrap(
         <Contact
-          key={i}
           title={section.title}
           address={section.address}
           phone={section.phone}
           email={section.email}
-        />
+        />,
       );
   }
 }
 
 export default function HomePage() {
+  const navLinks = buildNavLinks(data.sections);
   return (
     <>
       <BrandStyle palette={data.brand.palette} />
-      <main>
-        {data.sections.map((s, i) => renderSection(s, data.brand.name, i))}
+      <Nav brandName={data.brand.name} links={navLinks} />
+      <main id="top">
+        {data.sections.map((s, i) => renderSection(s, data.brand.name, i, data.sections))}
       </main>
       <Footer brandName={data.brand.name} />
     </>

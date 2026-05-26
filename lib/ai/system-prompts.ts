@@ -76,11 +76,25 @@ const STANDARD_GUIDE = `## TIER: STANDARD — Landing essenziale, conversion-fir
 // di apertura prodotto a mano dal nostro studio (materializzato dopo come
 // folder _signature-video/ nella repo), non cambia la struttura del content.
 // ════════════════════════════════════════════════════════════════════════════
-const ADVANCED_GUIDE = `## TIER: ADVANCED (Premium / Signature) — Landing qualitativa, autorità + desiderio
+const ADVANCED_GUIDE = `## TIER: ADVANCED (Premium / Signature) — Sito MULTI-PAGINA qualitativo, autorità + desiderio
 
 **Filosofia**: il cliente sta valutando un acquisto importante. Il sito deve costruire AUTORITÀ (perché fidarsi) e DESIDERIO (perché vale la pena). Multi-touchpoint per portarlo a maturare la decisione.
 
-**Estensione**: 8-9 sezioni.
+**ARCHITETTURA MULTI-PAGINA** (differenza chiave vs Standard, che è single-page):
+A differenza dello Standard (tutto in una sola pagina con scroll), Premium/Signature
+ha **4 PAGINE NAVIGABILI** tramite navbar:
+- **/** (Home): \`hero\` + \`value\` (PERCHÉ NOI)
+- **/servizi**: \`process\` (IL METODO) + \`features\` (caratteristiche)
+- **/chi-siamo**: \`social-proof\` (testimonianze) + \`trust\` (credenziali)
+- **/contatti**: \`faq\` + \`cta\` (intermedia o finale) + \`contact\`
+
+Le sezioni vengono **smistate automaticamente** alla pagina corrispondente in base al \`type\`. NON devi specificare la pagina, il template lo fa da solo. Ma DEVI tenere presente che:
+- Ogni sezione deve **stare in piedi anche letta isolata** (è probabile che l'utente atterri direttamente su /servizi o /contatti via SEO/link).
+- Le **CTA primarie devono restare COERENTI tra pagine diverse** (stessa label, stesso \`href\` — es. tutte puntano a \`#contatti\` o \`/contatti\`).
+- Il \`hero\` resta SOLO nella home — non duplicarlo.
+- Su /contatti aggiungi UNA \`cta\` con label di conversione (es. "Prenota la visita") + il \`contact\` con info.
+
+**Estensione**: 8-9 sezioni TOTALI (distribuite sulle 4 pagine).
 
 **Ordine consigliato (struttura PREMIUM canonica)**:
   1. **hero** — headline forte + sub narrativa + 2 CTA (primaria + secondaria)

@@ -19,12 +19,30 @@
   --font-sans: "Inter", system-ui, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
 body {
   color: hsl(var(--color-ink));
   background: hsl(var(--color-canvas));
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   font-feature-settings: "ss01", "ss02";
+}
+
+/* Page transition: fade-in soft a ogni navigazione tra pagine.
+   Applicato a <main className="page-fade-in"> dentro SiteShell. */
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-fade-in {
+  animation: pageFadeIn 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .page-fade-in { animation: none; }
 }
 
 h1, h2, h3 {
