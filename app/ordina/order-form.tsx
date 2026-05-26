@@ -288,19 +288,24 @@ export default function OrderForm() {
 
   const formRef = useRef<HTMLFormElement>(null);
   const addonSectionRef = useRef<HTMLDivElement>(null);
+  const signatureSectionRef = useRef<HTMLDivElement>(null);
 
   /**
-   * Auto-scroll dolce verso la sezione Add-on quando l'utente clicca un
-   * pacchetto. Piccolo delay per dare a React il tempo di re-renderare
-   * (auto-attivazione di addon inclusi) prima di muovere il viewport.
+   * Auto-scroll dolce dopo click pacchetto:
+   *  - Signature (business): scrolla alla sezione 'Personalizzazione
+   *    Signature' (video di apertura) — passaggio cruciale che altrimenti
+   *    salterebbe se andasse dritto agli addon.
+   *  - Standard / Premium: scrolla agli addon (prossimo step logico).
+   * Piccolo delay per dare a React il tempo di renderare la nuova sezione
+   * (mounted condizionalmente) prima di muovere il viewport.
    */
   function chooseTier(t: Tier) {
     setTier(t);
-    if (typeof window !== "undefined") {
-      setTimeout(() => {
-        addonSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 250);
-    }
+    if (typeof window === "undefined") return;
+    setTimeout(() => {
+      const target = t === "business" ? signatureSectionRef.current : addonSectionRef.current;
+      target?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 250);
   }
 
   // Valori HTML inputs pre-compilati (uncontrolled + defaultValue idiomatico).
@@ -1230,7 +1235,7 @@ export default function OrderForm() {
 
                 {/* ─── Personalizzazione Signature ─── */}
                 {tier === "business" && (
-                  <div className="mt-6 space-y-5 rounded-2xl border border-brass/30 bg-brass/5 p-6">
+                  <div ref={signatureSectionRef} className="scroll-mt-24 mt-6 space-y-5 rounded-2xl border border-brass/30 bg-brass/5 p-6">
                     <header className="flex items-baseline gap-3">
                       <span className="font-display text-xl italic text-brass">✦</span>
                       <h3 className="display text-lg font-bold tracking-tighter text-cream">
