@@ -24,6 +24,11 @@ export interface TierSpec {
   key: Tier;
   name: string;
   priceEur: number;
+  /**
+   * Prezzo "originale" usato come ancoraggio visivo (barrato) accanto al
+   * priceEur reale — leva commerciale di scontistica percepita.
+   */
+  priceEurOriginal?: number;
   description: string;
   features: string[];
   /**
@@ -65,7 +70,7 @@ export interface OrderPayload {
 
   // Brief
   sector: string;
-  targetAudience: string;
+  targetAudience?: string;
   uniqueSellingProposition?: string;
   primaryCta?: string;
   secondaryCta?: string;

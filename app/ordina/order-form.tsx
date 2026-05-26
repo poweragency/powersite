@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ADDONS, TIERS, calculateTotal, getTier } from "@/lib/catalog";
+import { ADDONS, TIERS, calculateTotal, getTier, MONTHLY_MAINTENANCE_EUR } from "@/lib/catalog";
 import type { AddonKey, Tier } from "@/lib/types";
 import { cn, formatEur } from "@/lib/utils";
 import { ShowcaseModal } from "@/components/ShowcaseModal";
@@ -957,16 +957,16 @@ export default function OrderForm() {
                     />
                   </div>
                   <div>
-                    <label className="label">Target / cliente ideale *</label>
+                    <label className="label">Target / cliente ideale (opz.)</label>
                     <textarea
                       name="targetAudience"
-                      required
                       maxLength={500}
                       rows={2}
                       placeholder="Chi è il tuo cliente tipo? Età, professione, esigenze..."
                       className="textarea"
                       defaultValue={draftValues.targetAudience ?? ""}
                     />
+                    <p className="mt-2 text-xs text-mist">Se non sai cosa scrivere lascia vuoto, lo deduciamo noi dal settore.</p>
                   </div>
                   <div>
                     <label className="label">USP — Cosa ti rende unico (opz.)</label>
@@ -1154,7 +1154,14 @@ export default function OrderForm() {
                               </span>
                             )}
                           </div>
-                          <div className="display mt-3 text-3xl font-bold tracking-tightest text-cream">{formatEur(t.priceEur)}</div>
+                          <div className="mt-3 flex items-baseline gap-2">
+                            <span className="display text-3xl font-bold tracking-tightest text-cream">{formatEur(t.priceEur)}</span>
+                            {t.priceEurOriginal && t.priceEurOriginal > t.priceEur && (
+                              <span className="font-mono text-sm text-mist line-through decoration-flame/70 decoration-2">
+                                {formatEur(t.priceEurOriginal)}
+                              </span>
+                            )}
+                          </div>
                           <div className="mt-2 text-xs leading-relaxed text-mist">{t.description}</div>
                           <ul className="mt-4 space-y-1.5 border-t border-bone/5 pt-4">
                             {t.features.map((f, fi) => (
@@ -1429,8 +1436,21 @@ export default function OrderForm() {
                   <div className="space-y-3">
                     <div className="flex items-baseline justify-between">
                       <span className="text-sm text-bone">Pacchetto {TIERS.find((t) => t.key === tier)?.name}</span>
-                      <span className="font-mono text-sm text-cream">
-                        {formatEur(TIERS.find((t) => t.key === tier)?.priceEur ?? 0)}
+                      <span className="flex items-baseline gap-2">
+                        {(() => {
+                          const t = TIERS.find((x) => x.key === tier);
+                          const orig = t?.priceEurOriginal;
+                          return (
+                            <>
+                              {orig && orig > (t?.priceEur ?? 0) && (
+                                <span className="font-mono text-xs text-mist line-through decoration-flame/70 decoration-2">
+                                  {formatEur(orig)}
+                                </span>
+                              )}
+                              <span className="font-mono text-sm text-cream">{formatEur(t?.priceEur ?? 0)}</span>
+                            </>
+                          );
+                        })()}
                       </span>
                     </div>
                     {addons.length === 0 && (
@@ -1438,22 +1458,49 @@ export default function OrderForm() {
                     )}
                     {addons.map((k) => {
                       const addon = ADDONS.find((a) => a.key === k);
-                      return addon ? (
+                      if (!addon) return null;
+                      const isIncluded = tierIncludedAddons.has(k);
+                      return (
                         <div key={k} className="flex items-baseline justify-between">
                           <span className="text-xs text-mist">+ {addon.name}</span>
-                          <span className="font-mono text-xs text-bone">{formatEur(addon.priceEur)}</span>
+                          {isIncluded ? (
+                            <span className="flex items-baseline gap-2">
+                              <span className="font-mono text-xs text-flame line-through decoration-flame decoration-2">
+                                {formatEur(addon.priceEur)}
+                              </span>
+                              <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-emerald-300">
+                                Incluso
+                              </span>
+                            </span>
+                          ) : (
+                            <span className="font-mono text-xs text-bone">{formatEur(addon.priceEur)}</span>
+                          )}
                         </div>
-                      ) : null;
+                      );
                     })}
                   </div>
 
                   <div className="hairline my-5" />
 
                   <div className="flex items-baseline justify-between">
-                    <span className="text-sm text-mist">Totale</span>
+                    <span className="text-sm text-mist">Totale oggi</span>
                     <span className="display text-4xl font-bold tracking-tightest text-cream">{formatEur(total)}</span>
                   </div>
                   <p className="mt-1 text-right text-[10px] uppercase tracking-widest text-smoke">Operazione non soggetta a IVA</p>
+
+                  {/* Mantenimento mensile obbligatorio: hosting + dominio + supporto */}
+                  <div className="mt-5 rounded-xl border border-brass/20 bg-brass/5 p-4">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="text-xs font-semibold text-bone">+ Mantenimento</span>
+                      <span className="font-mono text-sm font-bold text-brass">{formatEur(MONTHLY_MAINTENANCE_EUR)}<span className="text-[10px] font-normal text-mist">/mese</span></span>
+                    </div>
+                    <p className="mt-2 text-[11px] leading-relaxed text-mist">
+                      Include <strong className="text-bone">hosting</strong>,
+                      mantenimento del <strong className="text-bone">dominio</strong> e
+                      risoluzione di eventuali <strong className="text-bone">problemi tecnici</strong> dal nostro lato.
+                      Si attiva al momento del go-live del sito.
+                    </p>
+                  </div>
 
                   <label className="mt-7 mb-5 flex items-start gap-3 text-xs text-mist cursor-pointer">
                     <input

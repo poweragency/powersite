@@ -62,7 +62,7 @@ function buildUserMessage(order: OrderPayload): string {
   const brief = {
     azienda: order.company,
     settore: order.sector,
-    target: order.targetAudience,
+    target: order.targetAudience ?? null,
     proposta_unica: order.uniqueSellingProposition ?? null,
     cta_primaria: order.primaryCta ?? null,
     cta_secondaria: order.secondaryCta ?? null,

@@ -1,10 +1,18 @@
 import type { AddonSpec, TierSpec } from "./types";
 
+/**
+ * Subscription mensile obbligatoria abbinata al pacchetto: copre
+ * hosting + mantenimento dominio + risoluzione problemi tecnici.
+ * Mostrata nel checkout come "+ X €/mese" sotto al totale upfront.
+ */
+export const MONTHLY_MAINTENANCE_EUR = 19;
+
 export const TIERS: TierSpec[] = [
   {
     key: "standard",
     name: "Standard",
     priceEur: 397,
+    priceEurOriginal: 549,
     description: "Sito essenziale ad alta conversione. Consegna in 48h.",
     features: [
       "Sito a pagina unica con 6 sezioni",
@@ -12,7 +20,8 @@ export const TIERS: TierSpec[] = [
       "Copywriting su misura, scritto a mano",
       "100% responsive su mobile, tablet e desktop",
       "Pulsanti diretti a telefono / email / WhatsApp",
-      "Hosting incluso (sottodominio Power Agency)",
+      "✓ Dominio + SSL INCLUSO (es. tuonegozio.it)",
+      "Hosting + mantenimento mensile inclusi",
       "Consegna in 48 ore lavorative",
     ],
     templateRepo: "power-agency/template-standard",
@@ -21,6 +30,7 @@ export const TIERS: TierSpec[] = [
     key: "premium",
     name: "Premium",
     priceEur: 697,
+    priceEurOriginal: 949,
     description: "Sito multi-pagina con identità più ricca e percorso narrativo studiato.",
     features: [
       "Sito multi-pagina (Home, Servizi, Chi siamo, Contatti)",
@@ -30,6 +40,7 @@ export const TIERS: TierSpec[] = [
       "FAQ multi-livello (obiezioni + processo + customizzazione)",
       "Doppia CTA strategica per massimizzare conversione",
       "Typography premium (Fraunces serif) + spacing dilatato",
+      "✓ Dominio + SSL INCLUSO",
       "Tutto quello che c'è nello Standard +",
     ],
     templateRepo: "power-agency/template-premium",
@@ -38,6 +49,7 @@ export const TIERS: TierSpec[] = [
     key: "business",
     name: "Signature",
     priceEur: 1297,
+    priceEurOriginal: 1797,
     description: "Esperienza cinematografica completa, con SEO completo (Google + Local + AI Search) incluso.",
     features: [
       "Tutto quello che c'è nel Premium +",
@@ -46,6 +58,7 @@ export const TIERS: TierSpec[] = [
       "✓ SEO completo INCLUSO (ottimizzazione Google/Bing)",
       "✓ Local SEO INCLUSO (Google Maps, ricerche \"vicino a me\")",
       "✓ AI Search Optimization INCLUSO (citabilità in ChatGPT, Perplexity)",
+      "✓ Dominio + SSL INCLUSO",
       "Loading screen branded",
       "Priorità in delivery e supporto post-vendita",
     ],
@@ -108,13 +121,9 @@ export const ADDONS: AddonSpec[] = [
     description: "Le persone possono prenotare un appuntamento o comprare qualcosa direttamente dal sito, pagando online in sicurezza. I soldi arrivano sul tuo conto.",
     icon: "ShoppingCart",
   },
-  {
-    key: "domain",
-    name: "Dominio + SSL",
-    priceEur: 67,
-    description: "Compriamo per te il nome del sito (es. tuonegozio.it) con email professionale (info@tuonegozio.it). Tutto incluso per il primo anno.",
-    icon: "AtSign",
-  },
+  // NOTA: l'addon "domain" è stato rimosso dalla lista visibile perché ora
+  // è INCLUSO di default in tutti i tier (vedi features). Il tipo AddonKey
+  // resta per backwards-compat con ordini esistenti.
   // ───────────────────────────────────────────────────────────────
   // Modulo Contatti — 2 varianti mutually exclusive.
   // Di default il sito NON ha un form: i visitatori contattano via
