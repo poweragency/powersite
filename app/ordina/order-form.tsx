@@ -287,6 +287,21 @@ export default function OrderForm() {
   }, [logoFile]);
 
   const formRef = useRef<HTMLFormElement>(null);
+  const addonSectionRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * Auto-scroll dolce verso la sezione Add-on quando l'utente clicca un
+   * pacchetto. Piccolo delay per dare a React il tempo di re-renderare
+   * (auto-attivazione di addon inclusi) prima di muovere il viewport.
+   */
+  function chooseTier(t: Tier) {
+    setTier(t);
+    if (typeof window !== "undefined") {
+      setTimeout(() => {
+        addonSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 250);
+    }
+  }
 
   // Valori HTML inputs pre-compilati (uncontrolled + defaultValue idiomatico).
   const draftValues: Record<string, string> =
@@ -604,20 +619,17 @@ export default function OrderForm() {
 
       <div
         className={cn(
-          "grid gap-12 md:items-start",
-          // Step 1: classico 2 colonne form + sidebar
-          // Step 2: 2 colonne in row 1 (header sx + sidebar dx),
-          //         poi row 2 con form pacchetto+addon FULL-WIDTH sotto
+          // Step 1: layout classico 2 colonne (form sx + sidebar dx sticky)
+          // Step 2: layout 100% stacked single column → header, pacchetti,
+          //         addon, riepilogo TUTTI full-width in verticale
           step === 1
-            ? "md:grid-cols-[2fr_1fr]"
-            : "md:grid-cols-[2fr_1fr] md:grid-rows-[auto_auto]",
+            ? "grid gap-12 md:grid-cols-[2fr_1fr] md:items-start"
+            : "space-y-12",
         )}
       >
-        {/* ─── HEADER step 2 — in row 1 col 1, affiancato alla sidebar.
-            Estratto fuori dal form così pacchetto+addon possono occupare
-            tutto il width orizzontale sotto. ─────────────────────────── */}
+        {/* ─── HEADER step 2 — full-width sopra a tutto ─────────────── */}
         {step === 2 && (
-          <header className="md:col-start-1 md:row-start-1">
+          <header className="text-center md:text-left">
             <button
               type="button"
               onClick={goToStep1}
@@ -635,7 +647,7 @@ export default function OrderForm() {
             <h1 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tightest text-cream md:text-5xl">
               Scegli il <span className="serif-italic">pacchetto.</span>
             </h1>
-            <p className="mt-5 max-w-xl text-pretty text-mist">
+            <p className="mt-5 mx-auto md:mx-0 max-w-2xl text-pretty text-mist">
               Scegli il pacchetto migliore per te e seleziona gli Extra
               di cui hai bisogno.
             </p>
@@ -643,12 +655,7 @@ export default function OrderForm() {
         )}
 
         {/* ─── FORM PRINCIPALE ─────────────────────────── */}
-        <form
-          ref={formRef}
-          id={FORM_ID}
-          onSubmit={handleSubmit}
-          className={step === 2 ? "md:col-span-2 md:col-start-1 md:row-start-2" : undefined}
-        >
+        <form ref={formRef} id={FORM_ID} onSubmit={handleSubmit}>
           {/*
             STEP 1 e STEP 2 sono ENTRAMBI sempre nel DOM, alternati via CSS hidden.
             Motivo critico: se uno dei due viene rimosso dal DOM (es. con un ternary
@@ -1170,7 +1177,7 @@ export default function OrderForm() {
                         )}
                         <button
                           type="button"
-                          onClick={() => setTier(t.key)}
+                          onClick={() => chooseTier(t.key)}
                           className="block w-full p-5 text-left"
                         >
                           <div className="flex items-center justify-between">
@@ -1352,7 +1359,9 @@ export default function OrderForm() {
 
               {/* ─── II. ADDONS ───────────────────────── */}
               <section>
-                <SectionHeader n="II" title="Add-on (opzionali)" hint={`${addons.length} selezionati`} />
+                <div ref={addonSectionRef} className="scroll-mt-24">
+                  <SectionHeader n="II" title="Add-on (opzionali)" hint={`${addons.length} selezionati`} />
+                </div>
                 <div className="grid gap-3 md:grid-cols-3">
                   {ADDONS.map((a) => {
                     const isIncluded = tierIncludedAddons.has(a.key);
@@ -1418,7 +1427,14 @@ export default function OrderForm() {
         </form>
 
         {/* ─── SIDEBAR ─────────────────────────────── */}
-        <aside className="md:sticky md:top-24 md:self-start md:col-start-2 md:row-start-1">
+        <aside
+          className={cn(
+            step === 1
+              ? "md:sticky md:top-24 md:self-start"
+              // Step 2: full-width in fondo, max larghezza per leggibilità
+              : "mx-auto w-full max-w-2xl",
+          )}
+        >
           <div className="relative overflow-hidden rounded-2xl border border-brass/20 bg-coal p-8 shadow-[0_20px_60px_-20px_rgba(201,165,92,0.3)]">
             <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-brass/15 blur-3xl" />
             <div className="relative">
