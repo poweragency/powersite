@@ -268,9 +268,23 @@ export default function OrderForm() {
       : null,
   );
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+  const [logoPreviewOpen, setLogoPreviewOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [legalDialog, setLegalDialog] = useState<LegalDocKey | null>(null);
+
+  // Object URL del logo per preview/thumbnail. Si revoca al cambio file
+  // o al cleanup unmount per non leakkare memoria nel browser.
+  useEffect(() => {
+    if (!logoFile) {
+      setLogoPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(logoFile);
+    setLogoPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [logoFile]);
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -482,6 +496,33 @@ export default function OrderForm() {
         onClose={() => setLegalDialog(null)}
         docKey={legalDialog ?? "termini"}
       />
+      {logoPreviewOpen && logoPreviewUrl && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Anteprima logo"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-obsidian/90 p-6 backdrop-blur-sm"
+          onClick={() => setLogoPreviewOpen(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setLogoPreviewOpen(false)}
+            aria-label="Chiudi anteprima"
+            className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full border border-bone/20 bg-coal/80 text-mist backdrop-blur-md transition-all hover:border-brass hover:text-brass"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+          <img
+            src={logoPreviewUrl}
+            alt="Anteprima logo"
+            className="max-h-[85vh] max-w-[85vw] rounded-lg bg-canvas/5 object-contain p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
       <StepIndicator current={step} />
 
       <div className="grid gap-12 md:grid-cols-[2fr_1fr]">
@@ -701,27 +742,84 @@ export default function OrderForm() {
                 </div>
                 {logoChoice === "upload" && (
                   <div className="mt-5">
-                    <label className="flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed border-brass/30 bg-coal/40 px-4 py-3 transition-all hover:border-brass hover:bg-brass/10">
-                      <input
-                        type="file"
-                        name="logo"
-                        accept="image/png,image/jpeg,image/svg+xml,image/webp"
-                        onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
-                        className="sr-only"
-                      />
-                      <span className="grid h-10 w-10 place-items-center rounded border border-brass/40 bg-brass/15 text-brass">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="17 8 12 3 7 8" />
-                          <line x1="12" y1="3" x2="12" y2="15" />
-                        </svg>
-                      </span>
-                      <div className="flex-1">
-                        <div className="text-sm font-semibold text-cream">
-                          {logoFile ? logoFile.name : "Carica il logo"}
+                    {/* Input file SEMPRE nel DOM (anche quando già scelto)
+                        per essere serializzato dal FormData. Hidden via sr-only. */}
+                    <input
+                      type="file"
+                      name="logo"
+                      accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                      onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
+                      className="sr-only"
+                      id="logo-input"
+                    />
+
+                    {!logoFile ? (
+                      <label
+                        htmlFor="logo-input"
+                        className="flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed border-brass/30 bg-coal/40 px-4 py-3 transition-all hover:border-brass hover:bg-brass/10"
+                      >
+                        <span className="grid h-10 w-10 place-items-center rounded border border-brass/40 bg-brass/15 text-brass">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                          </svg>
+                        </span>
+                        <div className="flex-1">
+                          <div className="text-sm font-semibold text-cream">Carica il logo</div>
+                          <div className="text-[10px] text-mist">PNG, JPG, SVG, WEBP · max 5MB</div>
                         </div>
-                        <div className="text-[10px] text-mist">PNG, JPG, SVG, WEBP · max 5MB</div>
+                      </label>
+                    ) : (
+                      <div className="relative">
+                        {/* Tasto X overlay per rimuovere il file */}
+                        <button
+                          type="button"
+                          onClick={() => setLogoFile(null)}
+                          aria-label="Rimuovi logo"
+                          className="absolute -right-2 -top-2 z-10 grid h-7 w-7 place-items-center rounded-full border border-flame/40 bg-coal text-flame shadow-md transition-all hover:scale-110 hover:bg-flame hover:text-obsidian"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </button>
+
+                        {/* Card cliccabile: apre la preview in modal */}
+                        <button
+                          type="button"
+                          onClick={() => setLogoPreviewOpen(true)}
+                          className="flex w-full items-center gap-4 rounded-xl border border-brass/40 bg-brass/5 px-4 py-3 text-left transition-all hover:border-brass hover:bg-brass/10"
+                        >
+                          {logoPreviewUrl && (
+                            <span className="grid h-12 w-12 flex-none place-items-center overflow-hidden rounded border border-brass/40 bg-canvas/10">
+                              <img
+                                src={logoPreviewUrl}
+                                alt="Anteprima logo"
+                                className="max-h-12 max-w-12 object-contain"
+                              />
+                            </span>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate text-sm font-semibold text-cream" title={logoFile.name}>
+                              {logoFile.name}
+                            </div>
+                            <div className="text-[10px] text-mist">
+                              {(logoFile.size / 1024).toFixed(0)} KB · clicca per vedere in grande
+                            </div>
+                          </div>
+                          <span className="flex-none text-[10px] uppercase tracking-widest text-brass">
+                            Vedi
+                          </span>
+                        </button>
+
+                        <label
+                          htmlFor="logo-input"
+                          className="mt-2 inline-block cursor-pointer text-[10px] uppercase tracking-widest text-mist transition-colors hover:text-brass"
+                        >
+                          ↻ Carica un altro file
+                        </label>
                       </div>
-                    </label>
+                    )}
                   </div>
                 )}
               </section>
