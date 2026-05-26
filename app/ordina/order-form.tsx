@@ -527,9 +527,16 @@ export default function OrderForm() {
 
       <div className="grid gap-12 md:grid-cols-[2fr_1fr]">
         {/* ─── FORM PRINCIPALE ─────────────────────────── */}
-        <form ref={formRef} id={FORM_ID} onSubmit={handleSubmit} className="space-y-16">
-          {step === 1 ? (
-            <>
+        <form ref={formRef} id={FORM_ID} onSubmit={handleSubmit}>
+          {/*
+            STEP 1 e STEP 2 sono ENTRAMBI sempre nel DOM, alternati via CSS hidden.
+            Motivo critico: se uno dei due viene rimosso dal DOM (es. con un ternary
+            React), `new FormData(form)` perde i suoi input → il submit dello step 2
+            arriverebbe al server senza i dati dello step 1 (nome, email, ecc.) e
+            zod risponderebbe 400 silenzioso. Mantenendo entrambi in DOM, FormData
+            raccoglie tutto correttamente.
+          */}
+          <div className={step === 1 ? "space-y-16" : "hidden"}>
               <header>
                 <Link
                   href="/"
@@ -1005,9 +1012,8 @@ export default function OrderForm() {
                   Avrai ancora modo di rivedere e modificare il brief.
                 </p>
               </div>
-            </>
-          ) : (
-            <>
+          </div>
+          <div className={step === 2 ? "space-y-16" : "hidden"}>
               <header>
                 <button
                   type="button"
@@ -1255,8 +1261,7 @@ export default function OrderForm() {
                   })}
                 </div>
               </section>
-            </>
-          )}
+          </div>
 
           {error && (
             <div className="rounded-2xl border-2 border-flame bg-flame/10 p-4 text-sm font-medium text-flame-200">
