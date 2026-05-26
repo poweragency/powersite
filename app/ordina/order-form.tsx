@@ -634,20 +634,20 @@ export default function OrderForm() {
                 <div className="grid gap-5 md:grid-cols-2">
                   <div>
                     <label className="label">Nome *</label>
-                    <input name="firstName" type="text" required minLength={2} maxLength={60} placeholder="Mario" className="input" autoComplete="given-name" defaultValue={draftValues.firstName ?? ""} />
+                    <input name="firstName" type="text" required minLength={2} maxLength={60} placeholder="Mario" className="input" autoComplete="given-name" defaultValue={draftValues.firstName ?? ""} title="Nome obbligatorio (almeno 2 caratteri)" />
                   </div>
                   <div>
                     <label className="label">Cognome *</label>
-                    <input name="lastName" type="text" required minLength={2} maxLength={60} placeholder="Rossi" className="input" autoComplete="family-name" defaultValue={draftValues.lastName ?? ""} />
+                    <input name="lastName" type="text" required minLength={2} maxLength={60} placeholder="Rossi" className="input" autoComplete="family-name" defaultValue={draftValues.lastName ?? ""} title="Cognome obbligatorio (almeno 2 caratteri)" />
                   </div>
                   <div>
                     <label className="label">Email *</label>
-                    <input name="email" type="email" required placeholder="tu@azienda.it" className="input" autoComplete="email" defaultValue={draftValues.email ?? ""} />
+                    <input name="email" type="email" required placeholder="tu@azienda.it" className="input" autoComplete="email" defaultValue={draftValues.email ?? ""} title="Inserisci un'email valida (es. nome@dominio.it)" />
                     <p className="mt-2 text-xs text-mist">Conferma dell&apos;ordine e riferimenti.</p>
                   </div>
                   <div>
                     <label className="label">Nome azienda *</label>
-                    <input name="company" type="text" required placeholder="es. Studio Bianchi" className="input" defaultValue={draftValues.company ?? ""} />
+                    <input name="company" type="text" required minLength={2} maxLength={100} placeholder="es. Studio Bianchi" className="input" defaultValue={draftValues.company ?? ""} title="Nome azienda obbligatorio (almeno 2 caratteri)" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="label flex items-baseline gap-2">
@@ -681,7 +681,7 @@ export default function OrderForm() {
                   </div>
                   <div className="md:col-span-2">
                     <label className="label">Sito attuale (opz.)</label>
-                    <input name="website" type="url" placeholder="https://" className="input" autoComplete="url" defaultValue={draftValues.website ?? ""} />
+                    <input name="website" type="url" placeholder="https://" className="input" autoComplete="url" defaultValue={draftValues.website ?? ""} title="URL non valido. Deve iniziare con https:// (es. https://miosito.it)" />
                   </div>
                 </div>
               </section>
@@ -713,7 +713,7 @@ export default function OrderForm() {
                     </div>
                     <div>
                       <label className="label">CAP</label>
-                      <input name="addressCap" type="text" maxLength={5} pattern="\d{5}" placeholder="20121" className="input" autoComplete="postal-code" defaultValue={draftValues.addressCap ?? ""} />
+                      <input name="addressCap" type="text" maxLength={5} pattern="\d{5}" placeholder="20121" className="input" autoComplete="postal-code" defaultValue={draftValues.addressCap ?? ""} title="CAP non valido: devono essere 5 cifre (es. 20121)" />
                     </div>
                     <div className="md:col-span-1">
                       <label className="label">Città</label>
@@ -721,7 +721,7 @@ export default function OrderForm() {
                     </div>
                     <div>
                       <label className="label">Prov.</label>
-                      <input name="addressProvince" type="text" maxLength={2} pattern="[A-Za-z]{2}" placeholder="MI" className="input uppercase" defaultValue={draftValues.addressProvince ?? ""} />
+                      <input name="addressProvince" type="text" maxLength={2} pattern="[A-Za-z]{2}" placeholder="MI" className="input uppercase" defaultValue={draftValues.addressProvince ?? ""} title="Sigla provincia non valida: 2 lettere (es. MI, RM, TO)" />
                     </div>
                     <div className="md:col-span-3">
                       <label className="label">Orari di apertura (opz.)</label>
@@ -748,11 +748,11 @@ export default function OrderForm() {
                 <div className="grid gap-5 md:grid-cols-2">
                   <div>
                     <label className="label">Anni di esperienza (opz.)</label>
-                    <input name="yearsExperience" type="number" min={0} max={150} placeholder="es. 20" className="input" defaultValue={draftValues.yearsExperience ?? ""} />
+                    <input name="yearsExperience" type="number" min={0} max={150} placeholder="es. 20" className="input" defaultValue={draftValues.yearsExperience ?? ""} title="Numero intero tra 0 e 150" />
                   </div>
                   <div>
                     <label className="label">Clienti / pazienti / progetti totali (opz.)</label>
-                    <input name="clientsServed" type="number" min={0} placeholder="es. 500" className="input" defaultValue={draftValues.clientsServed ?? ""} />
+                    <input name="clientsServed" type="number" min={0} placeholder="es. 500" className="input" defaultValue={draftValues.clientsServed ?? ""} title="Numero intero positivo" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="label">Certificazioni, qualifiche, iscrizioni albi (opz.)</label>
@@ -895,19 +895,19 @@ export default function OrderForm() {
                 <div className="grid gap-5 md:grid-cols-2">
                   <div>
                     <label className="label">Instagram</label>
-                    <input name="socialInstagram" type="url" placeholder="https://instagram.com/..." className="input" defaultValue={draftValues.socialInstagram ?? ""} />
+                    <input name="socialInstagram" type="url" placeholder="https://instagram.com/..." className="input" defaultValue={draftValues.socialInstagram ?? ""} title="URL Instagram non valido (es. https://instagram.com/tuoaccount)" />
                   </div>
                   <div>
                     <label className="label">Facebook</label>
-                    <input name="socialFacebook" type="url" placeholder="https://facebook.com/..." className="input" defaultValue={draftValues.socialFacebook ?? ""} />
+                    <input name="socialFacebook" type="url" placeholder="https://facebook.com/..." className="input" defaultValue={draftValues.socialFacebook ?? ""} title="URL Facebook non valido (es. https://facebook.com/tuapagina)" />
                   </div>
                   <div>
                     <label className="label">LinkedIn</label>
-                    <input name="socialLinkedin" type="url" placeholder="https://linkedin.com/..." className="input" defaultValue={draftValues.socialLinkedin ?? ""} />
+                    <input name="socialLinkedin" type="url" placeholder="https://linkedin.com/..." className="input" defaultValue={draftValues.socialLinkedin ?? ""} title="URL LinkedIn non valido (es. https://linkedin.com/in/tuoprofilo)" />
                   </div>
                   <div>
                     <label className="label">TikTok</label>
-                    <input name="socialTiktok" type="url" placeholder="https://tiktok.com/@..." className="input" defaultValue={draftValues.socialTiktok ?? ""} />
+                    <input name="socialTiktok" type="url" placeholder="https://tiktok.com/@..." className="input" defaultValue={draftValues.socialTiktok ?? ""} title="URL TikTok non valido (es. https://tiktok.com/@tuoaccount)" />
                   </div>
                 </div>
               </section>

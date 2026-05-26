@@ -156,6 +156,24 @@ body {
   }
 }
 
+/* Visual feedback errore: bordo + ring rosso flame quando il campo è
+   stato compilato male DOPO che l'utente ha interagito. Usa :user-invalid
+   (non :invalid) per evitare di mostrare rosso al primo render dei campi
+   required vuoti. Il browser mostra anche un tooltip nativo col messaggio
+   dell'attributo `title` di ogni input al tentativo di submit. */
+.input:user-invalid,
+.textarea:user-invalid,
+select.input:user-invalid {
+  border-color: #FF6B35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.18);
+}
+.input:user-invalid:focus,
+.textarea:user-invalid:focus,
+select.input:user-invalid:focus {
+  border-color: #FF6B35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.35);
+}
+
 @layer utilities {
   .text-balance { text-wrap: balance; }
   .text-pretty { text-wrap: pretty; }
