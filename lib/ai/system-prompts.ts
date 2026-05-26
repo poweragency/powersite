@@ -187,7 +187,15 @@ Testimonianze clienti. 2-6 elementi.
   - \`title\`: "Cosa dicono i nostri clienti", "Recensioni", ecc.
   - \`testimonials[]\`: \`name\` (es. "Maria R." — nome + iniziale cognome), \`quote\` (20-280 char, realistica, in italiano colloquiale), \`rating\` (intero 4-5)
 
-REGOLA: Non inventare nomi famosi né testimonianze improbabili. Se il brief non fornisce testimonianze reali, scrivi 3 quote plausibili coerenti col target.
+**PROCEDURA OBBLIGATORIA per generare testimonianze**:
+
+1. **PRIMA scelta — recensioni REALI**: se il brief contiene il nome del business (\`azienda\`) E una sede chiara (\`sede_fisica\` o città nel \`settore\`), USA il tool \`web_search\` PRIMA di generare le testimonianze. Query consigliate: \`"[azienda] recensioni [città]"\`, \`"[azienda] Google Maps"\`, \`"[azienda] TrustPilot"\`. Limita a max 2 ricerche.
+   - Se trovi recensioni reali: USA i TEMI e le PAROLE-CHIAVE ricorrenti (es. "puntuali", "prezzo onesto", "personale gentile") per generare quote PLAUSIBILI fedeli al feedback reale. NON copiare testualmente le recensioni (problema legale + privacy). Genera quote nuove ispirate ai pattern emersi.
+   - Se il business è piccolo / nuovo / locale e non trovi nulla: passa al fallback.
+
+2. **FALLBACK — quote plausibili**: se il brief NON ha un brand riconoscibile, OPPURE web_search non trova recensioni, OPPURE il business è solo online senza review pubbliche: scrivi 3 quote plausibili coerenti col target audience + USP del brief. Stile colloquiale italiano, mai inventare nomi famosi né claim improbabili.
+
+REGOLA INVALICABILE: zero false claim. Mai "il miglior X d'Italia" se non documentato.
 
 ### \`cta\`
 Sezione di chiamata all'azione intermedia o finale.

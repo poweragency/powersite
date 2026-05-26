@@ -116,6 +116,17 @@ export async function generateLandingContent(
   const systemPrompt = systemPromptFor(order.tier);
   const userMessage = buildUserMessage(order);
 
+  // Tool web_search (server-side Anthropic) per cercare recensioni reali
+  // del business quando il brief NON le fornisce e il business sembra
+  // avere presenza online. Server tool = eseguito da Anthropic, risultati
+  // inclusi nella stessa response (no client loop).
+  // Limitato a 2 uses per call → controllo costi ($10/1000 searches).
+  const webSearchTool = {
+    type: "web_search_20250305",
+    name: "web_search",
+    max_uses: 2,
+  };
+
   let response: Anthropic.Message;
   try {
     response = await client.messages.create({
@@ -128,8 +139,12 @@ export async function generateLandingContent(
           cache_control: { type: "ephemeral" },
         },
       ],
-      tools: [renderLandingTool],
-      tool_choice: { type: "tool", name: RENDER_LANDING_TOOL_NAME },
+      // any = il modello DEVE usare almeno un tool ma sceglie quale. Cosi
+      // può prima fare web_search per recensioni (se serve), poi chiamare
+      // render_landing_content. Forzare 'tool' specifico bloccherebbe il
+      // web_search prima del render.
+      tools: [renderLandingTool, webSearchTool as unknown as Anthropic.Tool],
+      tool_choice: { type: "any" },
       messages: [{ role: "user", content: userMessage }],
     });
   } catch (err) {
