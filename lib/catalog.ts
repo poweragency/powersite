@@ -31,6 +31,7 @@ export const TIERS: TierSpec[] = [
     name: "Premium",
     priceEur: 697,
     priceEurOriginal: 949,
+    recommended: true,
     description: "Sito multi-pagina con identità più ricca e percorso narrativo studiato.",
     features: [
       "Sito multi-pagina (Home, Servizi, Chi siamo, Contatti)",
@@ -182,4 +183,19 @@ export function calculateTotal(tierKey: string, addonKeys: string[]): number {
 export function isAddonIncludedInTier(tierKey: string, addonKey: string): boolean {
   const tier = getTier(tierKey);
   return !!tier?.includedAddons?.includes(addonKey as never);
+}
+
+/**
+ * Totale "anchor" prima dello sconto: usa priceEurOriginal del tier se
+ * presente + somma di tutti i priceEur addon (anche inclusi, perché
+ * fanno parte del "valore originale" mostrato barrato).
+ */
+export function calculateOriginalTotal(tierKey: string, addonKeys: string[]): number {
+  const tier = getTier(tierKey);
+  if (!tier) return 0;
+  const tierAnchor = tier.priceEurOriginal ?? tier.priceEur;
+  const addonsTotal = addonKeys
+    .map((k) => getAddon(k)?.priceEur ?? 0)
+    .reduce((a, b) => a + b, 0);
+  return tierAnchor + addonsTotal;
 }

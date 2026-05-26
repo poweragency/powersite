@@ -37,6 +37,8 @@ export interface TierSpec {
    * regole di prompting vengono comunque applicate dalla pipeline AI.
    */
   includedAddons?: AddonKey[];
+  /** Tier consigliato → highlight visivo + badge "CONSIGLIATO" */
+  recommended?: boolean;
   templateRepo: string;
 }
 

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ADDONS, TIERS, calculateTotal, getTier, MONTHLY_MAINTENANCE_EUR } from "@/lib/catalog";
+import { ADDONS, TIERS, calculateTotal, calculateOriginalTotal, getTier, MONTHLY_MAINTENANCE_EUR } from "@/lib/catalog";
 import type { AddonKey, Tier } from "@/lib/types";
 import { cn, formatEur } from "@/lib/utils";
 import { ShowcaseModal } from "@/components/ShowcaseModal";
@@ -355,6 +355,7 @@ export default function OrderForm() {
   }
 
   const total = useMemo(() => calculateTotal(tier, addons), [tier, addons]);
+  const originalTotal = useMemo(() => calculateOriginalTotal(tier, addons), [tier, addons]);
 
   // Set degli addon inclusi automaticamente dal tier corrente — non
   // ri-addebitati nel totale + lockati nella griglia addon (non puoi
@@ -601,9 +602,53 @@ export default function OrderForm() {
       )}
       <StepIndicator current={step} />
 
-      <div className="grid gap-12 md:grid-cols-[2fr_1fr]">
+      <div
+        className={cn(
+          "grid gap-12 md:items-start",
+          // Step 1: classico 2 colonne form + sidebar
+          // Step 2: 2 colonne in row 1 (header sx + sidebar dx),
+          //         poi row 2 con form pacchetto+addon FULL-WIDTH sotto
+          step === 1
+            ? "md:grid-cols-[2fr_1fr]"
+            : "md:grid-cols-[2fr_1fr] md:grid-rows-[auto_auto]",
+        )}
+      >
+        {/* ─── HEADER step 2 — in row 1 col 1, affiancato alla sidebar.
+            Estratto fuori dal form così pacchetto+addon possono occupare
+            tutto il width orizzontale sotto. ─────────────────────────── */}
+        {step === 2 && (
+          <header className="md:col-start-1 md:row-start-1">
+            <button
+              type="button"
+              onClick={goToStep1}
+              className="group mb-10 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-mist transition-colors hover:text-brass"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:-translate-x-0.5">
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+              </svg>
+              Modifica brief
+            </button>
+            <div>
+              <span className="chip-brass">Step 2 di 2</span>
+            </div>
+            <h1 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tightest text-cream md:text-5xl">
+              Scegli il <span className="serif-italic">pacchetto.</span>
+            </h1>
+            <p className="mt-5 max-w-xl text-pretty text-mist">
+              Scegli il pacchetto migliore per te e seleziona gli Extra
+              di cui hai bisogno.
+            </p>
+          </header>
+        )}
+
         {/* ─── FORM PRINCIPALE ─────────────────────────── */}
-        <form ref={formRef} id={FORM_ID} onSubmit={handleSubmit}>
+        <form
+          ref={formRef}
+          id={FORM_ID}
+          onSubmit={handleSubmit}
+          className={step === 2 ? "md:col-span-2 md:col-start-1 md:row-start-2" : undefined}
+        >
           {/*
             STEP 1 e STEP 2 sono ENTRAMBI sempre nel DOM, alternati via CSS hidden.
             Motivo critico: se uno dei due viene rimosso dal DOM (es. con un ternary
@@ -1099,34 +1144,11 @@ export default function OrderForm() {
               </div>
           </div>
           <div className={step === 2 ? "space-y-16" : "hidden"}>
-              <header>
-                <button
-                  type="button"
-                  onClick={goToStep1}
-                  className="group mb-10 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-mist transition-colors hover:text-brass"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:-translate-x-0.5">
-                    <line x1="19" y1="12" x2="5" y2="12" />
-                    <polyline points="12 19 5 12 12 5" />
-                  </svg>
-                  Modifica brief
-                </button>
-                <div>
-                  <span className="chip-brass">Step 2 di 2</span>
-                </div>
-                <h1 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tightest text-cream md:text-5xl">
-                  Scegli il <span className="serif-italic">pacchetto.</span>
-                </h1>
-                <p className="mt-5 max-w-xl text-pretty text-mist">
-                  Pick il livello e aggiungi gli extra che ti servono.
-                  Poi procedi al pagamento sicuro.
-                </p>
-              </header>
 
               {/* ─── I. PACCHETTO ─────────────────────── */}
               <section>
                 <SectionHeader n="I" title="Pacchetto" />
-                <div className="grid gap-3 md:grid-cols-3">
+                <div className="grid gap-5 md:grid-cols-3">
                   {TIERS.map((t) => {
                     const active = tier === t.key;
                     return (
@@ -1136,9 +1158,16 @@ export default function OrderForm() {
                           "group relative rounded-2xl border transition-all",
                           active
                             ? "border-brass bg-brass/10 shadow-[0_0_30px_-10px_rgba(201,165,92,0.4)]"
-                            : "border-bone/10 bg-coal/60 hover:border-bone/30 hover:bg-coal",
+                            : t.recommended
+                              ? "border-brass/60 bg-brass/5 shadow-[0_0_24px_-10px_rgba(201,165,92,0.35)] hover:border-brass hover:bg-brass/10"
+                              : "border-bone/10 bg-coal/60 hover:border-bone/30 hover:bg-coal",
                         )}
                       >
+                        {t.recommended && !active && (
+                          <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-brass px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-obsidian shadow-md">
+                            ★ Consigliato
+                          </span>
+                        )}
                         <button
                           type="button"
                           onClick={() => setTier(t.key)}
@@ -1324,7 +1353,7 @@ export default function OrderForm() {
               {/* ─── II. ADDONS ───────────────────────── */}
               <section>
                 <SectionHeader n="II" title="Add-on (opzionali)" hint={`${addons.length} selezionati`} />
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="grid gap-3 md:grid-cols-3">
                   {ADDONS.map((a) => {
                     const isIncluded = tierIncludedAddons.has(a.key);
                     const active = addons.includes(a.key);
@@ -1389,7 +1418,7 @@ export default function OrderForm() {
         </form>
 
         {/* ─── SIDEBAR ─────────────────────────────── */}
-        <aside className="md:sticky md:top-24 md:self-start">
+        <aside className="md:sticky md:top-24 md:self-start md:col-start-2 md:row-start-1">
           <div className="relative overflow-hidden rounded-2xl border border-brass/20 bg-coal p-8 shadow-[0_20px_60px_-20px_rgba(201,165,92,0.3)]">
             <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-brass/15 blur-3xl" />
             <div className="relative">
@@ -1434,7 +1463,7 @@ export default function OrderForm() {
                   <div className="hairline my-5" />
 
                   <div className="space-y-3">
-                    <div className="flex items-baseline justify-between">
+                    <div className="flex items-baseline justify-between gap-3">
                       <span className="text-sm text-bone">Pacchetto {TIERS.find((t) => t.key === tier)?.name}</span>
                       <span className="flex items-baseline gap-2">
                         {(() => {
@@ -1443,11 +1472,11 @@ export default function OrderForm() {
                           return (
                             <>
                               {orig && orig > (t?.priceEur ?? 0) && (
-                                <span className="font-mono text-xs text-mist line-through decoration-flame/70 decoration-2">
+                                <span className="font-mono text-sm font-semibold text-flame/90 line-through decoration-flame decoration-[2.5px]">
                                   {formatEur(orig)}
                                 </span>
                               )}
-                              <span className="font-mono text-sm text-cream">{formatEur(t?.priceEur ?? 0)}</span>
+                              <span className="font-mono text-sm font-semibold text-cream">{formatEur(t?.priceEur ?? 0)}</span>
                             </>
                           );
                         })()}
@@ -1482,10 +1511,24 @@ export default function OrderForm() {
 
                   <div className="hairline my-5" />
 
-                  <div className="flex items-baseline justify-between">
+                  <div className="flex items-baseline justify-between gap-3">
                     <span className="text-sm text-mist">Totale oggi</span>
-                    <span className="display text-4xl font-bold tracking-tightest text-cream">{formatEur(total)}</span>
+                    <span className="flex items-baseline gap-3">
+                      {originalTotal > total && (
+                        <span className="display text-2xl font-bold text-flame/85 line-through decoration-flame decoration-[3px]">
+                          {formatEur(originalTotal)}
+                        </span>
+                      )}
+                      <span className="display text-4xl font-bold tracking-tightest text-cream">
+                        {formatEur(total)}
+                      </span>
+                    </span>
                   </div>
+                  {originalTotal > total && (
+                    <p className="mt-1 text-right text-[10px] font-bold uppercase tracking-widest text-flame">
+                      Risparmi {formatEur(originalTotal - total)}
+                    </p>
+                  )}
                   <p className="mt-1 text-right text-[10px] uppercase tracking-widest text-smoke">Operazione non soggetta a IVA</p>
 
                   {/* Mantenimento mensile obbligatorio: hosting + dominio + supporto */}
