@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { orderIntakeSchema } from "@/lib/validation";
 import { calculateTotal } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
@@ -206,20 +207,36 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Fire-and-forget: NON awaitiamo. Catch silenzia errori di rete iniziali.
-      // La pipeline poi gestisce i propri errori internamente.
-      fetch(`${appUrl}/api/orchestrate`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${secret}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ manifestUrl: manifest.url, nonce }),
-      }).catch((e) => {
-        console.error(`[/api/orders] orchestrate trigger fallito per ${nonce}:`, e);
+      // Su Vercel serverless le fetch fire-and-forget vengono CANCELLATE quando
+      // la function ritorna. Usiamo `after()` (Next.js 15) che garantisce
+      // l'esecuzione DOPO la response, mantenendo viva la function.
+      // L'URL del manifest e il secret vanno catturati ora.
+      const manifestUrl = manifest.url;
+      const orchestrateSecret = secret;
+      after(async () => {
+        try {
+          const res = await fetch(`${appUrl}/api/orchestrate`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${orchestrateSecret}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ manifestUrl, nonce }),
+          });
+          if (!res.ok) {
+            console.error(
+              `[/api/orders] orchestrate fallito ${res.status} per ${nonce}:`,
+              await res.text(),
+            );
+          } else {
+            console.log(`[/api/orders] orchestrate OK per ${nonce}`);
+          }
+        } catch (e) {
+          console.error(`[/api/orders] orchestrate fetch error per ${nonce}:`, e);
+        }
       });
 
-      console.log(`[/api/orders] BYPASS_STRIPE — pipeline triggered for ${nonce}`);
+      console.log(`[/api/orders] BYPASS_STRIPE — pipeline scheduled for ${nonce}`);
       return NextResponse.json({
         orderId: nonce,
         redirectUrl: `/grazie?nonce=${nonce}`,
