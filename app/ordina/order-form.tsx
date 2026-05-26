@@ -455,14 +455,6 @@ export default function OrderForm() {
         phoneEl?.scrollIntoView({ behavior: "smooth", block: "center" });
         return;
       }
-      const targetEl = form.elements.namedItem("targetAudience") as HTMLTextAreaElement | null;
-      if ((targetEl?.value.trim().length ?? 0) < 10) {
-        console.warn("[SUBMIT] target troppo corto");
-        setError("Descrivi il target / cliente ideale in almeno 10 caratteri.");
-        targetEl?.focus();
-        targetEl?.scrollIntoView({ behavior: "smooth", block: "center" });
-        return;
-      }
       console.log("[SUBMIT] step != 2 → goToStep2");
       goToStep2();
       return;
@@ -942,14 +934,12 @@ export default function OrderForm() {
                     <textarea
                       name="targetAudience"
                       required
-                      minLength={10}
                       maxLength={500}
                       rows={2}
                       placeholder="Chi è il tuo cliente tipo? Età, professione, esigenze..."
                       className="textarea"
                       defaultValue={draftValues.targetAudience ?? ""}
                     />
-                    <p className="mt-2 text-xs text-mist">Minimo 10 caratteri.</p>
                   </div>
                   <div>
                     <label className="label">USP — Cosa ti rende unico (opz.)</label>
