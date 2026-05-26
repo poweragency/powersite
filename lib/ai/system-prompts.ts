@@ -266,6 +266,49 @@ const COPY_PRINCIPLES = `## PRINCIPI DI COPYWRITING NON NEGOZIABILI
 
 9. **Italiano corretto**. Niente anglicismi inutili. "Prenota" non "Booka". "Contatti" non "Contact".`;
 
+const RESPONSIVE_AWARENESS = `## OTTIMIZZAZIONE UI/UX MOBILE + DESKTOP
+
+Il sito viene renderizzato responsive su tutte le risoluzioni — da iPhone SE (375px di larghezza) a desktop 4K. Il content che generi DEVE essere strutturato per leggersi bene SU TUTTI gli schermi. Su mobile lo spazio è prezioso, ogni byte di testo viene visto in modo amplificato.
+
+**Lunghezze ottimali (più stretti dei max tecnici dello schema):**
+
+- \`hero.headline\`: idealmente **40-80 char** (mobile: occupa 2-3 righe ottimali; oltre 100 char rischia 4-5 righe su iPhone SE che spinge la CTA fuori vista al primo paint).
+- \`hero.subheadline\`: **80-160 char** (oltre i 200 diventa muro di testo su mobile).
+- \`ctaPrimary.label\` / \`ctaSecondary.label\`: **2-4 parole**, MAI superare 30 char. Su mobile le label lunghe forzano i bottoni full-width verticali, rovinano il ritmo. "Prenota visita gratuita" OK; "Richiedi subito un preventivo personalizzato gratuito" NO.
+- \`value.items[].body\`: target **80-150 char** (sotto i 60 sembra povero, sopra i 200 occupa 4+ righe stacked su mobile).
+- \`features.items[].body\`: **60-130 char** (le card features sono più strette dei value su layout multi-colonna).
+- \`process.steps[].body\`: **70-140 char** (lo step deve leggersi in un colpo d'occhio).
+- \`trust.badges[].value\`: **MASSIMO 12 char** assoluto ("20+", "ISO 9001", "150+", "5.0★"). Niente "Più di venti anni" → "20+". Niente "Certificazione di qualità totale" → "ISO 9001".
+- \`trust.badges[].label\`: **2-5 parole** ("Anni di esperienza", "Clienti soddisfatti").
+- \`trust.badges[].detail\`: opzionale, max 100 char.
+- \`social-proof.testimonials[].quote\`: **80-220 char** ideali. Oltre 280 (max schema) il testo diventa un blocco e l'utente mobile smette di leggere.
+- \`social-proof.testimonials[].name\`: max 40 char ("Marco P., 48 anni" OK; "Marco Pellegrini, Amministratore Delegato di Studio Legale Pellegrini & Associati" → tronca a "Marco P., avvocato").
+- \`faq.items[].q\`: **40-100 char** (domanda che entra in 1-2 righe su mobile).
+- \`faq.items[].a\`: **100-280 char** ideali (max tecnico 400).
+- \`cta.title\`: **30-80 char** (titolo a forte impatto, una riga su desktop, 2 su mobile).
+- \`contact.address\`: format compatto "Via X 12, 20121 Milano (MI)" — niente paragrafi.
+
+**Quantità ottimali per sezione:**
+
+- \`value.items\`: 3 (Standard) / 4-5 (Premium) — oltre i 6 su mobile diventa scroll lunghissimo.
+- \`features.items\`: 3-5 ideali (mai 9). Più di 6 elementi stacked su mobile annoiano.
+- \`process.steps\`: 3-5 (4 è il numero perfetto per memorabilità).
+- \`trust.badges\`: 4 ideali (grid 2×2 su mobile pulita).
+- \`social-proof.testimonials\`: 3 (Standard) / 4-6 (Premium) — oltre i 6 stanca.
+- \`faq.items\`: 3 (Standard) / 5-7 (Premium).
+
+**Anti-pattern UX da evitare:**
+
+1. **Headline che non chiude in 1-2 righe su mobile** → spezza la promessa in due tempi (subheadline raccoglie il resto).
+2. **Liste con 8+ items** → l'utente mobile abbandona. Riduci a 3-5 essenziali.
+3. **Quote testimonianza che richiedono scroll DENTRO la card** → max 280 char, idealmente sotto i 220.
+4. **Numeri trust con unità lunghe** ("oltre 20 anni di esperienza" → "20+"). Il \`value\` del badge è SOLO il dato; il contesto va in \`label\`/\`detail\`.
+5. **CTA label che vanno a capo su mobile** → resta sotto 4 parole.
+6. **FAQ con risposte che embeddano liste markdown** → niente bullet inline (lo schema non li ha). Frasi corte separate.
+7. **Indirizzi con \\n o paragrafi** → 1 riga compatta.
+
+**Densità informativa**: ogni sezione deve dare un beneficio LEGGIBILE in <5 secondi di scroll. Se serve più tempo, dividi in due sezioni o riduci la copy.`;
+
 const IMAGE_RULES = `## GESTIONE IMMAGINI CLIENTE
 
 Riceverai nel messaggio user un campo \`imageManifest\` con la lista dei path delle immagini caricate dal cliente E un flag \`forceAllImages\`.
@@ -425,6 +468,8 @@ function tierPrompt(tier: Tier): string {
     TONE_GUIDE,
     "",
     COPY_PRINCIPLES,
+    "",
+    RESPONSIVE_AWARENESS,
     "",
     IMAGE_RULES,
     "",
