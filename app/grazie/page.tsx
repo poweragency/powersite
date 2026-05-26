@@ -43,8 +43,9 @@ export default async function GraziePage({
             <Reveal delay={400}>
               <p className="mx-auto mt-8 max-w-xl text-pretty text-lg leading-relaxed text-mist">
                 Il tuo brief è arrivato al nostro studio. Il nostro team è
-                già al lavoro sul progetto. Riceverai un&apos;email con il
-                link di anteprima <span className="text-bone">entro 48 ore</span>.
+                già al lavoro sul progetto. Verrai contattato direttamente{" "}
+                <span className="text-bone">su WhatsApp da uno dei nostri tecnici</span>{" "}
+                con il link di anteprima entro 48 ore.
               </p>
             </Reveal>
 
@@ -53,7 +54,7 @@ export default async function GraziePage({
                 {[
                   { n: "I", t: "Progettiamo", d: "Il nostro team disegna le sezioni, scrive il copy, sceglie la palette." },
                   { n: "II", t: "Costruiamo", d: "Sviluppiamo, testiamo, pubblichiamo sul dominio." },
-                  { n: "III", t: "Consegniamo", d: "Email con link di anteprima, in attesa della tua approvazione." },
+                  { n: "III", t: "Consegniamo", d: "Uno dei nostri tecnici ti contatta su WhatsApp col link di anteprima." },
                 ].map((s) => (
                   <div key={s.n} className="bg-coal/80 p-6 text-left backdrop-blur">
                     <span className="font-display text-2xl italic text-brass">{s.n}</span>

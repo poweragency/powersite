@@ -16,16 +16,6 @@ function dash(v: string | null | undefined): React.ReactNode {
   return <span className="italic opacity-60">[da inserire]</span>;
 }
 
-function Disclaimer() {
-  return (
-    <div className="mt-12 rounded-xl border border-accent/30 bg-accent/5 p-5 text-sm text-ink/80">
-      ⚠️ <strong>Documento generato automaticamente</strong> in base ai dati
-      forniti. Prima della pubblicazione definitiva è consigliato far validare
-      i contenuti da un consulente legale di tua fiducia.
-    </div>
-  );
-}
-
 const headingClass = "text-2xl font-bold text-primary mt-8 mb-3";
 const paraClass = "text-ink/80 leading-relaxed";
 
@@ -73,7 +63,6 @@ export function LegalBody({ legal, brandName }: { legal: LegalContent; brandName
         Titolare.
       </p>
 
-      <Disclaimer />
     </>
   );
 }
@@ -132,7 +121,6 @@ export function PrivacyBody({ legal, brandName }: { legal: LegalContent; brandNa
         (www.garanteprivacy.it).
       </p>
 
-      <Disclaimer />
     </>
   );
 }
@@ -169,7 +157,6 @@ export function CookiesBody({ legal, brandName }: { legal: LegalContent; brandNa
         Il titolare è <strong>{legal.companyName || brandName}</strong>.
       </p>
 
-      <Disclaimer />
     </>
   );
 }
