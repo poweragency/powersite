@@ -15,8 +15,9 @@ export default function OpenGraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 70,
-          background:
-            "radial-gradient(ellipse 800px 500px at 100% 0%, rgba(255,107,53,0.18) 0%, transparent 60%), radial-gradient(ellipse 600px 400px at 0% 100%, rgba(201,165,92,0.12) 0%, transparent 60%), #0C0A08",
+          backgroundColor: "#0C0A08",
+          backgroundImage:
+            "radial-gradient(ellipse 800px 500px at 100% 0%, rgba(255,107,53,0.18) 0%, transparent 60%), radial-gradient(ellipse 600px 400px at 0% 100%, rgba(201,165,92,0.12) 0%, transparent 60%)",
           color: "#EBE2D3",
           fontFamily: "serif",
         }}
