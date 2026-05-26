@@ -7,14 +7,8 @@ export function Footer() {
     <footer className="relative border-t border-bone/10 bg-coal">
       <div className="container-x py-10 md:py-12">
         <div className="grid gap-8 md:grid-cols-3 md:items-start md:gap-12">
-          <div className="flex flex-col items-start gap-4">
+          <div>
             <Logo />
-            <a
-              href="mailto:info@poweragency.it"
-              className="text-sm text-mist hover:text-bone"
-            >
-              info@poweragency.it
-            </a>
           </div>
 
           <div className="md:text-center">
