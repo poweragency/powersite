@@ -38,7 +38,7 @@ export const TIERS: TierSpec[] = [
     key: "business",
     name: "Signature",
     priceEur: 1297,
-    description: "Esperienza cinematografica completa, con SEO e Analytics inclusi.",
+    description: "Esperienza cinematografica completa, con SEO completo (Google + Local + AI Search) incluso.",
     features: [
       "Tutto quello che c'è nel Premium +",
       "Video di apertura cinematografico (porta che si apre, ingresso nel locale)",
@@ -46,15 +46,14 @@ export const TIERS: TierSpec[] = [
       "✓ SEO completo INCLUSO (ottimizzazione Google/Bing)",
       "✓ Local SEO INCLUSO (Google Maps, ricerche \"vicino a me\")",
       "✓ AI Search Optimization INCLUSO (citabilità in ChatGPT, Perplexity)",
-      "✓ Google Analytics + tracking conversioni INCLUSO",
       "Loading screen branded",
       "Priorità in delivery e supporto post-vendita",
     ],
-    // Signature include SEO + GEO + GAIO + Analytics: il prezzo è gia'
-    // nel pacchetto, i 4 addon corrispondenti sono auto-attivati nel
-    // form ma NON ri-addebitati. La pipeline AI riceve comunque gli
-    // addon nei keys → ADDON_GUIDES applicate normalmente.
-    includedAddons: ["seo", "geo", "gaio", "analytics"],
+    // Signature include SEO + GEO + GAIO: il prezzo è gia' nel pacchetto,
+    // i 3 addon corrispondenti sono auto-attivati nel form ma NON
+    // ri-addebitati. La pipeline AI riceve comunque gli addon nei keys
+    // → ADDON_GUIDES applicate normalmente.
+    includedAddons: ["seo", "geo", "gaio"],
     templateRepo: "power-agency/template-business",
   },
 ];
@@ -84,7 +83,7 @@ export const ADDONS: AddonSpec[] = [
   {
     key: "analytics",
     name: "Google Analytics + Tracking",
-    priceEur: 47,
+    priceEur: 87,
     description: "Installiamo un piccolo contatore invisibile sul sito. Tu vedi quante persone arrivano, da dove, e cosa guardano. Più i 'pixel' per fare pubblicità su Google e Instagram.",
     icon: "BarChart3",
   },
