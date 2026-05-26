@@ -26,6 +26,12 @@ export interface TierSpec {
   priceEur: number;
   description: string;
   features: string[];
+  /**
+   * Addon inclusi automaticamente in questo tier: il prezzo è già nel
+   * pacchetto (non vengono ri-addebitati in calculateTotal) ma le loro
+   * regole di prompting vengono comunque applicate dalla pipeline AI.
+   */
+  includedAddons?: AddonKey[];
   templateRepo: string;
 }
 

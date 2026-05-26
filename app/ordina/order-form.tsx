@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ADDONS, TIERS, calculateTotal } from "@/lib/catalog";
+import { ADDONS, TIERS, calculateTotal, getTier } from "@/lib/catalog";
 import type { AddonKey, Tier } from "@/lib/types";
 import { cn, formatEur } from "@/lib/utils";
 import { ShowcaseModal } from "@/components/ShowcaseModal";
@@ -356,7 +356,34 @@ export default function OrderForm() {
 
   const total = useMemo(() => calculateTotal(tier, addons), [tier, addons]);
 
+  // Set degli addon inclusi automaticamente dal tier corrente — non
+  // ri-addebitati nel totale + lockati nella griglia addon (non puoi
+  // disattivarli, sono parte del pacchetto).
+  const tierIncludedAddons = useMemo(
+    () => new Set<AddonKey>((getTier(tier)?.includedAddons ?? []) as AddonKey[]),
+    [tier],
+  );
+
+  // Quando l'utente cambia tier, auto-aggiungi gli addon inclusi al
+  // selezionato così l'UI è coerente (e la pipeline AI li riceve come
+  // attivi → ADDON_GUIDES applicate). Niente rimozione automatica:
+  // se l'utente cambia tier giù, gli ex-inclusi diventano normali addon
+  // attivi (l'utente può togliersi quelli che non vuole più).
+  useEffect(() => {
+    if (tierIncludedAddons.size === 0) return;
+    setAddons((curr) => {
+      const next = [...curr];
+      for (const k of tierIncludedAddons) {
+        if (!next.includes(k)) next.push(k);
+      }
+      return next;
+    });
+  }, [tierIncludedAddons]);
+
   function toggleAddon(key: AddonKey) {
+    // Gli addon inclusi nel tier non sono toggleabili (sono parte del pacchetto)
+    if (tierIncludedAddons.has(key)) return;
+
     // Mutual exclusivity per i 2 addon "Modulo contatti": cliccandone uno,
     // l'altro si deseleziona automaticamente (è UNA scelta tra due opzioni
     // di delivery, non due cose acquistabili insieme).
@@ -1129,6 +1156,16 @@ export default function OrderForm() {
                           </div>
                           <div className="display mt-3 text-3xl font-bold tracking-tightest text-cream">{formatEur(t.priceEur)}</div>
                           <div className="mt-2 text-xs leading-relaxed text-mist">{t.description}</div>
+                          <ul className="mt-4 space-y-1.5 border-t border-bone/5 pt-4">
+                            {t.features.map((f, fi) => (
+                              <li key={fi} className="flex items-start gap-2 text-[11px] leading-snug text-mist">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="mt-1 flex-none text-brass">
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                <span>{f}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </button>
                         <div className="border-t border-bone/5 px-5 py-3">
                           <button
@@ -1282,26 +1319,34 @@ export default function OrderForm() {
                 <SectionHeader n="II" title="Add-on (opzionali)" hint={`${addons.length} selezionati`} />
                 <div className="grid gap-3 md:grid-cols-2">
                   {ADDONS.map((a) => {
+                    const isIncluded = tierIncludedAddons.has(a.key);
                     const active = addons.includes(a.key);
                     return (
                       <button
                         type="button"
                         key={a.key}
                         onClick={() => toggleAddon(a.key)}
+                        disabled={isIncluded}
                         className={cn(
                           "flex items-start gap-3 rounded-xl border p-4 text-left transition-all",
-                          active
-                            ? "border-brass bg-brass/10"
-                            : "border-bone/10 bg-coal/60 hover:border-bone/30 hover:bg-coal",
+                          isIncluded
+                            ? "cursor-not-allowed border-emerald-500/40 bg-emerald-500/10"
+                            : active
+                              ? "border-brass bg-brass/10"
+                              : "border-bone/10 bg-coal/60 hover:border-bone/30 hover:bg-coal",
                         )}
                       >
                         <span
                           className={cn(
                             "mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded border",
-                            active ? "border-brass bg-brass text-obsidian" : "border-bone/30",
+                            isIncluded
+                              ? "border-emerald-500 bg-emerald-500 text-obsidian"
+                              : active
+                                ? "border-brass bg-brass text-obsidian"
+                                : "border-bone/30",
                           )}
                         >
-                          {active && (
+                          {(active || isIncluded) && (
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="20 6 9 17 4 12" />
                             </svg>
@@ -1310,9 +1355,17 @@ export default function OrderForm() {
                         <span className="flex-1">
                           <span className="flex items-baseline justify-between gap-2">
                             <span className="font-semibold text-sm text-cream">{a.name}</span>
-                            <span className="shrink-0 font-mono text-xs font-medium text-brass">+{formatEur(a.priceEur)}</span>
+                            {isIncluded ? (
+                              <span className="shrink-0 rounded-full bg-emerald-500/20 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-emerald-300">
+                                Incluso
+                              </span>
+                            ) : (
+                              <span className="shrink-0 font-mono text-xs font-medium text-brass">+{formatEur(a.priceEur)}</span>
+                            )}
                           </span>
-                          <span className="mt-1 block text-xs leading-relaxed text-mist">{a.description}</span>
+                          <span className="mt-1 block text-xs leading-relaxed text-mist">
+                            {isIncluded ? `Già incluso nel pacchetto Signature — ${a.description}` : a.description}
+                          </span>
                         </span>
                       </button>
                     );

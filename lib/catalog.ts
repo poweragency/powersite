@@ -5,13 +5,15 @@ export const TIERS: TierSpec[] = [
     key: "standard",
     name: "Standard",
     priceEur: 397,
-    description: "Landing essenziale ad alta conversione. Consegna in 48h.",
+    description: "Sito essenziale ad alta conversione. Consegna in 48h.",
     features: [
-      "6 sezioni (hero, valore, prova, FAQ, CTA, contatti)",
+      "Sito a pagina unica con 6 sezioni",
+      "Hero, sezione servizi, recensioni clienti, FAQ, contatti",
       "Copywriting su misura, scritto a mano",
-      "Mobile responsive",
-      "Contatti via telefono/email/WhatsApp diretti",
-      "Deploy su sottodominio Power Agency",
+      "100% responsive su mobile, tablet e desktop",
+      "Pulsanti diretti a telefono / email / WhatsApp",
+      "Hosting incluso (sottodominio Power Agency)",
+      "Consegna in 48 ore lavorative",
     ],
     templateRepo: "power-agency/template-standard",
   },
@@ -19,14 +21,16 @@ export const TIERS: TierSpec[] = [
     key: "premium",
     name: "Premium",
     priceEur: 697,
-    description: "Landing avanzata con animazioni e integrazioni.",
+    description: "Sito multi-pagina con identità più ricca e percorso narrativo studiato.",
     features: [
-      "Tutto Standard +",
-      "Animazioni e micro-interazioni",
-      "3 varianti A/B su hero/CTA",
-      "Integrazioni WhatsApp / Calendly",
-      "Favicon + Open Graph custom",
-      "Multilingua (fino a 2 lingue)",
+      "Sito multi-pagina (Home, Servizi, Chi siamo, Contatti)",
+      "Navigazione fluida con transizioni soft tra pagine",
+      "Sezione metodo step-by-step + credenziali aziendali",
+      "Testimonianze narrative estese (4-6 testimonial)",
+      "FAQ multi-livello (obiezioni + processo + customizzazione)",
+      "Doppia CTA strategica per massimizzare conversione",
+      "Typography premium (Fraunces serif) + spacing dilatato",
+      "Tutto quello che c'è nello Standard +",
     ],
     templateRepo: "power-agency/template-premium",
   },
@@ -34,15 +38,23 @@ export const TIERS: TierSpec[] = [
     key: "business",
     name: "Signature",
     priceEur: 1297,
-    description: "Esperienza cinematografica: video di apertura con porta che si apre e ingresso nel locale.",
+    description: "Esperienza cinematografica completa, con SEO e Analytics inclusi.",
     features: [
-      "Tutto Premium +",
-      "Video di apertura cinematografico — porta che si apre, ingresso fisico nel locale",
+      "Tutto quello che c'è nel Premium +",
+      "Video di apertura cinematografico (porta che si apre, ingresso nel locale)",
       "Hero animato in stile cinematografico",
-      "Soundtrack e effetti audio",
+      "✓ SEO completo INCLUSO (ottimizzazione Google/Bing)",
+      "✓ Local SEO INCLUSO (Google Maps, ricerche \"vicino a me\")",
+      "✓ AI Search Optimization INCLUSO (citabilità in ChatGPT, Perplexity)",
+      "✓ Google Analytics + tracking conversioni INCLUSO",
       "Loading screen branded",
-      "Sezione testimonianze video",
+      "Priorità in delivery e supporto post-vendita",
     ],
+    // Signature include SEO + GEO + GAIO + Analytics: il prezzo è gia'
+    // nel pacchetto, i 4 addon corrispondenti sono auto-attivati nel
+    // form ma NON ri-addebitati. La pipeline AI riceve comunque gli
+    // addon nei keys → ADDON_GUIDES applicate normalmente.
+    includedAddons: ["seo", "geo", "gaio", "analytics"],
     templateRepo: "power-agency/template-business",
   },
 ];
@@ -148,8 +160,18 @@ export function getAddon(key: string): AddonSpec | undefined {
 export function calculateTotal(tierKey: string, addonKeys: string[]): number {
   const tier = getTier(tierKey);
   if (!tier) return 0;
+  const included = new Set<string>(tier.includedAddons ?? []);
+  // Saltiamo gli addon gia' inclusi nel tier: il loro valore e' nel
+  // prezzo del pacchetto, non vanno ri-addebitati.
   const addonsTotal = addonKeys
+    .filter((k) => !included.has(k))
     .map((k) => getAddon(k)?.priceEur ?? 0)
     .reduce((a, b) => a + b, 0);
   return tier.priceEur + addonsTotal;
+}
+
+/** Restituisce true se un addon è incluso di default nel tier (non a pagamento). */
+export function isAddonIncludedInTier(tierKey: string, addonKey: string): boolean {
+  const tier = getTier(tierKey);
+  return !!tier?.includedAddons?.includes(addonKey as never);
 }
