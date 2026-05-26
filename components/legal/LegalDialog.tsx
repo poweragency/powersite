@@ -48,41 +48,21 @@ export function LegalDialog({ open, onClose, docKey }: Props) {
       }}
     >
       <div className="relative my-0 flex w-full max-w-3xl flex-col overflow-hidden bg-coal shadow-2xl md:my-8 md:rounded-2xl md:border md:border-bone/10">
-        {/* Header sticky con tasto Indietro */}
-        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-bone/10 bg-coal/95 px-6 py-4 backdrop-blur-md md:px-8">
-          <button
-            type="button"
-            onClick={onClose}
-            className="group inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-mist transition-colors hover:text-brass"
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="transition-transform group-hover:-translate-x-0.5"
-            >
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-            Indietro
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Chiudi"
-            className="text-mist transition-colors hover:text-bone"
-          >
-            ✕
-          </button>
-        </header>
+        {/* Sola X in alto a destra, niente altri bottoni di chiusura */}
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Chiudi"
+          className="absolute right-4 top-4 z-10 grid h-9 w-9 place-items-center rounded-full border border-bone/15 bg-coal/80 text-mist backdrop-blur-md transition-all hover:border-brass/60 hover:text-brass"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
 
-        {/* Title + body scrollable */}
-        <div className="flex-1 overflow-y-auto px-6 py-8 md:px-10 md:py-12">
+        {/* Title + body scrollable. Scrollbar custom coerente col tema dark. */}
+        <div className="legal-dialog-scroll flex-1 overflow-y-auto px-6 py-10 md:px-10 md:py-12">
           <span className="chip-brass">{meta.title.split(" ")[0]}</span>
           <h1
             id="legal-dialog-title"
@@ -95,17 +75,6 @@ export function LegalDialog({ open, onClose, docKey }: Props) {
             <LegalBodyFor docKey={docKey} />
           </div>
         </div>
-
-        {/* Footer con tasto Indietro pieno */}
-        <footer className="sticky bottom-0 border-t border-bone/10 bg-coal/95 px-6 py-4 backdrop-blur-md md:px-8">
-          <button
-            type="button"
-            onClick={onClose}
-            className="btn-ghost-bone btn-md w-full md:w-auto"
-          >
-            ← Indietro al pagamento
-          </button>
-        </footer>
       </div>
     </div>
   );
