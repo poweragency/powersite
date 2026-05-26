@@ -24,7 +24,7 @@ export const SHOWCASE: Record<Tier, ShowcaseItem[]> = {
     { name: "Studio Rossi", sector: "Avvocato · Torino", url: PLACEHOLDER },
   ],
   premium: [
-    { name: "Atelier Couture", sector: "Sartoria · Firenze", url: PLACEHOLDER },
+    { name: "Atelier Couture", sector: "Sartoria · Milano", url: PLACEHOLDER },
     { name: "Fitness Studio MI", sector: "Personal trainer · Milano", url: PLACEHOLDER },
     { name: "Concierge Lake Como", sector: "Hospitality · Como", url: PLACEHOLDER },
   ],

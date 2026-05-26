@@ -115,7 +115,7 @@ export default function HomePage() {
             {/* Eyebrow — chip-brass coerente col resto della pagina */}
             <Reveal>
               <span className="chip-brass">
-                Atelier digitale · Firenze
+                Atelier digitale · Milano
               </span>
             </Reveal>
 

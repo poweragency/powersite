@@ -174,7 +174,7 @@ export function TerminiBody() {
         <H2>8. Foro competente</H2>
         <p>
           Per qualsiasi controversia è competente in via esclusiva il Foro di
-          Firenze.
+          Milano.
         </p>
       </Section>
 
