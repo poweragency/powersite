@@ -441,6 +441,28 @@ export default function OrderForm() {
     console.log("[SUBMIT] handleSubmit triggered, step=", step);
 
     if (step !== 2) {
+      // Validation custom telefono: HTML5 pattern già blocca, ma se per
+      // qualche motivo è passato (es. browser obsoleto) blocchiamo qui.
+      const form = e.currentTarget;
+      const phoneEl = form.elements.namedItem("phone") as HTMLInputElement | null;
+      const phoneVal = phoneEl?.value.trim() ?? "";
+      if (!/^\+\d[\d\s\-()]{7,}$/.test(phoneVal)) {
+        console.warn("[SUBMIT] phone invalido:", phoneVal);
+        setError(
+          "Il numero di telefono non è valido. Inserisci il prefisso internazionale (es. +39 333 1234567).",
+        );
+        phoneEl?.focus();
+        phoneEl?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+      const targetEl = form.elements.namedItem("targetAudience") as HTMLTextAreaElement | null;
+      if ((targetEl?.value.trim().length ?? 0) < 10) {
+        console.warn("[SUBMIT] target troppo corto");
+        setError("Descrivi il target / cliente ideale in almeno 10 caratteri.");
+        targetEl?.focus();
+        targetEl?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
       console.log("[SUBMIT] step != 2 → goToStep2");
       goToStep2();
       return;
@@ -620,11 +642,11 @@ export default function OrderForm() {
                 <div className="grid gap-5 md:grid-cols-2">
                   <div>
                     <label className="label">Nome *</label>
-                    <input name="firstName" type="text" required placeholder="Mario" className="input" autoComplete="given-name" defaultValue={draftValues.firstName ?? ""} />
+                    <input name="firstName" type="text" required minLength={2} maxLength={60} placeholder="Mario" className="input" autoComplete="given-name" defaultValue={draftValues.firstName ?? ""} />
                   </div>
                   <div>
                     <label className="label">Cognome *</label>
-                    <input name="lastName" type="text" required placeholder="Rossi" className="input" autoComplete="family-name" defaultValue={draftValues.lastName ?? ""} />
+                    <input name="lastName" type="text" required minLength={2} maxLength={60} placeholder="Rossi" className="input" autoComplete="family-name" defaultValue={draftValues.lastName ?? ""} />
                   </div>
                   <div>
                     <label className="label">Email *</label>
@@ -648,6 +670,12 @@ export default function OrderForm() {
                       className="input"
                       autoComplete="tel"
                       defaultValue={draftValues.phone ?? ""}
+                      // Pattern: deve iniziare con + e contenere almeno 8 cifre
+                      // totali (cifre + eventuali spazi / trattini / parentesi).
+                      // Es validi: +39 333 1234567, +447700900123, +1-202-555-0182
+                      // Non validi: 333 1234567 (manca +), +39 (troppo corto)
+                      pattern="\+\d[\d\s\-()]{7,}"
+                      title="Inserisci il telefono con il prefisso internazionale, es. +39 333 1234567"
                     />
                     <div className="mt-2 rounded-lg border border-brass/30 bg-brass/5 p-3">
                       <p className="text-xs leading-relaxed text-bone">
@@ -902,6 +930,8 @@ export default function OrderForm() {
                       name="sector"
                       type="text"
                       required
+                      minLength={2}
+                      maxLength={80}
                       placeholder="es. Ristorante stellato, Studio dentistico, SaaS B2B..."
                       className="input"
                       defaultValue={draftValues.sector ?? ""}
@@ -912,11 +942,14 @@ export default function OrderForm() {
                     <textarea
                       name="targetAudience"
                       required
+                      minLength={10}
+                      maxLength={500}
                       rows={2}
                       placeholder="Chi è il tuo cliente tipo? Età, professione, esigenze..."
                       className="textarea"
                       defaultValue={draftValues.targetAudience ?? ""}
                     />
+                    <p className="mt-2 text-xs text-mist">Minimo 10 caratteri.</p>
                   </div>
                   <div>
                     <label className="label">USP — Cosa ti rende unico (opz.)</label>
