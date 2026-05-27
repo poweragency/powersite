@@ -8,39 +8,49 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Atelier palette — dark warm + brass + flame
-        obsidian: "rgb(var(--obsidian) / <alpha-value>)",   // #0C0A08
-        coal:     "rgb(var(--coal) / <alpha-value>)",       // #161310
-        ash:      "rgb(var(--ash) / <alpha-value>)",        // #24201B
-        bone:     "rgb(var(--bone) / <alpha-value>)",       // #EBE2D3
-        cream:    "rgb(var(--cream) / <alpha-value>)",      // #F4EDE0
-        mist:     "rgb(var(--mist) / <alpha-value>)",       // #9C9180
-        smoke:    "rgb(var(--smoke) / <alpha-value>)",      // #5E574D
+        // Palette "blu notte + oro" — premium / trust
+        //  base scura = night blue (CSS vars), accent = oro (brass) + ambra (flame)
+        obsidian: "rgb(var(--obsidian) / <alpha-value>)",   // #0B1220
+        coal:     "rgb(var(--coal) / <alpha-value>)",       // #131C2E
+        ash:      "rgb(var(--ash) / <alpha-value>)",        // #1C2840
+        bone:     "rgb(var(--bone) / <alpha-value>)",       // #EAF0F7
+        cream:    "rgb(var(--cream) / <alpha-value>)",      // #F5F8FC
+        mist:     "rgb(var(--mist) / <alpha-value>)",       // #8A97AB
+        smoke:    "rgb(var(--smoke) / <alpha-value>)",      // #525E70
+        // brass — oro tenue ed elegante: bordi, chip, dettagli raffinati
         brass: {
-          DEFAULT: "#C9A55C",
-          50:  "#FBF7EC",
-          100: "#F5ECCF",
-          200: "#EBD89E",
-          300: "#DDC06A",
-          400: "#D0AE4E",
-          500: "#C9A55C",
-          600: "#A38241",
-          700: "#7E6432",
-          800: "#5A4724",
-          900: "#3A2E18",
+          DEFAULT: "#D4AF6A",
+          50:  "#FBF6EA",
+          100: "#F5E9CC",
+          200: "#EBD49B",
+          300: "#DFBE6E",
+          400: "#E0C079",
+          500: "#D4AF6A",
+          600: "#B08F4D",
+          700: "#8A6F3B",
+          800: "#5F4D29",
+          900: "#3D3219",
         },
+        // flame — ambra oro caldo (NON arancione): prezzi, urgenza, glow su blu
         flame: {
-          DEFAULT: "#FF6B35",
-          50:  "#FFF1EA",
-          100: "#FFE0D1",
-          200: "#FFBE9F",
-          300: "#FF9B6D",
-          400: "#FF8550",
-          500: "#FF6B35",
-          600: "#ED4F18",
-          700: "#C53D0E",
-          800: "#9C310F",
-          900: "#7E2A12",
+          DEFAULT: "#E6A23C",
+          50:  "#FDF4E3",
+          100: "#FAE6C2",
+          200: "#F3CD86",
+          300: "#ECB456",
+          400: "#E9AB45",
+          500: "#E6A23C",
+          600: "#C4842A",
+          700: "#9C6720",
+          800: "#6E4818",
+          900: "#4A3111",
+        },
+        // steel — blu acciaio freddo: glow ambientali, dettagli secondari
+        steel: {
+          DEFAULT: "#5B7FA6",
+          400: "#7C9BBE",
+          500: "#5B7FA6",
+          600: "#47678A",
         },
       },
       fontFamily: {

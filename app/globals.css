@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  /* Atelier palette */
-  --obsidian: 12 10 8;     /* #0C0A08 — deepest warm black */
-  --coal:     22 19 16;    /* #161310 — card surface */
-  --ash:      36 32 27;    /* #24201B — elevated */
-  --bone:     235 226 211; /* #EBE2D3 — warm off-white */
-  --cream:    244 237 224; /* #F4EDE0 — bright text */
-  --mist:     156 145 128; /* #9C9180 — secondary text */
-  --smoke:    94 87 77;    /* #5E574D — muted */
+  /* Palette "blu notte + oro" — premium / trust */
+  --obsidian: 11 18 32;    /* #0B1220 — deepest night blue */
+  --coal:     19 28 46;    /* #131C2E — card surface */
+  --ash:      28 40 64;    /* #1C2840 — elevated */
+  --bone:     234 240 247; /* #EAF0F7 — cool off-white */
+  --cream:    245 248 252; /* #F5F8FC — bright text */
+  --mist:     138 151 171; /* #8A97AB — secondary text (cool grey) */
+  --smoke:    82 94 112;   /* #525E70 — muted */
 }
 
 html {
@@ -25,8 +25,8 @@ body {
   /* Atmosfera diffusa sul top dell'intera pagina —
      elimina lo "scalino" visivo tra l'area nav e l'hero. */
   background-image:
-    radial-gradient(ellipse 70% 500px at 100% 0%, rgba(255, 107, 53, 0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 350px at 0% 0%, rgba(201, 165, 92, 0.05) 0%, transparent 70%);
+    radial-gradient(ellipse 70% 500px at 100% 0%, rgba(212, 175, 106, 0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 350px at 0% 0%, rgba(91, 127, 166, 0.07) 0%, transparent 70%);
   background-attachment: fixed;
   background-repeat: no-repeat;
   color: rgb(var(--bone));
@@ -37,7 +37,7 @@ body {
 }
 
 ::selection {
-  background: #C9A55C;
+  background: #D4AF6A;
   color: rgb(var(--obsidian));
 }
 
@@ -89,9 +89,9 @@ body {
     height: 1px;
     background: linear-gradient(90deg,
       transparent 0%,
-      rgba(201, 165, 92, 0.3) 30%,
-      rgba(201, 165, 92, 0.5) 50%,
-      rgba(201, 165, 92, 0.3) 70%,
+      rgba(212, 175, 106, 0.3) 30%,
+      rgba(212, 175, 106, 0.5) 50%,
+      rgba(212, 175, 106, 0.3) 70%,
       transparent 100%);
   }
 
@@ -101,15 +101,17 @@ body {
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian
            overflow-hidden;
   }
+  /* CTA primario: oro pieno con glow — spicca sul fondo blu notte.
+     (Conserva il nome `btn-flame` per non rinominare i call-site.) */
   .btn-flame {
-    @apply btn bg-flame text-white shadow-[0_0_40px_-10px_rgba(255,107,53,0.6)]
-           hover:shadow-[0_0_60px_-5px_rgba(255,107,53,0.8)] hover:-translate-y-0.5;
+    @apply btn bg-brass text-obsidian font-semibold shadow-[0_0_40px_-10px_rgba(212,175,106,0.6)]
+           hover:bg-brass-400 hover:shadow-[0_0_60px_-5px_rgba(212,175,106,0.85)] hover:-translate-y-0.5;
   }
   .btn-flame::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.22) 50%, transparent 70%);
     background-size: 200% 100%;
     animation: shimmer 3.5s linear infinite;
     pointer-events: none;
@@ -138,10 +140,10 @@ body {
   .card {
     @apply relative rounded-2xl border border-bone/10 bg-coal/60 p-8 backdrop-blur transition-all duration-500
            hover:border-brass/40 hover:bg-coal hover:-translate-y-1
-           hover:shadow-[0_30px_60px_-30px_rgba(201,165,92,0.3)];
+           hover:shadow-[0_30px_60px_-30px_rgba(212,175,106,0.3)];
   }
   .card-flame {
-    @apply relative rounded-2xl bg-gradient-to-br from-flame to-flame-700 p-8 text-white shadow-[0_30px_60px_-20px_rgba(255,107,53,0.4)];
+    @apply relative rounded-2xl bg-gradient-to-br from-brass to-brass-700 p-8 text-obsidian shadow-[0_30px_60px_-20px_rgba(212,175,106,0.4)];
   }
 
   /* Form */
@@ -164,14 +166,14 @@ body {
 .input:user-invalid,
 .textarea:user-invalid,
 select.input:user-invalid {
-  border-color: #FF6B35;
-  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.18);
+  border-color: #E5484D;
+  box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.18);
 }
 .input:user-invalid:focus,
 .textarea:user-invalid:focus,
 select.input:user-invalid:focus {
-  border-color: #FF6B35;
-  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.35);
+  border-color: #E5484D;
+  box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.35);
 }
 
 @layer utilities {
@@ -193,7 +195,7 @@ select.input:user-invalid:focus {
    Funziona su Chromium/WebKit (Chrome, Edge, Safari) + Firefox. ─── */
 html {
   scrollbar-width: thin;
-  scrollbar-color: rgba(201, 165, 92, 0.45) rgb(var(--obsidian));
+  scrollbar-color: rgba(212, 175, 106, 0.45) rgb(var(--obsidian));
 }
 ::-webkit-scrollbar {
   width: 10px;
@@ -203,12 +205,12 @@ html {
   background: rgb(var(--obsidian));
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(201, 165, 92, 0.3);
+  background: rgba(212, 175, 106, 0.3);
   border-radius: 5px;
   border: 2px solid rgb(var(--obsidian));
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(201, 165, 92, 0.55);
+  background: rgba(212, 175, 106, 0.55);
 }
 ::-webkit-scrollbar-corner {
   background: rgb(var(--obsidian));
@@ -222,6 +224,6 @@ html {
   background: transparent;
 }
 .legal-dialog-scroll::-webkit-scrollbar-thumb {
-  background: rgba(201, 165, 92, 0.25);
+  background: rgba(212, 175, 106, 0.25);
   border: 2px solid rgb(var(--coal));
 }

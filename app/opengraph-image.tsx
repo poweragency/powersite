@@ -15,10 +15,10 @@ export default function OpenGraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 70,
-          backgroundColor: "#0C0A08",
+          backgroundColor: "#0B1220",
           backgroundImage:
-            "radial-gradient(ellipse 800px 500px at 100% 0%, rgba(255,107,53,0.18) 0%, transparent 60%), radial-gradient(ellipse 600px 400px at 0% 100%, rgba(201,165,92,0.12) 0%, transparent 60%)",
-          color: "#EBE2D3",
+            "radial-gradient(ellipse 800px 500px at 100% 0%, rgba(212,175,106,0.16) 0%, transparent 60%), radial-gradient(ellipse 600px 400px at 0% 100%, rgba(91,127,166,0.14) 0%, transparent 60%)",
+          color: "#EAF0F7",
           fontFamily: "serif",
         }}
       >
@@ -31,10 +31,10 @@ export default function OpenGraphImage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              border: "2px solid rgba(201,165,92,0.5)",
+              border: "2px solid rgba(212,175,106,0.5)",
               borderRadius: 24,
-              background: "rgba(22,19,16,0.6)",
-              color: "#C9A55C",
+              background: "rgba(19,28,46,0.6)",
+              color: "#D4AF6A",
               fontSize: 64,
               fontWeight: 700,
               fontStyle: "italic",
@@ -50,13 +50,13 @@ export default function OpenGraphImage() {
                 fontWeight: 600,
                 textTransform: "uppercase",
                 letterSpacing: 6,
-                color: "#C9A55C",
+                color: "#D4AF6A",
                 fontFamily: "sans-serif",
               }}
             >
               Power Agency
             </div>
-            <div style={{ fontSize: 28, color: "#9C9180", fontStyle: "italic" }}>
+            <div style={{ fontSize: 28, color: "#8A97AB", fontStyle: "italic" }}>
               PowerLanding · atelier digitale
             </div>
           </div>
@@ -69,7 +69,7 @@ export default function OpenGraphImage() {
               fontSize: 88,
               fontWeight: 700,
               lineHeight: 1.02,
-              color: "#F4EDE0",
+              color: "#F5F8FC",
               letterSpacing: -3,
             }}
           >
@@ -80,7 +80,7 @@ export default function OpenGraphImage() {
               fontSize: 88,
               fontWeight: 700,
               lineHeight: 1.02,
-              color: "#C9A55C",
+              color: "#D4AF6A",
               fontStyle: "italic",
               letterSpacing: -3,
             }}
@@ -96,18 +96,18 @@ export default function OpenGraphImage() {
             justifyContent: "space-between",
             alignItems: "center",
             fontSize: 20,
-            color: "#9C9180",
+            color: "#8A97AB",
             fontFamily: "sans-serif",
-            borderTop: "1px solid rgba(235,226,211,0.1)",
+            borderTop: "1px solid rgba(234,240,247,0.1)",
             paddingTop: 24,
           }}
         >
           <div>poweragency.it</div>
           <div style={{ display: "flex", gap: 32, textTransform: "uppercase", letterSpacing: 3, fontSize: 14 }}>
             <span>Atelier</span>
-            <span style={{ color: "#5E574D" }}>·</span>
+            <span style={{ color: "#525E70" }}>·</span>
             <span>Su misura</span>
-            <span style={{ color: "#5E574D" }}>·</span>
+            <span style={{ color: "#525E70" }}>·</span>
             <span>48 ore</span>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CookieBanner } from "@/components/CookieBanner";
@@ -46,6 +46,10 @@ export const metadata: Metadata = {
     title: "Power Agency — Atelier digitale",
     description: "Siti web sartoriali, consegna in 48 ore.",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0B1220",
 };
 
 export default function RootLayout({

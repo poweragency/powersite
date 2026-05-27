@@ -45,7 +45,7 @@ function StepIndicator({ current }: { current: Step }) {
               <span
                 className={cn(
                   "grid h-10 w-10 place-items-center rounded-full border-2 font-display text-sm font-bold transition-all duration-500",
-                  active && "border-brass bg-brass text-obsidian shadow-[0_0_20px_-5px_rgba(201,165,92,0.6)]",
+                  active && "border-brass bg-brass text-obsidian shadow-[0_0_20px_-5px_rgba(212,175,106,0.6)]",
                   done && "border-brass/60 bg-brass/20 text-brass",
                   !active && !done && "border-bone/20 bg-coal text-mist",
                 )}
@@ -1234,9 +1234,9 @@ export default function OrderForm() {
                         className={cn(
                           "group relative rounded-2xl border transition-all",
                           active
-                            ? "border-brass bg-brass/10 shadow-[0_0_30px_-10px_rgba(201,165,92,0.4)]"
+                            ? "border-brass bg-brass/10 shadow-[0_0_30px_-10px_rgba(212,175,106,0.4)]"
                             : t.recommended
-                              ? "border-brass/60 bg-brass/5 shadow-[0_0_24px_-10px_rgba(201,165,92,0.35)] hover:border-brass hover:bg-brass/10"
+                              ? "border-brass/60 bg-brass/5 shadow-[0_0_24px_-10px_rgba(212,175,106,0.35)] hover:border-brass hover:bg-brass/10"
                               : "border-bone/10 bg-coal/60 hover:border-bone/30 hover:bg-coal",
                         )}
                       >
@@ -1321,7 +1321,7 @@ export default function OrderForm() {
                         className={cn(
                           "group rounded-xl border-2 p-4 text-left transition-all",
                           signatureMode === "text"
-                            ? "border-brass bg-brass/15 shadow-[0_0_20px_-8px_rgba(201,165,92,0.5)]"
+                            ? "border-brass bg-brass/15 shadow-[0_0_20px_-8px_rgba(212,175,106,0.5)]"
                             : "border-bone/10 bg-coal/40 hover:border-bone/30 hover:bg-coal",
                         )}
                       >
@@ -1348,7 +1348,7 @@ export default function OrderForm() {
                         className={cn(
                           "group rounded-xl border-2 p-4 text-left transition-all",
                           signatureMode === "image"
-                            ? "border-brass bg-brass/15 shadow-[0_0_20px_-8px_rgba(201,165,92,0.5)]"
+                            ? "border-brass bg-brass/15 shadow-[0_0_20px_-8px_rgba(212,175,106,0.5)]"
                             : "border-bone/10 bg-coal/40 hover:border-bone/30 hover:bg-coal",
                         )}
                       >
@@ -1505,7 +1505,7 @@ export default function OrderForm() {
               : "mx-auto w-full max-w-2xl",
           )}
         >
-          <div className="relative overflow-hidden rounded-2xl border border-brass/20 bg-coal p-8 shadow-[0_20px_60px_-20px_rgba(201,165,92,0.3)]">
+          <div className="relative overflow-hidden rounded-2xl border border-brass/20 bg-coal p-8 shadow-[0_20px_60px_-20px_rgba(212,175,106,0.3)]">
             <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-brass/15 blur-3xl" />
             <div className="relative">
               {step === 1 ? (
