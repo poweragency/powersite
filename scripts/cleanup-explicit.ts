@@ -21,17 +21,9 @@ config({ path: resolve(process.cwd(), ".env.local") });
 import { Octokit } from "@octokit/rest";
 import { createClient } from "@supabase/supabase-js";
 
-const TARGET_REPOS = [
-  "client-swrwer-7bf85621",
-  "client-highlights-36cd20c0",
-  "client-mravcn95c27f839r-e0c283dd",
-  "client-studio-verdoneee-86467f29",
-  "client-studio-verdi-cf710d80",
-  "client-wqdqw-25e17b32",
-  "client-studio-diag-final-test-ad97b013",
-  "client-studio-after-fix-test-989c5d4e",
-  "sitotest",
-];
+// Lista esplicita da popolare di volta in volta prima di eseguire.
+// Lasciata vuota per evitare cancellazioni accidentali.
+const TARGET_REPOS: string[] = [];
 
 const DRY_RUN = !process.argv.includes("--yes");
 
