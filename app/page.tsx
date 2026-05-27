@@ -107,7 +107,7 @@ export default function HomePage() {
         {/* Atmosfere */}
         <div className="glow-orb top-[-10%] right-[-12%] h-[800px] w-[800px] animate-glow bg-flame/20" />
         <div className="glow-orb top-[40%] left-[-15%] h-[600px] w-[600px] animate-glow-slow bg-brass/15" />
-        <div className="grain" />
+        <div className="tech-grid" />
 
         <div className="container-x relative pt-28 pb-32 md:pt-36 md:pb-40 lg:pt-44">
           <div className="mx-auto max-w-5xl text-center">
@@ -264,7 +264,7 @@ export default function HomePage() {
       <section id="pacchetti" className="relative overflow-hidden py-32 md:py-40">
         <div className="glow-orb top-[5%] right-[15%] h-[500px] w-[500px] animate-glow bg-flame/20" />
         <div className="glow-orb bottom-[-20%] left-[15%] h-[600px] w-[600px] animate-glow-slow bg-brass/20" />
-        <div className="grain" />
+        <div className="tech-grid" />
 
         <div className="container-x relative">
           <div className="mx-auto max-w-3xl text-center">
@@ -408,7 +408,7 @@ export default function HomePage() {
       <section className="relative isolate overflow-hidden">
         <div className="glow-orb top-[10%] right-[20%] h-[600px] w-[600px] animate-glow bg-flame/40" />
         <div className="glow-orb bottom-[-10%] left-[10%] h-[500px] w-[500px] animate-glow-slow bg-brass/25" />
-        <div className="grain" />
+        <div className="tech-grid" />
 
         <div className="container-x relative py-32 text-center md:py-40">
           <Reveal>

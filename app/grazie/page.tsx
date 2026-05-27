@@ -17,7 +17,7 @@ export default async function GraziePage({
       <main className="relative isolate overflow-hidden">
         <div className="glow-orb top-[-10%] right-[10%] h-[500px] w-[500px] animate-glow bg-flame/25" />
         <div className="glow-orb bottom-[10%] left-[10%] h-[400px] w-[400px] animate-glow-slow bg-brass/20" />
-        <div className="grain" />
+        <div className="tech-grid" />
 
         <div className="container-x relative py-24 md:py-32">
           <div className="mx-auto max-w-2xl text-center">
