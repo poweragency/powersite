@@ -43,6 +43,17 @@ export async function insertCrmLead(args: InsertCrmLeadArgs): Promise<InsertCrmL
   if (order.addons.includes("logo_design")) {
     tags.push("logo:da-disegnare");
   }
+  if (order.tier === "business") {
+    // Video Signature è girato manualmente — vedi cartella _signature-video/
+    // nella repo cliente (brief.md + immagini hi-res).
+    const mode =
+      order.entranceImageMobileUrl || order.entranceImageDesktopUrl
+        ? "immagini"
+        : order.videoScript?.trim()
+          ? "testo"
+          : "libera";
+    tags.push(`video-signature:da-girare-modalita-${mode}`);
+  }
 
   const row = {
     nonce: order.nonce,

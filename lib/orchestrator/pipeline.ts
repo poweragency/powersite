@@ -17,7 +17,6 @@
 
 import type { OrderPayload } from "@/lib/types";
 import { generateLandingContent } from "@/lib/ai/generate-content";
-import { generateVideo } from "./steps/generate-video";
 import { buildProject } from "./steps/build-project";
 import { createGithubRepo } from "./steps/create-github-repo";
 import { deployToVercel } from "./steps/deploy-vercel";
@@ -40,15 +39,25 @@ export async function runPipeline(order: OrderPayload): Promise<PipelineResult> 
     const content = await generateLandingContent(order);
     console.log(`[pipeline:${order.nonce}] content generated`);
 
-    // 2. Video di apertura (solo Business)
-    let video;
+    // 2. (Solo Signature) il video di apertura viene girato MANUALMENTE.
+    //    Lo step build-project materializza brief + assets nella cartella
+    //    privata `_signature-video/` della repo cliente — vedi build-project.ts.
+    //    Il tag CRM `video-signature:da-girare-*` permette di filtrare nel CRM
+    //    gli ordini Signature in attesa di video.
     if (order.tier === "business") {
-      video = await generateVideo(order, content);
-      console.log(`[pipeline:${order.nonce}] video generated`);
+      const mode =
+        order.entranceImageMobileUrl || order.entranceImageDesktopUrl
+          ? "immagini"
+          : order.videoScript?.trim()
+            ? "testo"
+            : "libera";
+      console.log(
+        `[pipeline:${order.nonce}] SIGNATURE — video manuale pending (modalita=${mode})`,
+      );
     }
 
     // 3. Compila template
-    const built = await buildProject(order, { ...content, video });
+    const built = await buildProject(order, content);
     console.log(
       `[pipeline:${order.nonce}] project built at ${built.path}` +
         ` (imgs=${built.imagesDownloaded}, entrance=${built.entranceImagesDownloaded})`,

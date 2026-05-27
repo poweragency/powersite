@@ -1,9 +1,16 @@
 /**
  * Step 2 — Genera video AI di apertura (solo tier Business).
  *
- * Provider candidati: HeyGen, D-ID, Synthesia.
- * Input: brief + script (opzionale, altrimenti generato da Claude).
- * Output: URL del video MP4.
+ * ⚠️ NON CHIAMATO DALLA PIPELINE CORRENTE — il video Signature viene
+ * girato MANUALMENTE dal team. La pipeline materializza brief + assets
+ * nella cartella privata `_signature-video/` della repo cliente
+ * (vedi build-project.ts step 5) e nel CRM viene taggato col tag
+ * `video-signature:da-girare-modalita-{testo|immagini|libera}` per
+ * filtrare gli ordini in attesa di video.
+ *
+ * Questo file resta come placeholder per quando si vorrà integrare un
+ * provider AI (HeyGen / D-ID / Synthesia). Allora basterà ri-aggiungere
+ * la chiamata in pipeline.ts e rimuovere il tag CRM.
  */
 
 import type { OrderPayload } from "@/lib/types";
