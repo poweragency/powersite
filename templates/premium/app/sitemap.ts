@@ -8,7 +8,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "";
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   const base = SITE_URL || "https://example.com";
-  const pages = navLinksFromContent(content.sections as Section[]);
+  const pages = navLinksFromContent(content.sections as unknown as Section[]);
   const entries: MetadataRoute.Sitemap = pages.map((p) => ({
     url: `${base}${p.href === "/" ? "" : p.href}`,
     lastModified: now,
