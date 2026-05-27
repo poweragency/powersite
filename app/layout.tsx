@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
+import { Inter, Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CookieBanner } from "@/components/CookieBanner";
 import { JsonLd } from "@/components/JsonLd";
@@ -10,11 +10,11 @@ const sans = Inter({
   display: "swap",
 });
 
-const display = Fraunces({
+// Titoli: Geist (sans software-premium). Variable font, niente weight esplicito.
+const display = Geist({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  axes: ["opsz", "SOFT"],
 });
 
 const mono = JetBrains_Mono({

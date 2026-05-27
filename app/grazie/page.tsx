@@ -57,7 +57,7 @@ export default async function GraziePage({
                   { n: "III", t: "Consegniamo", d: "Uno dei nostri tecnici ti contatta su WhatsApp col link di anteprima." },
                 ].map((s) => (
                   <div key={s.n} className="bg-coal/80 p-6 text-left backdrop-blur">
-                    <span className="font-display text-2xl italic text-brass">{s.n}</span>
+                    <span className="font-display text-2xl text-brass">{s.n}</span>
                     <div className="hairline my-3 max-w-[40%]" />
                     <h3 className="display text-lg font-bold tracking-tighter text-cream">{s.t}</h3>
                     <p className="mt-2 text-xs leading-relaxed text-mist">{s.d}</p>

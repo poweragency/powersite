@@ -49,12 +49,12 @@ body {
 
   .display {
     @apply font-display tracking-tightest;
-    font-variation-settings: "opsz" 144, "SOFT" 100;
   }
 
+  /* Parola evidenziata nei titoli — ora Geist (sans), niente corsivo serif:
+     stacco affidato al colore oro + peso (il nome resta per i call-site). */
   .serif-italic {
-    @apply font-display italic text-brass;
-    font-variation-settings: "opsz" 144, "SOFT" 100;
+    @apply font-display font-semibold text-brass;
   }
 
   /* Glow orb that drifts behind hero */

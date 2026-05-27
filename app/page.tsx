@@ -216,7 +216,7 @@ export default function HomePage() {
             {STEPS.map((s, i) => (
               <Reveal key={s.n} delay={i * 120}>
                 <article className="card group h-full">
-                  <span className="font-display text-3xl italic text-brass">{s.n}</span>
+                  <span className="font-display text-3xl text-brass">{s.n}</span>
                   <div className="hairline mt-4 max-w-[40%]" />
                   <h3 className="display mt-6 text-2xl font-bold tracking-tighter text-cream">
                     {s.t}

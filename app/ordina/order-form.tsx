@@ -154,7 +154,7 @@ function EntranceSlot({ format, label, aspect, file, meta, error, onSelect, onRe
 function SectionHeader({ n, title, hint }: { n: string; title: string; hint?: string }) {
   return (
     <div className="mb-6 flex items-baseline gap-4 border-b border-bone/10 pb-5">
-      <span className="font-display text-2xl italic text-brass">{n}</span>
+      <span className="font-display text-2xl text-brass">{n}</span>
       <h2 className="display text-2xl font-bold tracking-tighter text-cream md:text-3xl">{title}</h2>
       {hint && <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-mist">{hint}</span>}
     </div>
@@ -1302,7 +1302,7 @@ export default function OrderForm() {
                 {tier === "business" && (
                   <div ref={signatureSectionRef} className="scroll-mt-24 mt-6 space-y-5 rounded-2xl border border-brass/30 bg-brass/5 p-6">
                     <header className="flex items-baseline gap-3">
-                      <span className="font-display text-xl italic text-brass">✦</span>
+                      <span className="font-display text-xl text-brass">✦</span>
                       <h3 className="display text-lg font-bold tracking-tighter text-cream">
                         Personalizzazione Signature
                       </h3>
