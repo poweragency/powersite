@@ -2,7 +2,7 @@ import content from "../../content.json";
 import type { Content } from "../../lib/content-schema";
 import { BrandStyle } from "../../components/BrandStyle";
 import { SiteShell } from "../../components/SiteShell";
-import { sectionsForPage, navLinksFromContent } from "../../lib/page-routing";
+import { sectionsForPage, navLinksFromContent, getContactSection } from "../../lib/page-routing";
 
 const data = content as unknown as Content;
 
@@ -18,6 +18,7 @@ export default function ServiziPage() {
         brandName={data.brand.name}
         sections={sectionsForPage(data.sections, "servizi")}
         navLinks={navLinksFromContent(data.sections)}
+        contactSection={getContactSection(data.sections)}
         pageTitle="Servizi"
       />
     </>

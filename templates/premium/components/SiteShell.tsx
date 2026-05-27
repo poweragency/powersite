@@ -17,6 +17,12 @@ interface Props {
   navLinks: Array<{ label: string; href: string }>;
   /** Spazio sopra il primo contenuto utile (compensa la nav fissa). */
   pageTitle?: string;
+  /**
+   * Sezione contatti RICORRENTE: renderizzata in fondo a OGNI pagina come CTA
+   * ripetuta. Se l'addon "Modulo contatti" è attivo, include il form (la
+   * Contact lo mostra in base a NEXT_PUBLIC_CONTACT_FORM) → form in ogni pagina.
+   */
+  contactSection?: Section;
 }
 
 function renderSection(section: Section, brandName: string, i: number) {
@@ -60,7 +66,7 @@ function renderSection(section: Section, brandName: string, i: number) {
   }
 }
 
-export function SiteShell({ brandName, sections, navLinks, pageTitle }: Props) {
+export function SiteShell({ brandName, sections, navLinks, pageTitle, contactSection }: Props) {
   // Se la pagina NON ha hero come prima sezione, aggiungo un padding-top
   // per non finire sotto la nav fissa.
   const startsWithHero = sections[0]?.type === "hero";
@@ -77,6 +83,8 @@ export function SiteShell({ brandName, sections, navLinks, pageTitle }: Props) {
           </section>
         )}
         {sections.map((s, i) => renderSection(s, brandName, i))}
+        {/* Contatti ricorrenti: CTA in fondo a ogni pagina (+ form se addon attivo). */}
+        {contactSection && renderSection(contactSection, brandName, 9999)}
       </main>
       <Footer brandName={brandName} />
     </>
