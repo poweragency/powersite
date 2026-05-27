@@ -11,8 +11,10 @@ import { SocialProof } from "../components/sections/SocialProof";
 import { CtaBlock } from "../components/sections/CtaBlock";
 import { Faq } from "../components/sections/Faq";
 import { Catalog } from "../components/sections/Catalog";
+import { Gallery } from "../components/sections/Gallery";
 import { Contact } from "../components/sections/Contact";
 import { Footer } from "../components/Footer";
+import { ChatWidget } from "../components/ChatWidget";
 
 const data = content as unknown as Content;
 
@@ -31,6 +33,7 @@ const SECTION_ANCHORS: Record<Section["type"], { id: string; label: string }> = 
   cta: { id: "cta", label: "" },
   faq: { id: "faq", label: "FAQ" },
   catalog: { id: "catalogo", label: "Catalogo" },
+  gallery: { id: "galleria", label: "Galleria" },
   contact: { id: "contatti", label: "Contatti" },
 };
 
@@ -86,6 +89,8 @@ function renderSection(section: Section, brandName: string, i: number, all: Sect
       return wrap(<Faq title={section.title} items={section.items} />);
     case "catalog":
       return wrap(<Catalog title={section.title} subtitle={section.subtitle} categories={section.categories} />);
+    case "gallery":
+      return wrap(<Gallery title={section.title} subtitle={section.subtitle} images={section.images} />);
     case "contact":
       return wrap(
         <Contact
@@ -108,6 +113,7 @@ export default function HomePage() {
         {data.sections.map((s, i) => renderSection(s, data.brand.name, i, data.sections))}
       </main>
       <Footer brandName={data.brand.name} />
+      <ChatWidget brandName={data.brand.name} />
     </>
   );
 }

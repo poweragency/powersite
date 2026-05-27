@@ -178,6 +178,7 @@ export async function deployToVercel(args: {
     contactFormEnabled:
       args.order.addons.includes("contact_form_integration") ||
       args.order.addons.includes("contact_form_bespoke"),
+    chatbotEnabled: args.order.addons.includes("chatbot"),
   }).catch((err) => {
     console.warn(`[deploy-vercel] inject env vars fallito (non bloccante):`, err);
   });
@@ -238,6 +239,7 @@ async function injectClientEnvVars(args: {
   projectId: string;
   nonce: string;
   contactFormEnabled: boolean;
+  chatbotEnabled: boolean;
 }): Promise<void> {
   const supabaseUrl = process.env.POWERHUB_SUPABASE_URL;
   const anonKey = process.env.POWERHUB_ANON_KEY;
@@ -253,9 +255,27 @@ async function injectClientEnvVars(args: {
   const envs: Array<{ key: string; value: string }> = [
     { key: "POWERSITE_NONCE", value: args.nonce },
     { key: "NEXT_PUBLIC_CONTACT_FORM", value: args.contactFormEnabled ? "true" : "false" },
+    { key: "NEXT_PUBLIC_CHATBOT", value: args.chatbotEnabled ? "true" : "false" },
   ];
   if (supabaseUrl) envs.push({ key: "NEXT_PUBLIC_POWERHUB_URL", value: supabaseUrl });
   if (anonKey) envs.push({ key: "NEXT_PUBLIC_POWERHUB_ANON_KEY", value: anonKey });
+
+  // Chatbot: serve la chiave Anthropic server-side nel sito cliente. La
+  // prendiamo dalla env del SaaS. ⚠️ I token consumati dal chatbot pubblico
+  // sono a carico di chi possiede questa chiave (Power Agency).
+  if (args.chatbotEnabled) {
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
+    if (anthropicKey) {
+      envs.push({ key: "ANTHROPIC_API_KEY", value: anthropicKey });
+      if (process.env.CHATBOT_MODEL) {
+        envs.push({ key: "CHATBOT_MODEL", value: process.env.CHATBOT_MODEL });
+      }
+    } else {
+      console.warn(
+        "[deploy-vercel] addon chatbot attivo ma ANTHROPIC_API_KEY mancante nel SaaS — il widget si mostrerà ma /api/chat risponderà 503",
+      );
+    }
+  }
 
   for (const env of envs) {
     await vercelRequest<unknown>(

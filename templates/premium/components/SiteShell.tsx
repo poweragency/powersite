@@ -1,6 +1,7 @@
 import type { Section } from "../lib/content-schema";
 import { Nav } from "./Nav";
 import { Footer } from "./Footer";
+import { ChatWidget } from "./ChatWidget";
 import { Hero } from "./sections/Hero";
 import { Value } from "./sections/Value";
 import { Features } from "./sections/Features";
@@ -10,6 +11,7 @@ import { SocialProof } from "./sections/SocialProof";
 import { CtaBlock } from "./sections/CtaBlock";
 import { Faq } from "./sections/Faq";
 import { Catalog } from "./sections/Catalog";
+import { Gallery } from "./sections/Gallery";
 import { Contact } from "./sections/Contact";
 
 interface Props {
@@ -56,6 +58,8 @@ function renderSection(section: Section, brandName: string, i: number) {
       return <Faq key={i} title={section.title} items={section.items} />;
     case "catalog":
       return <Catalog key={i} title={section.title} subtitle={section.subtitle} categories={section.categories} />;
+    case "gallery":
+      return <Gallery key={i} title={section.title} subtitle={section.subtitle} images={section.images} />;
     case "contact":
       return (
         <Contact
@@ -90,6 +94,7 @@ export function SiteShell({ brandName, sections, navLinks, pageTitle, contactSec
         {contactSection && renderSection(contactSection, brandName, 9999)}
       </main>
       <Footer brandName={brandName} />
+      <ChatWidget brandName={brandName} />
     </>
   );
 }

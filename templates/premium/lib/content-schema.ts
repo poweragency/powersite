@@ -32,6 +32,7 @@ export type Section =
   | { type: "cta"; title: string; body?: string; ctaPrimary: Cta }
   | { type: "faq"; title: string; items: { q: string; a: string }[] }
   | { type: "catalog"; title: string; subtitle?: string; categories: { name: string; items: { name: string; description?: string; price?: string }[] }[] }
+  | { type: "gallery"; title: string; subtitle?: string; images: string[] }
   | { type: "contact"; title: string; address?: string; phone?: string; email?: string };
 
 export interface ImagesMeta {

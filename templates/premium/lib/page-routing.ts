@@ -19,6 +19,7 @@ const TYPE_TO_PAGE: Record<Section["type"], PageKey> = {
   features: "servizi", // caratteristiche prodotto
   "social-proof": "chi-siamo", // testimonianze
   trust: "chi-siamo", // credenziali
+  gallery: "chi-siamo", // vetrina foto/lavori
   cta: "faq", // la cta intermedia chiude la pagina FAQ
   faq: "faq",
   catalog: "servizi", // menù/catalogo/listino vive nella pagina Servizi

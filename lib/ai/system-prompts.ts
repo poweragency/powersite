@@ -339,6 +339,7 @@ Riceverai nel messaggio user un campo \`imageManifest\` con la lista dei path de
 DEVI usare TUTTE le immagini fornite. Distribuiscile sensatamente:
   - 1 sempre come \`hero.image\` (la più rappresentativa)
   - Le restanti come \`testimonial.image\` se hai social-proof, o nei \`features\` items
+  - **REGOLA GALLERY**: se dopo aver assegnato hero + eventuali testimonial restano MOLTE immagini (indicativamente 6 o più non collocate), NON forzarle dentro features/testimonial — crea UNA sezione \`gallery\` con tutte le immagini residue (titolo coerente col business: "I nostri lavori", "Il locale", "La galleria"). È il modo corretto di valorizzare tante foto senza sovraccaricare le altre sezioni.
   - In \`images.selected\`: tutti i path, in ordine d'apparizione
   - \`images.unused\`: deve essere vuoto \`[]\`
 

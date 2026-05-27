@@ -259,6 +259,27 @@ const sectionCatalog = {
   },
 } as const;
 
+// Sezione GALLERY: griglia di immagini. Usata quando il cliente carica MOLTE
+// foto (tipicamente con forceAllImages) che non starebbero bene spalmate a
+// forza in hero/testimonial/features. Raccoglie le immagini "extra" in una
+// vetrina visiva coerente.
+const sectionGallery = {
+  type: "object",
+  additionalProperties: false,
+  required: ["type", "title", "images"],
+  properties: {
+    type: { type: "string", enum: ["gallery"] },
+    title: { type: "string", minLength: 2, maxLength: 80, description: "Es. 'I nostri lavori', 'Galleria', 'Il locale'" },
+    subtitle: { type: "string", maxLength: 200 },
+    images: {
+      type: "array",
+      minItems: 4,
+      maxItems: 24,
+      items: { type: "string", description: "Path immagine in /uploads/ dal manifest" },
+    },
+  },
+} as const;
+
 export const CONTENT_JSON_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -313,6 +334,7 @@ export const CONTENT_JSON_SCHEMA = {
           sectionFaq,
           sectionContact,
           sectionCatalog,
+          sectionGallery,
         ],
       },
     },
