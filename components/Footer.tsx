@@ -1,18 +1,13 @@
 import Link from "next/link";
 import { Zap } from "lucide-react";
-import { Logo } from "./Logo";
 
 export function Footer() {
   return (
     <footer className="relative border-t border-bone/10 bg-coal">
       <div className="container-x py-10 md:py-12">
-        <div className="grid gap-8 md:grid-cols-3 md:items-start md:gap-12">
+        <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between md:gap-12">
           <div>
-            <Logo />
-          </div>
-
-          <div className="md:text-center">
-            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm md:justify-center">
+            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
               <li><Link href="/legal" className="text-mist hover:text-bone">Note legali</Link></li>
               <li><Link href="/termini" className="text-mist hover:text-bone">Termini</Link></li>
               <li><Link href="/cookies" className="text-mist hover:text-bone">Cookie policy</Link></li>
@@ -20,7 +15,7 @@ export function Footer() {
           </div>
 
           {/* Badge "POWERED BY POWERAGENCY" */}
-          <div className="md:justify-self-end">
+          <div>
             <a
               href="https://poweragency.it"
               target="_blank"
