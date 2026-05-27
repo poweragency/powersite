@@ -25,7 +25,7 @@ body {
   /* Atmosfera diffusa sul top dell'intera pagina —
      elimina lo "scalino" visivo tra l'area nav e l'hero. */
   background-image:
-    radial-gradient(ellipse 70% 500px at 100% 0%, rgba(212, 175, 106, 0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 500px at 100% 0%, rgba(46,111,176, 0.07) 0%, transparent 70%),
     radial-gradient(ellipse 50% 350px at 0% 0%, rgba(91, 127, 166, 0.07) 0%, transparent 70%);
   background-attachment: fixed;
   background-repeat: no-repeat;
@@ -37,7 +37,7 @@ body {
 }
 
 ::selection {
-  background: #D4AF6A;
+  background: #38BDF8;
   color: rgb(var(--obsidian));
 }
 
@@ -51,8 +51,8 @@ body {
     @apply font-display tracking-tightest;
   }
 
-  /* Parola evidenziata nei titoli — ora Geist (sans), niente corsivo serif:
-     stacco affidato al colore oro + peso (il nome resta per i call-site). */
+  /* Parola evidenziata nei titoli — Geist (sans), stacco affidato al colore
+     azzurro scuro (text-brass) + peso. Il nome resta per i call-site. */
   .serif-italic {
     @apply font-display font-semibold text-brass;
   }
@@ -95,9 +95,9 @@ body {
     height: 1px;
     background: linear-gradient(90deg,
       transparent 0%,
-      rgba(212, 175, 106, 0.3) 30%,
-      rgba(212, 175, 106, 0.5) 50%,
-      rgba(212, 175, 106, 0.3) 70%,
+      rgba(46,111,176, 0.3) 30%,
+      rgba(46,111,176, 0.5) 50%,
+      rgba(46,111,176, 0.3) 70%,
       transparent 100%);
   }
 
@@ -107,11 +107,11 @@ body {
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian
            overflow-hidden;
   }
-  /* CTA primario: oro pieno con glow — spicca sul fondo blu notte.
+  /* CTA primario: azzurro pieno con glow — spicca sul fondo blu notte.
      (Conserva il nome `btn-flame` per non rinominare i call-site.) */
   .btn-flame {
-    @apply btn bg-brass text-obsidian font-semibold shadow-[0_0_40px_-10px_rgba(212,175,106,0.6)]
-           hover:bg-brass-400 hover:shadow-[0_0_60px_-5px_rgba(212,175,106,0.85)] hover:-translate-y-0.5;
+    @apply btn bg-brass text-white font-semibold shadow-[0_0_40px_-10px_rgba(46,111,176,0.6)]
+           hover:bg-brass-400 hover:shadow-[0_0_60px_-5px_rgba(46,111,176,0.85)] hover:-translate-y-0.5;
   }
   .btn-flame::before {
     content: "";
@@ -127,7 +127,7 @@ body {
            hover:bg-bone/10 hover:border-bone/40;
   }
   .btn-brass {
-    @apply btn bg-brass text-obsidian hover:bg-brass-400 hover:-translate-y-0.5;
+    @apply btn bg-brass text-white hover:bg-brass-400 hover:-translate-y-0.5;
   }
   .btn-sm  { @apply h-10 px-5 text-sm rounded-full; }
   .btn-md  { @apply h-12 px-7 text-sm rounded-full; }
@@ -146,10 +146,10 @@ body {
   .card {
     @apply relative rounded-2xl border border-bone/10 bg-coal/60 p-8 backdrop-blur transition-all duration-500
            hover:border-brass/40 hover:bg-coal hover:-translate-y-1
-           hover:shadow-[0_30px_60px_-30px_rgba(212,175,106,0.3)];
+           hover:shadow-[0_30px_60px_-30px_rgba(46,111,176,0.3)];
   }
   .card-flame {
-    @apply relative rounded-2xl bg-gradient-to-br from-brass to-brass-700 p-8 text-obsidian shadow-[0_30px_60px_-20px_rgba(212,175,106,0.4)];
+    @apply relative rounded-2xl bg-gradient-to-br from-brass to-brass-700 p-8 text-white shadow-[0_30px_60px_-20px_rgba(46,111,176,0.4)];
   }
 
   /* Form */
@@ -201,7 +201,7 @@ select.input:user-invalid:focus {
    Funziona su Chromium/WebKit (Chrome, Edge, Safari) + Firefox. ─── */
 html {
   scrollbar-width: thin;
-  scrollbar-color: rgba(212, 175, 106, 0.45) rgb(var(--obsidian));
+  scrollbar-color: rgba(46,111,176, 0.45) rgb(var(--obsidian));
 }
 ::-webkit-scrollbar {
   width: 10px;
@@ -211,12 +211,12 @@ html {
   background: rgb(var(--obsidian));
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 106, 0.3);
+  background: rgba(46,111,176, 0.3);
   border-radius: 5px;
   border: 2px solid rgb(var(--obsidian));
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 175, 106, 0.55);
+  background: rgba(46,111,176, 0.55);
 }
 ::-webkit-scrollbar-corner {
   background: rgb(var(--obsidian));
@@ -230,6 +230,6 @@ html {
   background: transparent;
 }
 .legal-dialog-scroll::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 106, 0.25);
+  background: rgba(46,111,176, 0.25);
   border: 2px solid rgb(var(--coal));
 }

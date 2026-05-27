@@ -17,33 +17,33 @@ export default {
         cream:    "rgb(var(--cream) / <alpha-value>)",      // #F5F8FC
         mist:     "rgb(var(--mist) / <alpha-value>)",       // #8A97AB
         smoke:    "rgb(var(--smoke) / <alpha-value>)",      // #525E70
-        // brass — oro tenue ed elegante: bordi, chip, dettagli raffinati
+        // brass — azzurro scuro: titoli, titoletti, parole evidenziate, CTA, bordi
         brass: {
-          DEFAULT: "#D4AF6A",
-          50:  "#FBF6EA",
-          100: "#F5E9CC",
-          200: "#EBD49B",
-          300: "#DFBE6E",
-          400: "#E0C079",
-          500: "#D4AF6A",
-          600: "#B08F4D",
-          700: "#8A6F3B",
-          800: "#5F4D29",
-          900: "#3D3219",
+          DEFAULT: "#2E6FB0",
+          50:  "#ECF3FB",
+          100: "#D5E4F5",
+          200: "#AECBEC",
+          300: "#7FACDE",
+          400: "#4F8BCC",
+          500: "#2E6FB0",
+          600: "#265D95",
+          700: "#204C79",
+          800: "#1A3C5F",
+          900: "#142E49",
         },
-        // flame — ambra oro caldo (NON arancione): prezzi, urgenza, glow su blu
+        // flame — azzurro brillante: "in 48 ore", prezzi, urgenza, glow su blu
         flame: {
-          DEFAULT: "#E6A23C",
-          50:  "#FDF4E3",
-          100: "#FAE6C2",
-          200: "#F3CD86",
-          300: "#ECB456",
-          400: "#E9AB45",
-          500: "#E6A23C",
-          600: "#C4842A",
-          700: "#9C6720",
-          800: "#6E4818",
-          900: "#4A3111",
+          DEFAULT: "#38BDF8",
+          50:  "#EAF8FE",
+          100: "#D0F0FD",
+          200: "#A6E4FB",
+          300: "#6FD3F8",
+          400: "#4FC8F6",
+          500: "#38BDF8",
+          600: "#1A9FD8",
+          700: "#1480B0",
+          800: "#135F82",
+          900: "#14506B",
         },
         // steel — blu acciaio freddo: glow ambientali, dettagli secondari
         steel: {

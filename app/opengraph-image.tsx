@@ -17,7 +17,7 @@ export default function OpenGraphImage() {
           padding: 70,
           backgroundColor: "#0B1220",
           backgroundImage:
-            "radial-gradient(ellipse 800px 500px at 100% 0%, rgba(212,175,106,0.16) 0%, transparent 60%), radial-gradient(ellipse 600px 400px at 0% 100%, rgba(91,127,166,0.14) 0%, transparent 60%)",
+            "radial-gradient(ellipse 800px 500px at 100% 0%, rgba(46, 111, 176,0.16) 0%, transparent 60%), radial-gradient(ellipse 600px 400px at 0% 100%, rgba(91,127,166,0.14) 0%, transparent 60%)",
           color: "#EAF0F7",
           fontFamily: "serif",
         }}
@@ -31,10 +31,10 @@ export default function OpenGraphImage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              border: "2px solid rgba(212,175,106,0.5)",
+              border: "2px solid rgba(46, 111, 176,0.5)",
               borderRadius: 24,
               background: "rgba(19,28,46,0.6)",
-              color: "#D4AF6A",
+              color: "#38BDF8",
               fontSize: 64,
               fontWeight: 700,
               fontStyle: "italic",
@@ -50,7 +50,7 @@ export default function OpenGraphImage() {
                 fontWeight: 600,
                 textTransform: "uppercase",
                 letterSpacing: 6,
-                color: "#D4AF6A",
+                color: "#38BDF8",
                 fontFamily: "sans-serif",
               }}
             >
@@ -80,7 +80,7 @@ export default function OpenGraphImage() {
               fontSize: 88,
               fontWeight: 700,
               lineHeight: 1.02,
-              color: "#D4AF6A",
+              color: "#38BDF8",
               fontStyle: "italic",
               letterSpacing: -3,
             }}
