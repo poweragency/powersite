@@ -19,10 +19,13 @@ interface Props {
 /**
  * Navbar dinamica per il template Standard (single-page).
  *
- * - Inizialmente trasparente, integrata visivamente nell'hero
- * - Su scroll (>40px): bg primary + backdrop-blur + bordo sottile
- * - Voci nav: anchor (#hero, #servizi, ecc.) → smooth scroll via CSS
- * - Mobile: voci visibili in linea (no hamburger, count basso ≤5)
+ * ⚠️ REGOLA CONTRASTO (importante): il testo nav DEVE restare leggibile su
+ * QUALSIASI palette generata. Bug storico: `text-canvas` su sfondo canvas =
+ * invisibile. Garanzie:
+ *   1. Testo SEMPRE `text-white` (primary regge il bianco — cfr .btn-primary).
+ *   2. Scrim `from-primary` anche da non scrollata: fondo scuro dietro il testo
+ *      su qualsiasi sezione; sopra l'hero scuro si fonde (effetto trasparente).
+ * Mai usare `canvas`/`ink` per testo o sfondo nav (variano con la palette).
  */
 export function Nav({ brandName, links }: Props) {
   const [scrolled, setScrolled] = useState(false);
@@ -38,16 +41,14 @@ export function Nav({ brandName, links }: Props) {
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-primary/90 backdrop-blur-md border-b border-canvas/10 shadow-lg"
-          : "bg-transparent"
+          ? "bg-primary/95 backdrop-blur-md border-b border-white/10 shadow-lg"
+          : "bg-gradient-to-b from-primary/85 via-primary/45 to-transparent"
       }`}
     >
       <div className="container-narrow flex h-16 items-center justify-between md:h-20">
         <a
           href="#top"
-          className={`text-base md:text-lg font-bold tracking-tight transition-colors ${
-            scrolled ? "text-canvas" : "text-canvas"
-          }`}
+          className="text-base md:text-lg font-bold tracking-tight text-white transition-opacity hover:opacity-80 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)]"
         >
           {brandName}
         </a>
@@ -56,11 +57,7 @@ export function Nav({ brandName, links }: Props) {
             <a
               key={link.href}
               href={link.href}
-              className={`rounded-full px-2 py-1.5 text-xs font-medium uppercase tracking-wider transition-all md:px-4 md:py-2 md:text-[11px] md:tracking-widest ${
-                scrolled
-                  ? "text-canvas/80 hover:bg-canvas/10 hover:text-canvas"
-                  : "text-canvas/90 hover:text-canvas"
-              }`}
+              className="rounded-full px-2 py-1.5 text-xs font-medium uppercase tracking-wider text-white/90 transition-all hover:bg-white/10 hover:text-white md:px-4 md:py-2 md:text-[11px] md:tracking-widest [text-shadow:0_1px_8px_rgba(0,0,0,0.35)]"
             >
               {link.label}
             </a>
