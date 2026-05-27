@@ -82,6 +82,49 @@ body {
     mask-image: radial-gradient(ellipse 75% 60% at 50% 38%, black 0%, transparent 78%);
   }
 
+  /* Griglia blueprint INTERATTIVA (hero): parallax col mouse (--gx/--gy) +
+     spotlight azzurro che segue il cursore (--mx/--my). Vedi InteractiveGrid.tsx. */
+  .interactive-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    --mx: 50%;
+    --my: 28%;
+    --gx: 0px;
+    --gy: 0px;
+  }
+  /* Layer griglia + parallax. Inset negativo così il translate non scopre i bordi. */
+  .interactive-grid::before {
+    content: "";
+    position: absolute;
+    inset: -24px;
+    background-image:
+      linear-gradient(rgba(123, 155, 190, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123, 155, 190, 0.07) 1px, transparent 1px);
+    background-size: 46px 46px;
+    transform: translate(var(--gx), var(--gy));
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 38%, black 0%, transparent 78%);
+    mask-image: radial-gradient(ellipse 75% 60% at 50% 38%, black 0%, transparent 78%);
+  }
+  /* Spotlight: alone azzurro che segue il mouse + griglia più nitida sotto. */
+  .interactive-grid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(360px circle at var(--mx) var(--my), rgba(56, 189, 248, 0.10), transparent 65%),
+      linear-gradient(rgba(56, 189, 248, 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56, 189, 248, 0.16) 1px, transparent 1px);
+    background-size: 100% 100%, 46px 46px, 46px 46px;
+    -webkit-mask-image: radial-gradient(320px circle at var(--mx) var(--my), black 0%, transparent 70%);
+    mask-image: radial-gradient(320px circle at var(--mx) var(--my), black 0%, transparent 70%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .interactive-grid::before { transition: none; }
+  }
+
   .noise {
     position: absolute;
     inset: 0;

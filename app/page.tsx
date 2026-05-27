@@ -4,6 +4,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { Reveal } from "@/components/Reveal";
 import { Marquee } from "@/components/Marquee";
+import { InteractiveGrid } from "@/components/InteractiveGrid";
 import { formatEur } from "@/lib/utils";
 
 const MARQUEE = [
@@ -107,7 +108,7 @@ export default function HomePage() {
         {/* Atmosfere */}
         <div className="glow-orb top-[-10%] right-[-12%] h-[800px] w-[800px] animate-glow bg-flame/20" />
         <div className="glow-orb top-[40%] left-[-15%] h-[600px] w-[600px] animate-glow-slow bg-brass/15" />
-        <div className="tech-grid" />
+        <InteractiveGrid />
 
         <div className="container-x relative pt-28 pb-32 md:pt-36 md:pb-40 lg:pt-44">
           <div className="mx-auto max-w-5xl text-center">
