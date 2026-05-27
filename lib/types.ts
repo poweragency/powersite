@@ -128,4 +128,9 @@ export interface OrderPayload {
   // Solo Signature: due immagini hi-res dell'ingresso del locale (mobile + desktop)
   entranceImageMobileUrl?: string;
   entranceImageDesktopUrl?: string;
+
+  // Riferimenti Stripe — popolati dal webhook DOPO checkout completato,
+  // non presenti nel manifest iniziale uploadato pre-pagamento.
+  stripeSessionId?: string | null;
+  stripeSubscriptionId?: string | null;
 }

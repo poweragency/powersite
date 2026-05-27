@@ -276,13 +276,27 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 3b. Modalità Stripe normale (default): crea Checkout Session
+    // 3b. Modalità Stripe normale (default): crea Checkout Session.
+    //     mode='subscription' perche' include la manutenzione mensile 19€
+    //     (vedi MONTHLY_MAINTENANCE_EUR). Stripe accetta line items misti
+    //     (recurring + one-time) nello stesso checkout: la prima invoice
+    //     fattura tier + addon + primo mese, dal secondo solo i 19€.
     const session = await stripe().checkout.sessions.create({
-      mode: "payment",
+      mode: "subscription",
       customer_email: data.email,
       line_items: buildLineItems(data.tier, data.addons),
       success_url: `${appUrl}/grazie?nonce=${nonce}`,
       cancel_url: `${appUrl}/ordina?canceled=1`,
+      // Metadata duplicato sulla subscription cosi' arriva anche negli
+      // event invoice.* futuri (renewal, payment_failed, ecc.).
+      subscription_data: {
+        metadata: {
+          nonce,
+          tier: data.tier,
+          email: data.email,
+          company_slug: companySlug,
+        },
+      },
       metadata: {
         nonce,
         tier: data.tier,

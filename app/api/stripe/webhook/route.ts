@@ -77,6 +77,15 @@ export async function POST(req: NextRequest) {
       }),
     }).catch((e) => console.warn("[stripe webhook] order confirmation email error:", e));
 
+    // Aggancia la subscription Stripe al lead CRM (campi gia' nel DB).
+    // session.subscription e' popolato in mode='subscription'. Lo passiamo
+    // alla pipeline tramite payload (stateless, niente DB write qui).
+    payload.stripeSubscriptionId =
+      typeof session.subscription === "string"
+        ? session.subscription
+        : session.subscription?.id ?? null;
+    payload.stripeSessionId = session.id;
+
     const result = await runPipeline(payload);
 
     // Marker scritto DOPO il successo — se la pipeline fallisce

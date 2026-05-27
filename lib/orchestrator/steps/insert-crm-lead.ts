@@ -14,6 +14,7 @@
 
 import type { OrderPayload } from "@/lib/types";
 import { getPowerhubClient } from "@/lib/supabase/powerhub";
+import { MONTHLY_MAINTENANCE_EUR } from "@/lib/catalog";
 
 export interface InsertCrmLeadArgs {
   order: OrderPayload;
@@ -106,11 +107,21 @@ export async function insertCrmLead(args: InsertCrmLeadArgs): Promise<InsertCrmL
     tier: order.tier,
     addons: order.addons,
     total_eur: order.totalEur,
-    stripe_session_id: stripeSessionId || null,
+    stripe_session_id: stripeSessionId || order.stripeSessionId || null,
     preview_url: previewUrl,
     repo_url: repoUrl,
     ...(tags.length > 0 ? { tags } : {}),
-    // status/subscription_status restano ai default (ready_to_deliver / none)
+
+    // Subscription mensile (19€/mese manutenzione + hosting).
+    // Popolata solo se Stripe ha creato la subscription. In BYPASS_STRIPE
+    // resta a default 'none' / null perche' nessun pagamento e' avvenuto.
+    ...(order.stripeSubscriptionId
+      ? {
+          subscription_status: "active" as const,
+          subscription_started_at: new Date().toISOString(),
+          subscription_eur_monthly: MONTHLY_MAINTENANCE_EUR,
+        }
+      : {}),
   };
 
   try {
@@ -128,7 +139,10 @@ export async function insertCrmLead(args: InsertCrmLeadArgs): Promise<InsertCrmL
       !!data?.created_at && Date.now() - new Date(data.created_at).getTime() > 60_000;
 
     console.log(
-      `[insert-crm-lead] ${alreadyExisted ? "updated" : "inserted"} lead ${data?.id} (nonce=${order.nonce})`,
+      `[insert-crm-lead] ${alreadyExisted ? "updated" : "inserted"} lead ${data?.id} (nonce=${order.nonce})` +
+        (order.stripeSubscriptionId
+          ? ` subscription=${order.stripeSubscriptionId} (${MONTHLY_MAINTENANCE_EUR}€/mo)`
+          : ""),
     );
     return { ok: true, leadId: data?.id, alreadyExisted };
   } catch (err) {
