@@ -117,9 +117,6 @@ export const ADDONS: AddonSpec[] = [
     description: "Le persone possono prenotare un appuntamento o comprare qualcosa direttamente dal sito, pagando online in sicurezza. I soldi arrivano sul tuo conto.",
     icon: "ShoppingCart",
   },
-  // NOTA: l'addon "domain" è stato rimosso dalla lista visibile perché ora
-  // è INCLUSO di default in tutti i tier (vedi features). Il tipo AddonKey
-  // resta per backwards-compat con ordini esistenti.
   // ───────────────────────────────────────────────────────────────
   // Modulo Contatti — 2 varianti mutually exclusive.
   // Di default il sito NON ha un form: i visitatori contattano via

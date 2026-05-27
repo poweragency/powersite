@@ -8,7 +8,6 @@ export type AddonKey =
   | "chatbot"
   | "email_funnel"
   | "booking"
-  | "domain"
   | "contact_form_integration"
   | "contact_form_bespoke"
   | "logo_design";

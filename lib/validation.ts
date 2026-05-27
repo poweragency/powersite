@@ -55,7 +55,7 @@ export const orderIntakeSchema = z.object({
   tier: z.enum(["standard", "premium", "business"]),
   addons: z.array(z.enum([
     "seo","geo","gaio","analytics","chatbot","email_funnel",
-    "booking","domain","contact_form_integration","contact_form_bespoke",
+    "booking","contact_form_integration","contact_form_bespoke",
     "logo_design",
   ]))
     .default([])

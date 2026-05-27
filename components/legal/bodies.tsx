@@ -16,12 +16,6 @@ const Section = ({ children }: { children: ReactNode }) => (
   <section className="space-y-3">{children}</section>
 );
 
-const Disclaimer = ({ children }: { children: ReactNode }) => (
-  <p className="mt-12 rounded-2xl border border-brass/30 bg-brass/5 p-5 text-sm text-mist">
-    ⚠️ <strong className="text-bone">Documento da finalizzare.</strong> {children}
-  </p>
-);
-
 // ────────────────────────────────────────────────────────────────────────
 // /legal — Note legali
 // ────────────────────────────────────────────────────────────────────────
@@ -83,11 +77,6 @@ export function LegalBody() {
           per dettagli sui cookie utilizzati.
         </p>
       </Section>
-
-      <Disclaimer>
-        Questo testo è un placeholder. Prima del lancio in produzione fai
-        validare le Note legali definitive da un consulente legale.
-      </Disclaimer>
     </>
   );
 }
@@ -177,11 +166,6 @@ export function TerminiBody() {
           Milano.
         </p>
       </Section>
-
-      <Disclaimer>
-        Questo testo è un placeholder. Prima del lancio in produzione fai
-        validare i Termini di servizio da un consulente legale.
-      </Disclaimer>
     </>
   );
 }
@@ -261,11 +245,6 @@ export function CookiesBody() {
           .
         </p>
       </Section>
-
-      <Disclaimer>
-        Questo testo è un placeholder. Prima del lancio in produzione integra
-        l&apos;informativa definitiva (es. via Iubenda o consulente legale).
-      </Disclaimer>
     </>
   );
 }

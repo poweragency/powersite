@@ -426,9 +426,6 @@ Sistema prenotazione online integrato (Calendly / Fresha / Cal.com).
 - Aggiungi UN item nei \`value\` o \`features\` che enfatizzi la facilità di prenotazione (3 minuti, 24/7, scegli orario, conferma istantanea).
 - Se il brief contiene orari/disponibilità nelle \`note_contenuto\`, integrali nella sezione \`contact\` come \`address\` esteso o body informativo.`,
 
-  domain: `### Quando \`domain\` è attivo
-Nessun impatto sul contenuto generato. È un'operation di deploy: il sito sarà servito sul dominio cliente custom. Genera il content come se l'addon non ci fosse.`,
-
   contact_form_integration: `### Quando \`contact_form_integration\` è attivo
 Il sito avrà un MODULO CONTATTI nella sezione finale (form con nome / telefono / email / messaggio) le cui richieste verranno inoltrate al gestionale CRM già esistente del cliente.
 - Sezione \`contact\`: il template aggiunge automaticamente il form sotto le info statiche. Tu NON inserire un campo "form" nel JSON — il template lo renderizza in base all'env var iniettata.
