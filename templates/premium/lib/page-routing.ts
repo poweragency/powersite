@@ -21,6 +21,7 @@ const TYPE_TO_PAGE: Record<Section["type"], PageKey> = {
   trust: "chi-siamo", // credenziali
   cta: "faq", // la cta intermedia chiude la pagina FAQ
   faq: "faq",
+  catalog: "servizi", // menù/catalogo/listino vive nella pagina Servizi
   contact: "faq", // placeholder: la contact è ricorrente, esclusa da sectionsForPage
 };
 

@@ -1006,15 +1006,27 @@ export default function OrderForm() {
                     <p className="mt-2 text-xs text-mist">Se non sai cosa scrivere lascia vuoto, lo deduciamo noi dal settore.</p>
                   </div>
                   <div>
-                    <label className="label">USP — Cosa ti rende unico (opz.)</label>
+                    <label className="label">Cosa fai di diverso dai concorrenti (opz.)</label>
                     <textarea
                       name="uniqueSellingProposition"
                       rows={2}
-                      placeholder="Qual è il valore che offri e che la concorrenza non offre?"
+                      placeholder="Concreto, non astratto. Es: &ldquo;gli altri danno il preventivo in 3 giorni, io in 2 ore&rdquo; / &ldquo;uso solo materiale italiano&rdquo;"
                       className="textarea"
                       defaultValue={draftValues.uniqueSellingProposition ?? ""}
                     />
-                    <p className="mt-2 text-xs text-mist">Se non sai cosa scrivere lascia vuoto, lo deduciamo noi dal settore + target.</p>
+                    <p className="mt-2 text-xs text-mist">Il confronto concreto col vicino di bottega è ciò che rende il sito tuo e non di chiunque altro.</p>
+                  </div>
+                  <div>
+                    <label className="label">Quali domande ti fanno più spesso? (opz.)</label>
+                    <textarea
+                      name="frequentQuestions"
+                      rows={3}
+                      maxLength={1500}
+                      placeholder="Una per riga. Es: &ldquo;quanto costa?&rdquo;, &ldquo;quanto tempo ci vuole?&rdquo;, &ldquo;fate sopralluoghi gratuiti?&rdquo;"
+                      className="textarea"
+                      defaultValue={draftValues.frequentQuestions ?? ""}
+                    />
+                    <p className="mt-2 text-xs text-mist">Diventano le FAQ del sito — quelle vere dei tuoi clienti, non domande inventate.</p>
                   </div>
                   <div className="grid gap-5 md:grid-cols-2">
                     <div>
@@ -1056,6 +1068,40 @@ export default function OrderForm() {
                       defaultValue={draftValues.avoidInCopy ?? ""}
                     />
                     <p className="mt-2 text-xs text-mist">Aiutaci a non andare in direzioni sbagliate.</p>
+                  </div>
+                  <div>
+                    <label className="label">Cosa critichi del tuo settore? (opz.)</label>
+                    <textarea
+                      name="industryCritique"
+                      rows={2}
+                      maxLength={800}
+                      placeholder="es. &ldquo;tutti danno preventivi vaghi&rdquo;, &ldquo;ti fanno aspettare settimane&rdquo;, &ldquo;usano materiali scadenti&rdquo;"
+                      className="textarea"
+                      defaultValue={draftValues.industryCritique ?? ""}
+                    />
+                    <p className="mt-2 text-xs text-mist">Ti posiziona per contrasto e dà carattere. Critichiamo la pratica diffusa, mai un concorrente per nome.</p>
+                  </div>
+                  <div>
+                    <label className="label">Una garanzia o promessa concreta (opz.)</label>
+                    <input
+                      name="guarantee"
+                      type="text"
+                      maxLength={500}
+                      placeholder="es. &ldquo;Se non sei soddisfatto, rifacciamo gratis&rdquo; / &ldquo;Preventivo in 24 ore&rdquo;"
+                      className="input"
+                      defaultValue={draftValues.guarantee ?? ""}
+                    />
+                    <p className="mt-2 text-xs text-mist">Le promesse concrete aumentano la fiducia: le mettiamo in evidenza nel sito.</p>
+                  </div>
+                  <div>
+                    <label className="label">Menù / catalogo / listino in PDF (opz.)</label>
+                    <input
+                      name="catalogPdf"
+                      type="file"
+                      accept="application/pdf"
+                      className="block w-full text-sm text-mist file:mr-4 file:rounded-full file:border-0 file:bg-brass/15 file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-widest file:text-brass hover:file:bg-brass/25 file:cursor-pointer"
+                    />
+                    <p className="mt-2 text-xs text-mist">Se carichi un menù o catalogo, lo leggiamo e lo trasformiamo in una sezione dedicata dentro il sito (categorie, voci, prezzi). Max 20MB.</p>
                   </div>
                 </div>
               </section>

@@ -272,7 +272,21 @@ const COPY_PRINCIPLES = `## PRINCIPI DI COPYWRITING NON NEGOZIABILI
    - \`meta.title\`: 50-60 char, formato "[Brand] — [Promessa breve]"
    - \`meta.description\`: 130-160 char, frase completa con CTA implicita
 
-9. **Italiano corretto**. Niente anglicismi inutili. "Prenota" non "Booka". "Contatti" non "Contact".`;
+9. **Italiano corretto**. Niente anglicismi inutili. "Prenota" non "Booka". "Contatti" non "Contact".
+
+## CAMPI NARRATIVI DEL BRIEF — usali per battere la genericità
+
+Questi campi (se presenti) sono ORO: sono ciò che rende il sito unico invece di intercambiabile. Sfruttali sempre.
+
+10. **\`domande_che_mi_fanno_piu_spesso\`**: se presente, le FAQ DEVONO nascere DA QUI — sono le domande VERE dei clienti, non obiezioni generiche inventate. Riformula ogni domanda in modo naturale e scrivi risposte concrete coerenti col brief. Hanno priorità assoluta sulle FAQ dedotte dal settore.
+
+11. **\`cosa_faccio_di_diverso_dai_concorrenti\`**: è il posizionamento. Usalo come spina dorsale di hero + sezione \`value\` (PERCHÉ NOI). Trasformalo in beneficio concreto e specifico, mai in claim astratto. È più importante di qualsiasi descrizione generica del servizio.
+
+12. **\`cosa_critico_del_mio_settore\`**: usalo per il posizionamento PER CONTRASTO ("a differenza di chi..."). Dà personalità e una presa di posizione. Integralo con TATTO in hero/value: critica la PRATICA diffusa, MAI nominare o diffamare concorrenti specifici. Es. critica "i preventivi vaghi" → "Da noi il preventivo è scritto, dettagliato, senza sorprese".
+
+13. **\`garanzia_o_promessa_concreta\`**: se presente, è un fortissimo segnale di trust. Inseriscila in modo evidente — idealmente come sottotitolo hero, un item \`value\`, o nel blocco \`cta\` finale. Mantienila testuale e concreta, non annacquarla.
+
+14. **\`catalog\` (PDF allegato)**: se è allegato un documento menù/catalogo/listino, genera UNA sezione \`catalog\` con i contenuti REALI estratti dal PDF (categorie → voci con nome, descrizione, prezzo se presente). Non inventare voci. Posizionala dove ha più senso nel flusso (per un ristorante il menù è quasi centrale, subito dopo l'hero o dopo \`value\`).`;
 
 const RESPONSIVE_AWARENESS = `## OTTIMIZZAZIONE UI/UX MOBILE + DESKTOP
 

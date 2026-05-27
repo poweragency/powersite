@@ -72,6 +72,10 @@ export async function insertCrmLead(args: InsertCrmLeadArgs): Promise<InsertCrmL
     preferred_colors: order.preferredColors || null,
     content_notes: order.contentNotes || null,
     avoid_in_copy: order.avoidInCopy || null,
+    frequent_questions: order.frequentQuestions || null,
+    industry_critique: order.industryCritique || null,
+    guarantee: order.guarantee || null,
+    catalog_pdf_url: order.catalogPdfUrl || null,
 
     // Indirizzo strutturato
     works_remotely: order.worksRemotely ?? false,

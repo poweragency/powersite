@@ -9,6 +9,7 @@ import { Trust } from "./sections/Trust";
 import { SocialProof } from "./sections/SocialProof";
 import { CtaBlock } from "./sections/CtaBlock";
 import { Faq } from "./sections/Faq";
+import { Catalog } from "./sections/Catalog";
 import { Contact } from "./sections/Contact";
 
 interface Props {
@@ -53,6 +54,8 @@ function renderSection(section: Section, brandName: string, i: number) {
       return <CtaBlock key={i} title={section.title} body={section.body} ctaPrimary={section.ctaPrimary} />;
     case "faq":
       return <Faq key={i} title={section.title} items={section.items} />;
+    case "catalog":
+      return <Catalog key={i} title={section.title} subtitle={section.subtitle} categories={section.categories} />;
     case "contact":
       return (
         <Contact

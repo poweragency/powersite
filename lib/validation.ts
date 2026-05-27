@@ -22,6 +22,10 @@ export const orderIntakeSchema = z.object({
   preferredColors: z.string().max(120).optional(),
   contentNotes: z.string().max(2000).optional(),
   avoidInCopy: z.string().max(1000).optional(),
+  // Campi narrativi anti-genericità
+  frequentQuestions: z.string().max(1500).optional(),
+  industryCritique: z.string().max(800).optional(),
+  guarantee: z.string().max(500).optional(),
 
   // Indirizzo strutturato (opzionali; obbligatori solo se NON works_remotely)
   worksRemotely: z.boolean().default(false),

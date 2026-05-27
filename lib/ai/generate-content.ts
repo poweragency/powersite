@@ -63,7 +63,10 @@ function buildUserMessage(order: OrderPayload): string {
     azienda: order.company,
     settore: order.sector,
     target: order.targetAudience ?? null,
-    proposta_unica: order.uniqueSellingProposition ?? null,
+    cosa_faccio_di_diverso_dai_concorrenti: order.uniqueSellingProposition ?? null,
+    domande_che_mi_fanno_piu_spesso: order.frequentQuestions ?? null,
+    cosa_critico_del_mio_settore: order.industryCritique ?? null,
+    garanzia_o_promessa_concreta: order.guarantee ?? null,
     cta_primaria: order.primaryCta ?? null,
     cta_secondaria: order.secondaryCta ?? null,
     tono_di_voce: order.toneOfVoice,
@@ -89,6 +92,8 @@ function buildUserMessage(order: OrderPayload): string {
     path: `/uploads/image_${i}.${url.split(".").pop()?.split("?")[0] ?? "jpg"}`,
   }));
 
+  const hasCatalogPdf = Boolean(order.catalogPdfUrl);
+
   return [
     "<brief_cliente>",
     JSON.stringify(brief, null, 2),
@@ -104,6 +109,9 @@ function buildUserMessage(order: OrderPayload): string {
     JSON.stringify(order.addons),
     "</addon_attivi>",
     "",
+    hasCatalogPdf
+      ? "<documento_allegato>È allegato un PDF (menù / catalogo / listino). LEGGILO e crea UNA sezione `catalog` strutturata in categorie e voci, estraendo nomi, descrizioni e prezzi se presenti. Posizionala nel punto più sensato del flusso (per un ristorante = il menù è centrale; per un negozio = dopo i servizi). NON inventare voci non presenti nel PDF.</documento_allegato>\n"
+      : "",
     "Genera ora il contenuto della landing chiamando `render_landing_content` con tutti i campi popolati secondo le regole del system prompt. Applica SOLO le regole degli addon presenti in `<addon_attivi>`; ignora le regole degli altri addon.",
   ].join("\n");
 }
@@ -145,7 +153,21 @@ export async function generateLandingContent(
       // web_search prima del render.
       tools: [renderLandingTool, webSearchTool as unknown as Anthropic.Tool],
       tool_choice: { type: "any" },
-      messages: [{ role: "user", content: userMessage }],
+      messages: [
+        {
+          role: "user",
+          content: order.catalogPdfUrl
+            ? [
+                // PDF letto nativamente da Claude (document block via URL pubblico Blob).
+                {
+                  type: "document",
+                  source: { type: "url", url: order.catalogPdfUrl },
+                } as unknown as Anthropic.ContentBlockParam,
+                { type: "text", text: userMessage },
+              ]
+            : userMessage,
+        },
+      ],
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

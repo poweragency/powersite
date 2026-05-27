@@ -3,7 +3,7 @@ import { after } from "next/server";
 import { orderIntakeSchema } from "@/lib/validation";
 import { calculateTotal } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
-import { uploadImage, uploadEntranceImage, uploadLogo, uploadManifest } from "@/lib/blob";
+import { uploadImage, uploadEntranceImage, uploadLogo, uploadCatalogPdf, uploadManifest } from "@/lib/blob";
 import { stripe, buildLineItems } from "@/lib/stripe";
 import { sendEmail } from "@/lib/email/send";
 import { orderConfirmation } from "@/lib/email/templates";
@@ -17,6 +17,7 @@ const MAX_IMAGES = 30;
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_ENTRANCE_IMAGE_BYTES = 15 * 1024 * 1024;
 const MAX_LOGO_BYTES = 5 * 1024 * 1024;
+const MAX_CATALOG_PDF_BYTES = 20 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
   try {
@@ -45,6 +46,9 @@ export async function POST(req: NextRequest) {
       preferredColors: form.get("preferredColors")?.toString() || undefined,
       contentNotes: form.get("contentNotes")?.toString() || undefined,
       avoidInCopy: form.get("avoidInCopy")?.toString() || undefined,
+      frequentQuestions: form.get("frequentQuestions")?.toString() || undefined,
+      industryCritique: form.get("industryCritique")?.toString() || undefined,
+      guarantee: form.get("guarantee")?.toString() || undefined,
       videoScript: form.get("videoScript")?.toString() || undefined,
 
       // Indirizzo strutturato
@@ -131,6 +135,27 @@ export async function POST(req: NextRequest) {
       logoBlobUrl = uploaded.url;
     }
 
+    // 1a-ter. PDF menù/catalogo/listino (opzionale): l'AI lo legge ed estrae
+    // una sezione `catalog`. Accettiamo solo application/pdf.
+    let catalogPdfUrl: string | undefined;
+    const pdfFile = form.get("catalogPdf");
+    if (pdfFile instanceof File && pdfFile.size > 0) {
+      if (pdfFile.type !== "application/pdf") {
+        return NextResponse.json(
+          { error: "Il file menù/catalogo deve essere un PDF." },
+          { status: 415 },
+        );
+      }
+      if (pdfFile.size > MAX_CATALOG_PDF_BYTES) {
+        return NextResponse.json(
+          { error: `Il PDF supera 20MB (${(pdfFile.size / 1024 / 1024).toFixed(1)}MB)` },
+          { status: 413 },
+        );
+      }
+      const uploaded = await uploadCatalogPdf(nonce, pdfFile);
+      catalogPdfUrl = uploaded.url;
+    }
+
     // 1b. (Solo Signature) due immagini ingresso hi-res (mobile + desktop)
     let entranceImageMobileUrl: string | undefined;
     let entranceImageDesktopUrl: string | undefined;
@@ -171,6 +196,10 @@ export async function POST(req: NextRequest) {
       contentNotes: data.contentNotes,
       videoScript: data.videoScript,
       avoidInCopy: data.avoidInCopy,
+      frequentQuestions: data.frequentQuestions,
+      industryCritique: data.industryCritique,
+      guarantee: data.guarantee,
+      catalogPdfUrl,
 
       worksRemotely: data.worksRemotely,
       addressStreet: data.addressStreet,

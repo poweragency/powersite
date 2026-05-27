@@ -10,6 +10,7 @@ import { Trust } from "../components/sections/Trust";
 import { SocialProof } from "../components/sections/SocialProof";
 import { CtaBlock } from "../components/sections/CtaBlock";
 import { Faq } from "../components/sections/Faq";
+import { Catalog } from "../components/sections/Catalog";
 import { Contact } from "../components/sections/Contact";
 import { Footer } from "../components/Footer";
 
@@ -29,6 +30,7 @@ const SECTION_ANCHORS: Record<Section["type"], { id: string; label: string }> = 
   "social-proof": { id: "recensioni", label: "Recensioni" },
   cta: { id: "cta", label: "" },
   faq: { id: "faq", label: "FAQ" },
+  catalog: { id: "catalogo", label: "Catalogo" },
   contact: { id: "contatti", label: "Contatti" },
 };
 
@@ -82,6 +84,8 @@ function renderSection(section: Section, brandName: string, i: number, all: Sect
       return wrap(<CtaBlock title={section.title} body={section.body} ctaPrimary={section.ctaPrimary} />);
     case "faq":
       return wrap(<Faq title={section.title} items={section.items} />);
+    case "catalog":
+      return wrap(<Catalog title={section.title} subtitle={section.subtitle} categories={section.categories} />);
     case "contact":
       return wrap(
         <Contact

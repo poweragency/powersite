@@ -72,7 +72,7 @@ export interface OrderPayload {
   // Brief
   sector: string;
   targetAudience?: string;
-  uniqueSellingProposition?: string;
+  uniqueSellingProposition?: string;  // ora orientato al CONFRONTO concreto coi concorrenti
   primaryCta?: string;
   secondaryCta?: string;
   toneOfVoice: ToneOfVoice;
@@ -80,6 +80,14 @@ export interface OrderPayload {
   contentNotes?: string;
   videoScript?: string;
   avoidInCopy?: string;
+  // Campi narrativi anti-genericità (alimentano FAQ, posizionamento, copy)
+  frequentQuestions?: string;   // "quali domande ti fanno più spesso?" → FAQ reali
+  industryCritique?: string;    // "cosa critichi del tuo settore?" → posizionamento per contrasto
+  guarantee?: string;           // garanzia/promessa concreta → trust + differenziazione
+
+  // PDF menù/catalogo/listino caricato dal cliente: l'AI lo legge ed estrae
+  // una sezione `catalog` strutturata, posizionata nel sito (mono + multipagina).
+  catalogPdfUrl?: string;
 
   // Indirizzo strutturato (opzionale: businesses online non hanno sede)
   worksRemotely?: boolean;

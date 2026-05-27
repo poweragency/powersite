@@ -31,6 +31,7 @@ export type Section =
   | { type: "social-proof"; title: string; testimonials: { name: string; quote: string; rating?: number; image?: string }[] }
   | { type: "cta"; title: string; body?: string; ctaPrimary: Cta }
   | { type: "faq"; title: string; items: { q: string; a: string }[] }
+  | { type: "catalog"; title: string; subtitle?: string; categories: { name: string; items: { name: string; description?: string; price?: string }[] }[] }
   | { type: "contact"; title: string; address?: string; phone?: string; email?: string };
 
 export interface ImagesMeta {

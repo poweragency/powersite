@@ -108,6 +108,15 @@ export async function uploadEntranceImage(
   });
 }
 
+export async function uploadCatalogPdf(nonce: string, file: File): Promise<PutBlobResult> {
+  const path = blobPath(nonce, "catalog.pdf");
+  return put(path, file, {
+    access: "public",
+    contentType: "application/pdf",
+    addRandomSuffix: false,
+  });
+}
+
 export async function uploadLogo(nonce: string, file: File): Promise<PutBlobResult> {
   const ext = (file.name.split(".").pop()?.toLowerCase() ?? "png").replace(/[^a-z0-9]/g, "");
   const path = blobPath(nonce, `logo.${ext || "png"}`);

@@ -217,6 +217,48 @@ const sectionTrust = {
   },
 } as const;
 
+// Sezione CATALOG: menù / catalogo / listino estratto dal PDF caricato dal
+// cliente. Strutturato in categorie → voci (nome, descrizione?, prezzo?).
+// Renderizzata sia nel template mono (standard) che multipagina (premium).
+const sectionCatalog = {
+  type: "object",
+  additionalProperties: false,
+  required: ["type", "title", "categories"],
+  properties: {
+    type: { type: "string", enum: ["catalog"] },
+    title: { type: "string", minLength: 2, maxLength: 80, description: "Es. 'Il menù', 'Catalogo', 'Listino'" },
+    subtitle: { type: "string", maxLength: 200 },
+    categories: {
+      type: "array",
+      minItems: 1,
+      maxItems: 14,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["name", "items"],
+        properties: {
+          name: { type: "string", minLength: 1, maxLength: 80, description: "Categoria, es. 'Antipasti', 'Maglieria'" },
+          items: {
+            type: "array",
+            minItems: 1,
+            maxItems: 50,
+            items: {
+              type: "object",
+              additionalProperties: false,
+              required: ["name"],
+              properties: {
+                name: { type: "string", minLength: 1, maxLength: 140 },
+                description: { type: "string", maxLength: 300 },
+                price: { type: "string", maxLength: 30, description: "Es. '12 €', 'da 8,50 €' — solo se nel PDF" },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+} as const;
+
 export const CONTENT_JSON_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -258,7 +300,7 @@ export const CONTENT_JSON_SCHEMA = {
     sections: {
       type: "array",
       minItems: 4,
-      maxItems: 9,
+      maxItems: 10,
       items: {
         anyOf: [
           sectionHero,
@@ -270,6 +312,7 @@ export const CONTENT_JSON_SCHEMA = {
           sectionCta,
           sectionFaq,
           sectionContact,
+          sectionCatalog,
         ],
       },
     },
