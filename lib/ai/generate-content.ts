@@ -135,39 +135,40 @@ export async function generateLandingContent(
     max_uses: 2,
   };
 
+  const userContent: Anthropic.MessageParam["content"] = order.catalogPdfUrl
+    ? [
+        // PDF letto nativamente da Claude (document block via URL pubblico Blob).
+        {
+          type: "document",
+          source: { type: "url", url: order.catalogPdfUrl },
+        } as unknown as Anthropic.ContentBlockParam,
+        { type: "text", text: userMessage },
+      ]
+    : userMessage;
+
+  const systemBlocks = [
+    { type: "text" as const, text: systemPrompt, cache_control: { type: "ephemeral" as const } },
+  ];
+
+  const findRender = (msg: Anthropic.Message) =>
+    msg.content.find(
+      (b): b is Anthropic.ToolUseBlock =>
+        b.type === "tool_use" && b.name === RENDER_LANDING_TOOL_NAME,
+    );
+
   let response: Anthropic.Message;
   try {
     response = await client.messages.create({
       model: MODEL_COPY,
       max_tokens: 8000,
-      system: [
-        {
-          type: "text",
-          text: systemPrompt,
-          cache_control: { type: "ephemeral" },
-        },
-      ],
+      system: systemBlocks,
       // any = il modello DEVE usare almeno un tool ma sceglie quale. Cosi
       // può prima fare web_search per recensioni (se serve), poi chiamare
       // render_landing_content. Forzare 'tool' specifico bloccherebbe il
       // web_search prima del render.
       tools: [renderLandingTool, webSearchTool as unknown as Anthropic.Tool],
       tool_choice: { type: "any" },
-      messages: [
-        {
-          role: "user",
-          content: order.catalogPdfUrl
-            ? [
-                // PDF letto nativamente da Claude (document block via URL pubblico Blob).
-                {
-                  type: "document",
-                  source: { type: "url", url: order.catalogPdfUrl },
-                } as unknown as Anthropic.ContentBlockParam,
-                { type: "text", text: userMessage },
-              ]
-            : userMessage,
-        },
-      ],
+      messages: [{ role: "user", content: userContent }],
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -181,13 +182,35 @@ export async function generateLandingContent(
     throw new Error(`[generate-content] Claude API error: ${message}`);
   }
 
-  const toolUseBlock = response.content.find(
-    (b): b is Anthropic.ToolUseBlock =>
-      b.type === "tool_use" && b.name === RENDER_LANDING_TOOL_NAME,
-  );
+  let toolUseBlock = findRender(response);
+
+  // RETRY: a volte (es. dopo web_search senza risultati per un brand poco noto)
+  // il modello chiude con testo invece di chiamare render_landing_content
+  // (stop_reason=end_turn). Riproviamo FORZANDO il tool e SENZA web_search,
+  // così il sito viene comunque generato (testimonianze in fallback plausibile).
+  if (!toolUseBlock) {
+    console.warn(
+      `[generate-content] ${order.nonce}: nessun render alla 1ª chiamata (stop_reason=${response.stop_reason}) → retry forzato`,
+    );
+    try {
+      response = await client.messages.create({
+        model: MODEL_COPY,
+        max_tokens: 8000,
+        system: systemBlocks,
+        tools: [renderLandingTool],
+        tool_choice: { type: "tool", name: RENDER_LANDING_TOOL_NAME },
+        messages: [{ role: "user", content: userContent }],
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      logGeneration({ nonce: order.nonce, step: "generate-content", model: MODEL_COPY, durationMs: Date.now() - startedAt, error: `retry: ${message}` });
+      throw new Error(`[generate-content] Claude API error (retry): ${message}`);
+    }
+    toolUseBlock = findRender(response);
+  }
 
   if (!toolUseBlock) {
-    const errMsg = `Nessuna chiamata a ${RENDER_LANDING_TOOL_NAME}. stop_reason=${response.stop_reason}`;
+    const errMsg = `Nessuna chiamata a ${RENDER_LANDING_TOOL_NAME} (anche dopo retry). stop_reason=${response.stop_reason}`;
     logGeneration({
       nonce: order.nonce,
       step: "generate-content",

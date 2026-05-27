@@ -33,7 +33,10 @@ export async function isEventProcessed(eventId: string): Promise<boolean> {
 }
 
 export async function markEventProcessed(eventId: string): Promise<void> {
-  await put(eventMarkerPath(eventId), "", {
+  // Body NON vuoto: @vercel/blob rifiuta body vuoto ("body is required").
+  // Un marker zero-byte facevamo prima → rompeva l'idempotenza (e con Stripe
+  // un retry del webhook avrebbe rigenerato un sito duplicato).
+  await put(eventMarkerPath(eventId), new Date().toISOString(), {
     access: "public",
     contentType: "text/plain",
     addRandomSuffix: false,
