@@ -179,6 +179,8 @@ export async function deployToVercel(args: {
       args.order.addons.includes("contact_form_integration") ||
       args.order.addons.includes("contact_form_bespoke"),
     chatbotEnabled: args.order.addons.includes("chatbot"),
+    analyticsEnabled: args.order.addons.includes("analytics"),
+    emailFunnelEnabled: args.order.addons.includes("email_funnel"),
   }).catch((err) => {
     console.warn(`[deploy-vercel] inject env vars fallito (non bloccante):`, err);
   });
@@ -240,6 +242,8 @@ async function injectClientEnvVars(args: {
   nonce: string;
   contactFormEnabled: boolean;
   chatbotEnabled: boolean;
+  analyticsEnabled: boolean;
+  emailFunnelEnabled: boolean;
 }): Promise<void> {
   const supabaseUrl = process.env.POWERHUB_SUPABASE_URL;
   const anonKey = process.env.POWERHUB_ANON_KEY;
@@ -256,6 +260,8 @@ async function injectClientEnvVars(args: {
     { key: "POWERSITE_NONCE", value: args.nonce },
     { key: "NEXT_PUBLIC_CONTACT_FORM", value: args.contactFormEnabled ? "true" : "false" },
     { key: "NEXT_PUBLIC_CHATBOT", value: args.chatbotEnabled ? "true" : "false" },
+    { key: "NEXT_PUBLIC_ANALYTICS", value: args.analyticsEnabled ? "true" : "false" },
+    { key: "NEXT_PUBLIC_EMAIL_FUNNEL", value: args.emailFunnelEnabled ? "true" : "false" },
   ];
   if (supabaseUrl) envs.push({ key: "NEXT_PUBLIC_POWERHUB_URL", value: supabaseUrl });
   if (anonKey) envs.push({ key: "NEXT_PUBLIC_POWERHUB_ANON_KEY", value: anonKey });
@@ -294,4 +300,14 @@ async function injectClientEnvVars(args: {
     );
   }
   console.log(`[deploy-vercel] env vars iniettate (${envs.length}) su project ${args.projectId}`);
+  if (args.analyticsEnabled) {
+    console.log(
+      `[deploy-vercel] ⚠️ ADDON ANALYTICS attivo: l'infrastruttura cookie-compliant è pronta, ma vanno settati MANUALMENTE su questo project Vercel gli ID del cliente: NEXT_PUBLIC_GA_ID (GA4) e/o NEXT_PUBLIC_META_PIXEL_ID (ogni cliente ha la propria proprietà).`,
+    );
+  }
+  if (args.emailFunnelEnabled) {
+    console.log(
+      `[deploy-vercel] ⚠️ ADDON EMAIL FUNNEL attivo: il form newsletter salva le iscrizioni nel CRM (landing_contact_submissions). La SEQUENZA email va collegata manualmente al provider (Resend/Mailchimp) per questo cliente.`,
+    );
+  }
 }

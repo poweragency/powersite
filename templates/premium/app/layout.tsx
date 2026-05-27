@@ -3,6 +3,7 @@ import "./globals.css";
 import content from "../content.json";
 import { JsonLd } from "../components/JsonLd";
 import { CookieBanner } from "../components/CookieBanner";
+import { Analytics } from "../components/Analytics";
 import type { Content } from "../lib/content-schema";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "";
@@ -38,6 +39,7 @@ export default function RootLayout({
       <body className="min-h-screen">
         {children}
         <CookieBanner />
+        <Analytics />
       </body>
     </html>
   );

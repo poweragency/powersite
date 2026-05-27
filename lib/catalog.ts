@@ -113,7 +113,7 @@ export const ADDONS: AddonSpec[] = [
   {
     key: "booking",
     name: "Booking & E-commerce",
-    priceEur: 197,
+    priceEur: 297,
     description: "Le persone possono prenotare un appuntamento o comprare qualcosa direttamente dal sito, pagando online in sicurezza. I soldi arrivano sul tuo conto.",
     icon: "ShoppingCart",
   },
