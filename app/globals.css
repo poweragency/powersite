@@ -108,18 +108,21 @@ body {
     -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 38%, black 0%, transparent 78%);
     mask-image: radial-gradient(ellipse 75% 60% at 50% 38%, black 0%, transparent 78%);
   }
-  /* Spotlight: alone azzurro che segue il mouse + griglia più nitida sotto. */
+  /* Spotlight premium: alone soffuso bianco-azzurrino che segue il mouse +
+     griglia che si "accende" gradualmente sotto al cursore. Falloff dolce
+     (mask ampia, gradient morbido) per un effetto raffinato, non a bordo netto. */
   .interactive-grid::after {
     content: "";
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(360px circle at var(--mx) var(--my), rgba(56, 189, 248, 0.10), transparent 65%),
-      linear-gradient(rgba(56, 189, 248, 0.16) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(56, 189, 248, 0.16) 1px, transparent 1px);
+      radial-gradient(480px circle at var(--mx) var(--my), rgba(125, 185, 235, 0.07), transparent 60%),
+      linear-gradient(rgba(120, 175, 225, 0.11) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120, 175, 225, 0.11) 1px, transparent 1px);
     background-size: 100% 100%, 46px 46px, 46px 46px;
-    -webkit-mask-image: radial-gradient(320px circle at var(--mx) var(--my), black 0%, transparent 70%);
-    mask-image: radial-gradient(320px circle at var(--mx) var(--my), black 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(440px circle at var(--mx) var(--my), black 0%, rgba(0,0,0,0.35) 45%, transparent 78%);
+    mask-image: radial-gradient(440px circle at var(--mx) var(--my), black 0%, rgba(0,0,0,0.35) 45%, transparent 78%);
+    transition: opacity 0.3s ease;
   }
   @media (prefers-reduced-motion: reduce) {
     .interactive-grid::before { transition: none; }
@@ -237,6 +240,51 @@ select.input:user-invalid:focus {
   .text-stroke {
     -webkit-text-stroke: 1.5px rgb(var(--bone));
     color: transparent;
+  }
+}
+
+/* ─── Cursore custom premium (CustomCursor.tsx) ───────────────────────
+   Visibile solo da desktop (pointer fine): nascondiamo il cursore di sistema
+   e mostriamo dot + ring con mix-blend-mode difference (adattivo, elegante). */
+.cursor-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 9999px;
+  opacity: 0;
+  will-change: transform;
+  pointer-events: none;
+}
+.cursor-dot {
+  width: 7px;
+  height: 7px;
+  background: #ffffff;
+  transition: opacity 0.2s ease;
+}
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  transition: width 0.25s ease, height 0.25s ease, opacity 0.2s ease, border-color 0.25s ease;
+}
+.cursor-ring--active {
+  width: 56px;
+  height: 56px;
+  border-color: rgba(255, 255, 255, 0.55);
+}
+/* Nascondi il cursore di sistema solo quando il custom è attivo (desktop). */
+@media (pointer: fine) {
+  body.has-custom-cursor,
+  body.has-custom-cursor * {
+    cursor: none !important;
   }
 }
 

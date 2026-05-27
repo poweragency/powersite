@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Footer } from "@/components/Footer";
 import { Logo } from "@/components/Logo";
+import { InteractiveGrid } from "@/components/InteractiveGrid";
 import OrderForm from "./order-form";
 
 export const metadata = {
@@ -13,7 +14,7 @@ export default function OrdinaPage() {
       <main className="relative isolate overflow-hidden">
         <div className="glow-orb top-[-15%] right-[-5%] h-[500px] w-[500px] animate-glow-slow bg-flame/15" />
         <div className="glow-orb bottom-[10%] left-[-10%] h-[400px] w-[400px] animate-glow-slow bg-brass/15" />
-        <div className="tech-grid" />
+        <InteractiveGrid />
 
         {/* Top bar: solo brand mark */}
         <div className="container-x relative">

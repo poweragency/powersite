@@ -1,6 +1,7 @@
 import { Nav } from "./Nav";
 import { Footer } from "./Footer";
 import { BackButton } from "./BackButton";
+import { InteractiveGrid } from "./InteractiveGrid";
 
 interface Props {
   eyebrow: string;
@@ -16,7 +17,7 @@ export function LegalLayout({ eyebrow, title, italicWord, updatedAt, children }:
       <Nav />
       <main className="relative isolate overflow-hidden">
         <div className="glow-orb top-[-15%] right-[-5%] h-[400px] w-[400px] animate-glow-slow bg-brass/15" />
-        <div className="tech-grid" />
+        <InteractiveGrid />
 
         <article className="container-x relative py-16 md:py-24">
           <header className="mx-auto max-w-3xl">

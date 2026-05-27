@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CookieBanner } from "@/components/CookieBanner";
+import { CustomCursor } from "@/components/CustomCursor";
 import { JsonLd } from "@/components/JsonLd";
 
 const sans = Inter({
@@ -89,6 +90,7 @@ export default function RootLayout({
       <body className="min-h-screen font-sans antialiased bg-obsidian text-bone">
         {children}
         <CookieBanner />
+        <CustomCursor />
       </body>
     </html>
   );
