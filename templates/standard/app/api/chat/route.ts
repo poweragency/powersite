@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: "Body non valido" }, { status: 400 });
   }
-  const history = Array.isArray(body.messages) ? body.messages.slice(-10) : [];
+  const history = Array.isArray(body.messages) ? body.messages.slice(-8) : [];
   if (history.length === 0 || history[history.length - 1]?.role !== "user") {
     return NextResponse.json({ error: "Nessun messaggio" }, { status: 400 });
   }
@@ -108,8 +108,11 @@ export async function POST(req: NextRequest) {
         "content-type": "application/json",
       },
       body: JSON.stringify({
+        // claude-haiku-4-5 è il modello più economico accessibile da questo
+        // account ($1/$5 per 1M). I modelli 3.x non sono abilitati (404).
+        // Consumo ridotto via max_tokens basso (l'output costa 5x l'input).
         model: process.env.CHATBOT_MODEL || "claude-haiku-4-5",
-        max_tokens: 400,
+        max_tokens: 256,
         system: buildSystemPrompt(),
         messages: history.map((m) => ({ role: m.role, content: m.content })),
       }),
