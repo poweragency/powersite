@@ -22,7 +22,7 @@ export function Process({ title, steps }: Props) {
         <ol className="relative space-y-12 md:space-y-16">
           <div className="absolute left-[27px] md:left-[35px] top-8 bottom-8 w-px bg-gradient-to-b from-accent/30 via-primary/10 to-transparent" aria-hidden />
           {steps.map((s, i) => (
-            <li key={i} className="relative flex gap-6 md:gap-8 fade-in">
+            <li key={i} className="relative flex gap-6 md:gap-8 fade-in fx-lift">
               <div className="flex-none">
                 <div className="w-[54px] h-[54px] md:w-[70px] md:h-[70px] rounded-full bg-secondary border border-primary/15 grid place-items-center text-2xl md:text-3xl shadow-sm" aria-hidden>
                   {s.icon}

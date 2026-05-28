@@ -21,7 +21,7 @@ export function Features({ title, items }: Props) {
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-x-12 gap-y-14">
           {items.map((item, i) => (
-            <article key={i} className="flex gap-6 fade-in">
+            <article key={i} className="flex gap-6 fade-in fx-lift">
               {item.icon && (
                 <div className="flex-none text-5xl md:text-6xl leading-none" aria-hidden>
                   {item.icon}

@@ -18,23 +18,31 @@ export function Hero({ brandName, headline, subheadline, ctaPrimary, ctaSecondar
       {image && (
         <>
           <div
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0 bg-cover bg-center hero-kenburns"
             style={{ backgroundImage: `url(${image})` }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-canvas/40 via-canvas/60 to-canvas/95" />
         </>
       )}
-      <div className="container-narrow relative z-10 max-w-4xl text-center fade-in">
-        <p className="section-eyebrow">{brandName}</p>
-        <h1 className="text-balance text-5xl md:text-7xl lg:text-8xl leading-[0.95] text-primary mb-8">
-          {headline}
+      <div className="container-narrow relative z-10 max-w-4xl text-center">
+        <p className="section-eyebrow hero-rise" style={{ animationDelay: "0.05s" }}>{brandName}</p>
+        <div className="hero-line" />
+        <h1 className="text-balance text-5xl md:text-7xl lg:text-8xl leading-[0.95] text-primary mb-8 mt-6">
+          {headline.split(" ").map((w, i) => (
+            <span key={i} className="hero-word" style={{ animationDelay: `${0.15 + i * 0.07}s` }}>
+              {w}
+            </span>
+          ))}
         </h1>
         {subheadline && (
-          <p className="text-pretty text-lg md:text-xl text-ink/70 max-w-2xl mx-auto mb-12 leading-relaxed">
+          <p
+            className="text-pretty text-lg md:text-xl text-ink/70 max-w-2xl mx-auto mb-12 leading-relaxed hero-rise"
+            style={{ animationDelay: "0.5s" }}
+          >
             {subheadline}
           </p>
         )}
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="flex flex-wrap gap-4 justify-center hero-rise" style={{ animationDelay: "0.65s" }}>
           <Link href={ctaPrimary.href} className="btn-primary">
             {ctaPrimary.label}
           </Link>

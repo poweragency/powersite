@@ -13,6 +13,7 @@ import { Faq } from "./sections/Faq";
 import { Catalog } from "./sections/Catalog";
 import { Gallery } from "./sections/Gallery";
 import { Contact } from "./sections/Contact";
+import { Reveal } from "./Reveal";
 import { shouldRenderCtaBlock } from "../lib/cta";
 
 interface Props {
@@ -93,9 +94,15 @@ export function SiteShell({ brandName, sections, navLinks, pageTitle, contactSec
             <div className="hairline mt-6 max-w-[120px]" />
           </section>
         )}
-        {sections.map((s, i) => renderSection(s, brandName, i))}
+        {sections.map((s, i) => {
+          const node = renderSection(s, brandName, i);
+          if (!node) return null;
+          // L'hero ha la sua animazione cinematografica; le altre sezioni
+          // entrano con reveal allo scroll.
+          return s.type === "hero" ? node : <Reveal key={i}>{node}</Reveal>;
+        })}
         {/* Contatti ricorrenti: CTA in fondo a ogni pagina (+ form se addon attivo). */}
-        {contactSection && renderSection(contactSection, brandName, 9999)}
+        {contactSection && <Reveal>{renderSection(contactSection, brandName, 9999)}</Reveal>}
       </main>
       <Footer brandName={brandName} />
       <ChatWidget brandName={brandName} />

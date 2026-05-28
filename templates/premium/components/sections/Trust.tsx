@@ -1,3 +1,5 @@
+import { CountUp } from "../CountUp";
+
 interface Badge {
   label: string;
   value: string;
@@ -25,7 +27,7 @@ export function Trust({ title, badges }: Props) {
           {badges.map((b, i) => (
             <div key={i} className="text-center md:text-left fade-in">
               <div className="text-5xl md:text-6xl lg:text-7xl text-accent leading-none mb-3 serif-italic font-semibold">
-                {b.value}
+                <CountUp value={b.value} />
               </div>
               <div className="text-base md:text-lg font-semibold text-primary mb-1">
                 {b.label}

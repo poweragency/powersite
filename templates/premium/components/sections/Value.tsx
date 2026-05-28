@@ -22,7 +22,7 @@ export function Value({ title, items }: Props) {
         </div>
         <div className={`grid gap-x-10 gap-y-12 ${cols}`}>
           {items.map((item, i) => (
-            <article key={i} className="fade-in">
+            <article key={i} className="fade-in fx-lift">
               <h3 className="text-xl md:text-2xl font-semibold text-primary mb-3 leading-snug">
                 <span className="serif-italic text-accent text-3xl md:text-4xl mr-3 align-baseline">
                   {String(i + 1).padStart(2, "0")}
