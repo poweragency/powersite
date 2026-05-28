@@ -45,8 +45,8 @@ export function CustomCursor() {
 
     const loop = () => {
       // lerp morbido del ring verso la posizione del mouse
-      rx += (mx - rx) * 0.18;
-      ry += (my - ry) * 0.18;
+      rx += (mx - rx) * 0.28;
+      ry += (my - ry) * 0.28;
       ring.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%)`;
       raf = requestAnimationFrame(loop);
     };

@@ -222,16 +222,22 @@ h1 {
 .cursor-layer--dot .cursor-ring { display: none; }
 .cursor-layer--dot .cursor-dot { width: 14px; height: 14px; background: hsl(var(--color-accent) / 0.85); }
 
-/* glow — alone luminoso soffuso (friendly / energetic) */
-.cursor-layer--glow .cursor-dot { display: none; }
+/* glow — punto NETTO preciso (segue il mouse 1:1) + alone soffuso dietro come
+   decorazione. Il dot è il punto di contatto reale del click. */
+.cursor-layer--glow .cursor-dot {
+  width: 9px;
+  height: 9px;
+  background: hsl(var(--color-accent));
+  box-shadow: 0 0 0 2px hsl(var(--color-canvas) / 0.5);
+}
 .cursor-layer--glow .cursor-ring {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border: none;
-  background: radial-gradient(circle, hsl(var(--color-accent) / 0.40), transparent 70%);
+  background: radial-gradient(circle, hsl(var(--color-accent) / 0.35), transparent 70%);
   filter: blur(3px);
 }
-.cursor-layer--glow .cursor-ring--active { width: 70px; height: 70px; }
+.cursor-layer--glow .cursor-ring--active { width: 64px; height: 64px; }
 
 @media (pointer: fine) {
   body.has-custom-cursor,
