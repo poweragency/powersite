@@ -1314,7 +1314,7 @@ export default function OrderForm() {
                               </span>
                             )}
                           </div>
-                          <div className="mt-2 text-xs leading-relaxed text-mist">{t.description}</div>
+                          <div className="mt-2 min-h-[2.5rem] text-xs leading-relaxed text-mist">{t.description}</div>
                           <ul className="mt-4 space-y-1.5 border-t border-bone/5 pt-4">
                             {t.features.map((f, fi) => (
                               <li key={fi} className="flex items-start gap-2 text-[11px] leading-snug text-mist">
