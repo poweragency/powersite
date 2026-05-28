@@ -166,7 +166,13 @@ const SECTION_REFERENCE = `## TIPI DI SEZIONE — schema obbligatorio
 
 ### \`hero\`
 La PRIMA sezione, sempre. Campi:
-  - \`headline\` (8-120 char): la promessa principale. Una frase. NIENTE punto finale. Esempio buono: "Sorrisi che durano una vita." Esempio scadente: "Benvenuti nel nostro sito"
+  - \`headline\` (8-120 char): la promessa principale.
+    - DEVE essere UNA SOLA frase italiana, grammaticalmente CORRETTA e di SENSO COMPIUTO. Rileggila ad alta voce: se suona strana o monca, riscrivila.
+    - Controlla SOGGETTO–VERBO–COMPLEMENTO: il soggetto deve essere quello giusto. Se il servizio è una riparazione, è il BRAND che ripara ("Ripariamo…") oppure l'oggetto che VIENE riparato/torna a nuovo — MAI l'oggetto come soggetto attivo.
+    - ❌ SBAGLIATO: "La tua auto elettrica ripara. In 30 minuti sai tutto." (l'auto non "ripara"; sono due frasi scollegate)
+    - ✅ GIUSTO: "La tua auto elettrica torna a nuovo in 30 minuti." oppure "Diagnostica completa della tua auto elettrica in 30 minuti."
+    - NON spezzare in due frasi con due punti. Niente punto finale se è uno slogan breve; un solo punto è tollerato se è una frase compiuta.
+    - Esempio buono: "Sorrisi che durano una vita" · Esempio scadente: "Benvenuti nel nostro sito"
   - \`subheadline\` (≤240 char, opzionale): aggiunge contesto/credibilità. Esempio: "20 anni di esperienza in odontoiatria a Milano."
   - \`ctaPrimary\`: label (verbo all'imperativo, 2-4 parole — "Prenota visita gratuita") + href ("#contatti" per scroll, o "tel:+39..." / "mailto:..." / URL esterno)
   - \`ctaSecondary\` (opzionale): solo se ha senso un'azione alternativa ("Scopri i servizi" → "#servizi")
@@ -273,6 +279,12 @@ const COPY_PRINCIPLES = `## PRINCIPI DI COPYWRITING NON NEGOZIABILI
    - \`meta.description\`: 130-160 char, frase completa con CTA implicita
 
 9. **Italiano corretto**. Niente anglicismi inutili. "Prenota" non "Booka". "Contatti" non "Contact".
+
+9-bis. **Grammatica e senso compiuto — controllo finale OBBLIGATORIO**. Prima di restituire il JSON, rileggi OGNI headline, titolo e CTA come se li leggessi ad alta voce a un cliente. Ognuno deve:
+   - essere una frase italiana corretta, con soggetto e verbo concordi e SENSATI (chi compie l'azione è quello giusto);
+   - avere senso compiuto da solo, senza ambiguità;
+   - NON essere monco, troncato o spezzato in due frasi scollegate.
+   Se una frase non regge alla rilettura, RISCRIVILA prima di restituirla. La chiarezza grammaticale viene SEMPRE prima della creatività o della brevità.
 
 ## CAMPI NARRATIVI DEL BRIEF — usali per battere la genericità
 
