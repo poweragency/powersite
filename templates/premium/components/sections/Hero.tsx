@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { InteractiveGrid } from "../InteractiveGrid";
+import { isContactCta } from "../../lib/cta";
 
 interface Props {
   brandName: string;
@@ -37,7 +38,7 @@ export function Hero({ brandName, headline, subheadline, ctaPrimary, ctaSecondar
           <Link href={ctaPrimary.href} className="btn-primary">
             {ctaPrimary.label}
           </Link>
-          {ctaSecondary && (
+          {ctaSecondary && isContactCta(ctaSecondary.href) && (
             <Link href={ctaSecondary.href} className="btn-outline">
               {ctaSecondary.label}
             </Link>

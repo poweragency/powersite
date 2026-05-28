@@ -15,6 +15,7 @@ import { Gallery } from "../components/sections/Gallery";
 import { Contact } from "../components/sections/Contact";
 import { Footer } from "../components/Footer";
 import { ChatWidget } from "../components/ChatWidget";
+import { shouldRenderCtaBlock } from "../lib/cta";
 
 const data = content as unknown as Content;
 
@@ -84,6 +85,9 @@ function renderSection(section: Section, brandName: string, i: number, all: Sect
     case "social-proof":
       return wrap(<SocialProof title={section.title} testimonials={section.testimonials} />);
     case "cta":
+      // MAX 1 CTA-contatti per pagina: la sezione `contact` è già la CTA.
+      // Un CtaBlock si mostra SOLO se è il lead-magnet newsletter.
+      if (!shouldRenderCtaBlock(section.ctaPrimary.href)) return null;
       return wrap(<CtaBlock title={section.title} body={section.body} ctaPrimary={section.ctaPrimary} />);
     case "faq":
       return wrap(<Faq title={section.title} items={section.items} />);

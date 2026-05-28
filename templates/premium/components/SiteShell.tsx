@@ -13,6 +13,7 @@ import { Faq } from "./sections/Faq";
 import { Catalog } from "./sections/Catalog";
 import { Gallery } from "./sections/Gallery";
 import { Contact } from "./sections/Contact";
+import { shouldRenderCtaBlock } from "../lib/cta";
 
 interface Props {
   brandName: string;
@@ -53,6 +54,9 @@ function renderSection(section: Section, brandName: string, i: number) {
     case "social-proof":
       return <SocialProof key={i} title={section.title} testimonials={section.testimonials} />;
     case "cta":
+      // MAX 1 CTA-contatti per pagina: la sezione `contact` ricorrente è già
+      // la CTA. Un CtaBlock si mostra SOLO se è il lead-magnet newsletter.
+      if (!shouldRenderCtaBlock(section.ctaPrimary.href)) return null;
       return <CtaBlock key={i} title={section.title} body={section.body} ctaPrimary={section.ctaPrimary} />;
     case "faq":
       return <Faq key={i} title={section.title} items={section.items} />;
