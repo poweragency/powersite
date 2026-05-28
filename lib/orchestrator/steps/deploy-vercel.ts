@@ -72,10 +72,14 @@ function buildUrl(path: string, teamId?: string): URL {
  */
 function pickStableAlias(aliases?: string[]): string | undefined {
   if (!aliases?.length) return undefined;
-  const clean = aliases.find(
-    (a) => a.endsWith(".vercel.app") && !a.includes("-git-") && !a.includes("-projects.vercel.app"),
-  );
-  return clean ?? aliases.find((a) => a.endsWith(".vercel.app")) ?? aliases[0];
+  // Escludi gli alias di branch git (effimeri/lunghi). Tra i rimanenti
+  // (tutti stabili per production) preferisci il PIÙ CORTO: è l'alias pulito
+  // `{nome}.vercel.app`. Se non ancora propagato (deploy appena creato), resta
+  // comunque l'alias `...-projects.vercel.app`, anch'esso stabile.
+  const candidates = aliases
+    .filter((a) => a.endsWith(".vercel.app") && !a.includes("-git-"))
+    .sort((a, b) => a.length - b.length);
+  return candidates[0] ?? aliases[0];
 }
 
 async function vercelRequest<T>(
