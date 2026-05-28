@@ -56,7 +56,7 @@ function ResolutionPreview({ url, device }: { url: string; device: Device }) {
               src={url}
               title="Preview"
               loading="lazy"
-              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              sandbox="allow-same-origin allow-scripts"
               style={{
                 width: `${baseW}px`,
                 height: `${baseH}px`,
@@ -65,6 +65,9 @@ function ResolutionPreview({ url, device }: { url: string; device: Device }) {
               }}
               className="absolute left-0 top-0 border-0"
             />
+            {/* Overlay che cattura ogni interazione: l'anteprima è solo da
+                guardare, non si può cliccare/navigare verso il sito reale. */}
+            <div className="absolute inset-0 z-10 cursor-default" aria-hidden />
           </div>
           <p className="font-mono text-[10px] uppercase tracking-widest text-mist">
             Risoluzione · {baseW} × {baseH} · scale {(scale * 100).toFixed(0)}%
@@ -161,21 +164,6 @@ export function ShowcaseModal({ tier, onClose }: Props) {
                 Mobile
               </button>
             </div>
-
-            {/* Apri in nuova tab */}
-            <a
-              href={active.url}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="hidden items-center gap-1.5 rounded-lg border border-bone/15 px-3 py-2 text-[10px] font-semibold uppercase tracking-widest text-mist transition-colors hover:border-brass/40 hover:text-brass md:inline-flex"
-            >
-              Apri
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                <polyline points="15 3 21 3 21 9" />
-                <line x1="10" y1="14" x2="21" y2="3" />
-              </svg>
-            </a>
 
             {/* Close */}
             <button

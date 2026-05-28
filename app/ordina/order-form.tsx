@@ -1314,8 +1314,8 @@ export default function OrderForm() {
                               </span>
                             )}
                           </div>
-                          <div className="mt-2 min-h-[2.5rem] text-xs leading-relaxed text-mist">{t.description}</div>
-                          <ul className="mt-4 space-y-1.5 border-t border-bone/5 pt-4">
+                          <div className="mt-2 min-h-[2rem] text-xs leading-relaxed text-mist">{t.description}</div>
+                          <ul className="mt-3 space-y-1.5 border-t border-bone/5 pt-3">
                             {t.features.map((f, fi) => (
                               <li key={fi} className="flex items-start gap-2 text-[11px] leading-snug text-mist">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="mt-1 flex-none text-brass">
@@ -1326,17 +1326,17 @@ export default function OrderForm() {
                             ))}
                           </ul>
                         </button>
-                        <div className="border-t border-bone/5 px-5 py-3">
+                        <div className="border-t border-bone/5 px-5 py-4">
                           <button
                             type="button"
                             onClick={() => setShowcaseTier(t.key)}
-                            className="group/btn flex w-full items-center justify-between font-mono text-[10px] uppercase tracking-widest text-mist transition-colors hover:text-brass"
+                            className="group/btn flex w-full items-center justify-center gap-2 rounded-lg border border-brass/40 bg-brass/10 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-brass transition-all hover:border-brass hover:bg-brass/20"
                           >
-                            <span>Vedi esempi</span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover/btn:translate-x-0.5">
-                              <line x1="5" y1="12" x2="19" y2="12" />
-                              <polyline points="12 5 19 12 12 19" />
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                              <circle cx="12" cy="12" r="3" />
                             </svg>
+                            <span>Vedi esempi siti {t.name}</span>
                           </button>
                         </div>
                       </div>
