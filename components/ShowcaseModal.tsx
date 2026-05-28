@@ -56,7 +56,11 @@ function ResolutionPreview({ url, device }: { url: string; device: Device }) {
               src={url}
               title="Preview"
               loading="lazy"
-              sandbox="allow-same-origin allow-scripts"
+              /* Interazione e scroll DENTRO l'anteprima sono permessi.
+                 Niente allow-popups / allow-top-navigation → l'iframe non può
+                 aprire il sito in una nuova scheda né navigare fuori dal modal:
+                 le anteprime restano visibili solo da qui. */
+              sandbox="allow-same-origin allow-scripts allow-forms"
               style={{
                 width: `${baseW}px`,
                 height: `${baseH}px`,
@@ -65,9 +69,6 @@ function ResolutionPreview({ url, device }: { url: string; device: Device }) {
               }}
               className="absolute left-0 top-0 border-0"
             />
-            {/* Overlay che cattura ogni interazione: l'anteprima è solo da
-                guardare, non si può cliccare/navigare verso il sito reale. */}
-            <div className="absolute inset-0 z-10 cursor-default" aria-hidden />
           </div>
           <p className="font-mono text-[10px] uppercase tracking-widest text-mist">
             Risoluzione · {baseW} × {baseH} · scale {(scale * 100).toFixed(0)}%
