@@ -11,7 +11,6 @@ const MARQUEE = [
   "Atelier digitale",
   "Su misura",
   "Consegna in 48 ore",
-  "Made in Italy",
   "Lavoro sartoriale",
   "Codice scritto a mano",
   "Senza template",
@@ -37,7 +36,7 @@ const STEPS = [
   {
     n: "IV",
     t: "Ricevi e approvi",
-    d: "Email con il link di anteprima. Tu rivedi, chiedi modifiche se serve, e quando dici sì consegniamo la versione finale.",
+    d: "Otterrai la tua anteprima, accettiamo qualsiasi modifica e alla tua conferma caricheremo il sito definitivo per te.",
   },
 ];
 
@@ -123,12 +122,9 @@ export default function HomePage() {
             {/* Headline */}
             <h1 className="display mt-12 text-balance text-5xl font-bold leading-[1] text-cream sm:text-6xl md:mt-14 md:text-7xl lg:text-[7.5rem] lg:leading-[0.95]">
               <Reveal delay={120} inline className="block">Sito web</Reveal>
-              <Reveal delay={280} inline className="block">
-                <span className="serif-italic">su misura</span>
-                <span className="text-mist">,</span>
-              </Reveal>
+              <Reveal delay={280} inline className="block">su misura</Reveal>
               <Reveal delay={440} inline className="block">
-                <span className="text-flame">in 48 ore.</span>
+                <span className="text-flame">in 48 ore</span>
               </Reveal>
             </h1>
 
@@ -140,9 +136,9 @@ export default function HomePage() {
             {/* Subhead */}
             <Reveal delay={780}>
               <p className="mx-auto mt-10 max-w-xl text-pretty text-base leading-relaxed text-bone/80 md:text-lg">
-                Niente template. Niente drag-and-drop. Un sito disegnato e
-                costruito per te, dal nostro studio. Una consegna alla
-                volta, con cura artigianale.
+                Un sito disegnato e costruito per te, dal nostro studio.
+                <br />
+                Una consegna alla volta, con cura artigianale.
               </p>
             </Reveal>
 
