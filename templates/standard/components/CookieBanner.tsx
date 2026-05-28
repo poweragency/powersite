@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "site-cookie-consent";
@@ -52,9 +53,9 @@ export function CookieBanner() {
       <p id="cookie-desc" className="text-sm leading-relaxed text-ink/80">
         Usiamo solo cookie tecnici necessari al funzionamento del sito. Maggiori
         dettagli nella{" "}
-        <a href="/cookies" className="underline hover:text-accent">
+        <Link href="/cookies" className="underline hover:text-accent">
           Cookie Policy
-        </a>
+        </Link>
         .
       </p>
       <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-end">

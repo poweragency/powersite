@@ -1,3 +1,4 @@
+import Link from "next/link";
 import content from "../content.json";
 import type { Content } from "../lib/content-schema";
 import { BrandStyle } from "./BrandStyle";
@@ -19,15 +20,17 @@ export function LegalPageShell({ title, children }: Props) {
   return (
     <>
       <BrandStyle palette={data.brand.palette} />
-      <header className="bg-primary text-white py-10">
-        <div className="container-narrow">
-          <a href="/" className="text-xs uppercase tracking-widest opacity-70 hover:opacity-100">
-            ← Torna al sito
-          </a>
-          <h1 className="mt-4 text-4xl md:text-5xl font-bold">{title}</h1>
-        </div>
-      </header>
-      <main className="container-narrow py-12 md:py-16">{children}</main>
+      <div className="page-fade-in">
+        <header className="bg-primary text-white py-10">
+          <div className="container-narrow">
+            <Link href="/" className="text-xs uppercase tracking-widest opacity-70 transition-opacity hover:opacity-100">
+              ← Torna al sito
+            </Link>
+            <h1 className="mt-4 text-4xl md:text-5xl font-bold">{title}</h1>
+          </div>
+        </header>
+        <main className="container-narrow py-12 md:py-16">{children}</main>
+      </div>
       <Footer brandName={data.brand.name} />
     </>
   );

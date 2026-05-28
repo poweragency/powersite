@@ -1,12 +1,12 @@
+import Link from "next/link";
+
 /**
  * Footer del sito cliente.
  *
  * Il badge "Powered by PowerLanding" usa i colori dinamici della palette
  * generata dall'AI (variabili CSS --color-accent + --color-ink) invece
  * di colori hardcoded oro/nero — così si integra con qualsiasi brand.
- *   - background: ink (più scuro disponibile della palette) con opacità
- *   - bordo + testo + icona: accent della palette
- * Funziona su palette verdi, blu, rosse, qualsiasi senza stonare.
+ * I link legali usano <Link> (next) per navigazione client-side fluida.
  */
 export function Footer({ brandName }: { brandName: string }) {
   return (
@@ -31,11 +31,11 @@ export function Footer({ brandName }: { brandName: string }) {
           Powered by <span className="text-accent">PowerLanding</span>
         </a>
         <nav className="flex flex-wrap items-center justify-center gap-4 text-[11px] uppercase tracking-widest opacity-80">
-          <a href="/legal" className="hover:opacity-100 hover:text-accent transition-colors">Note legali</a>
+          <Link href="/legal" className="hover:opacity-100 hover:text-accent transition-colors">Note legali</Link>
           <span aria-hidden className="opacity-40">·</span>
-          <a href="/privacy" className="hover:opacity-100 hover:text-accent transition-colors">Privacy</a>
+          <Link href="/privacy" className="hover:opacity-100 hover:text-accent transition-colors">Privacy</Link>
           <span aria-hidden className="opacity-40">·</span>
-          <a href="/cookies" className="hover:opacity-100 hover:text-accent transition-colors">Cookie policy</a>
+          <Link href="/cookies" className="hover:opacity-100 hover:text-accent transition-colors">Cookie policy</Link>
         </nav>
         <span className="opacity-70 text-xs text-center">
           © {new Date().getFullYear()} {brandName}. Tutti i diritti riservati.
