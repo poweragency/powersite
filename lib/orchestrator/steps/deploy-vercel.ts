@@ -65,6 +65,19 @@ function buildUrl(path: string, teamId?: string): URL {
   return url;
 }
 
+/**
+ * Sceglie l'alias di produzione più "pulito" da mostrare nel CRM:
+ * preferisce `{nome-troncato}.vercel.app` ed evita gli alias di branch git
+ * (contengono "-git-") e quelli col nome del team ("...-projects.vercel.app").
+ */
+function pickStableAlias(aliases?: string[]): string | undefined {
+  if (!aliases?.length) return undefined;
+  const clean = aliases.find(
+    (a) => a.endsWith(".vercel.app") && !a.includes("-git-") && !a.includes("-projects.vercel.app"),
+  );
+  return clean ?? aliases.find((a) => a.endsWith(".vercel.app")) ?? aliases[0];
+}
+
 async function vercelRequest<T>(
   path: string,
   init: RequestInit & { token: string; teamId?: string },
@@ -204,11 +217,29 @@ export async function deployToVercel(args: {
     }),
   });
 
-  const url = deployment.url.startsWith("http")
+  // URL del singolo deployment (con hash, cambia a OGNI push) — solo per log.
+  const deploymentUrl = deployment.url.startsWith("http")
     ? deployment.url
     : `https://${deployment.url}`;
 
-  console.log(`[deploy-vercel] deployment ${deployment.id} avviato → ${url}`);
+  // URL di PRODUZIONE STABILE: l'alias che Vercel assegna al target production
+  // e che resta IDENTICO a ogni push. NON usiamo `{nome}.vercel.app` derivato
+  // perché Vercel TRONCA il nome se lungo (es. ...-04c25e30 → ...-04c2). Lo
+  // leggiamo dagli alias reali del progetto. Così nel CRM finisce l'URL giusto,
+  // senza doverlo aggiornare a mano dopo ogni modifica al sito.
+  let stableAlias: string | undefined;
+  try {
+    const proj = await vercelRequest<{ targets?: { production?: { alias?: string[] } } }>(
+      `/v9/projects/${project.id}`,
+      { token, teamId, method: "GET" },
+    );
+    stableAlias = pickStableAlias(proj.targets?.production?.alias);
+  } catch (err) {
+    console.warn(`[deploy-vercel] lettura alias production fallita:`, err);
+  }
+  const url = stableAlias ? `https://${stableAlias}` : `https://${project.name}.vercel.app`;
+
+  console.log(`[deploy-vercel] deployment ${deployment.id} → prod ${url} (deploy: ${deploymentUrl})`);
 
   return {
     projectId: project.id,
