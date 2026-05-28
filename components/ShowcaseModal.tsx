@@ -17,11 +17,12 @@ type Device = "desktop" | "mobile";
  * manca larghezza si stringe — qualunque sia il vincolo prevalente.
  */
 function ResolutionPreview({ url, device }: { url: string; device: Device }) {
-  const baseW = device === "desktop" ? 1920 : 1080;
-  const baseH = device === "desktop" ? 1080 : 1920;
-  // Cap di larghezza per mobile: anche se ci fosse spazio in larghezza,
-  // restringiamo per simulare un telefono reale.
-  const widthCap = device === "desktop" ? Infinity : 420;
+  // Mobile usa un VIEWPORT REALE da telefono (390px di larghezza CSS): così
+  // i media-query del sito scattano sul layout mobile vero (menu hamburger,
+  // testo impilato), non il layout desktop solo rimpicciolito. 1080px sarebbe
+  // ancora "desktop" per i breakpoint CSS.
+  const baseW = device === "desktop" ? 1920 : 390;
+  const baseH = device === "desktop" ? 1080 : 844;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0);
@@ -30,16 +31,18 @@ function ResolutionPreview({ url, device }: { url: string; device: Device }) {
     const container = containerRef.current;
     if (!container) return;
     const update = () => {
-      const availW = Math.min(container.clientWidth, widthCap);
+      const availW = container.clientWidth;
       const availH = container.clientHeight;
       if (availW <= 0 || availH <= 0) return;
-      setScale(Math.min(availW / baseW, availH / baseH));
+      // Mobile: non ingrandiamo oltre 1:1 (il telefono resta a misura reale).
+      const s = Math.min(availW / baseW, availH / baseH);
+      setScale(device === "mobile" ? Math.min(s, 1) : s);
     };
     update();
     const ro = new ResizeObserver(update);
     ro.observe(container);
     return () => ro.disconnect();
-  }, [baseW, baseH, widthCap]);
+  }, [baseW, baseH, device]);
 
   const scaledW = baseW * scale;
   const scaledH = baseH * scale;
