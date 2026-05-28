@@ -43,7 +43,7 @@ const STEPS = [
 const VALUES = [
   { t: "Lavoriamo su misura", d: "Ogni sito è progettato da zero per te. Niente template, niente preset, niente layout già visti." },
   { t: "Codice scritto a mano.", d: "Sviluppiamo con cura riga per riga. Il sito è veloce, pulito, e tuo per sempre." },
-  { t: "Le tue immagini.", d: "Carichi tu le foto del business. Niente stock photography, niente immagini generiche da archivio." },
+  { t: "Le tue immagini.", d: "Carichiamo le foto del tuo business. Niente stock photography, niente immagini generiche da archivio." },
   { t: "Copy che vende.", d: "Ogni parola è studiata per portare risultati. Headline, CTA, FAQ, tutto curato come fosse un vestito cucito a mano." },
   { t: "Consegna garantita.", d: "Quarantotto ore dal pagamento al link di anteprima. Non promesse, ma il nostro impegno scritto." },
   { t: "Tuo per sempre.", d: "Codice, repository, dominio: tutto a tuo nome. Vuoi cambiare studio domani? Hai già tutto in mano." },
