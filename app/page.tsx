@@ -21,7 +21,7 @@ const MARQUEE = [
 const STEPS = [
   {
     n: "I",
-    t: "Compili il brief",
+    t: "Compiliamo il brief",
     d: "Quindici domande mirate, scritte da chi disegna siti web da anni. Cinque minuti che ci dicono tutto quello che serve.",
   },
   {
@@ -31,7 +31,7 @@ const STEPS = [
   },
   {
     n: "III",
-    t: "Costruiamo e deployiamo",
+    t: "Costruiamo e mettiamo online",
     d: "Sviluppiamo il sito con codice scritto a mano, lo pubblichiamo su dominio, lo testiamo su ogni dispositivo.",
   },
   {
