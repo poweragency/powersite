@@ -24,6 +24,12 @@ function MacBookFrame({ width, height, children }: { width: number; height: numb
         <div className="absolute left-1/2 top-[3.5px] h-[5px] w-[5px] -translate-x-1/2 rounded-full bg-[#27272b]" aria-hidden />
         <div className="relative overflow-hidden rounded-[3px] bg-white" style={{ width, height }}>
           {children}
+          {/* Riflesso vetro dello schermo: decorativo, non intercetta scroll/click */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{ background: "linear-gradient(118deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 16%, rgba(255,255,255,0) 100%)" }}
+            aria-hidden
+          />
         </div>
       </div>
       {/* Base / cerniera, leggermente più larga dello schermo */}
@@ -42,6 +48,11 @@ function IPhoneFrame({ width, height, children }: { width: number; height: numbe
   return (
     <div className="relative rounded-[2.6rem] bg-[#0d0d0f] p-[11px] shadow-[0_30px_70px_-25px_rgba(0,0,0,0.75)]">
       <div className="absolute left-1/2 top-[20px] z-10 h-[22px] w-[32%] -translate-x-1/2 rounded-full bg-black" aria-hidden />
+      {/* Tasti laterali (decorativi): accensione a destra, volume/silenzioso a sinistra */}
+      <div className="absolute right-[-2px] top-[27%] h-[13%] w-[3px] rounded-r-md bg-[#1c1c1f]" aria-hidden />
+      <div className="absolute left-[-2px] top-[19%] h-[6%] w-[3px] rounded-l-md bg-[#1c1c1f]" aria-hidden />
+      <div className="absolute left-[-2px] top-[30%] h-[10%] w-[3px] rounded-l-md bg-[#1c1c1f]" aria-hidden />
+      <div className="absolute left-[-2px] top-[42%] h-[10%] w-[3px] rounded-l-md bg-[#1c1c1f]" aria-hidden />
       <div className="relative overflow-hidden rounded-[1.9rem] bg-white" style={{ width, height }}>
         {children}
       </div>
