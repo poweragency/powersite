@@ -41,8 +41,8 @@ const STEPS = [
 ];
 
 const VALUES = [
-  { t: "Su misura, davvero.", d: "Ogni landing è progettata da zero per te. Niente template, niente preset, niente layout già visti." },
-  { t: "Codice scritto a mano.", d: "Sviluppiamo con cura artigianale, riga per riga. Il sito è veloce, pulito, e tuo per sempre." },
+  { t: "Lavoriamo su misura", d: "Ogni sito è progettato da zero per te. Niente template, niente preset, niente layout già visti." },
+  { t: "Codice scritto a mano.", d: "Sviluppiamo con cura riga per riga. Il sito è veloce, pulito, e tuo per sempre." },
   { t: "Le tue immagini.", d: "Carichi tu le foto del business. Niente stock photography, niente immagini generiche da archivio." },
   { t: "Copy che vende.", d: "Ogni parola è studiata per portare risultati. Headline, CTA, FAQ, tutto curato come fosse un vestito cucito a mano." },
   { t: "Consegna garantita.", d: "Quarantotto ore dal pagamento al link di anteprima. Non promesse, ma il nostro impegno scritto." },
@@ -236,7 +236,7 @@ export default function HomePage() {
             <Reveal delay={150}>
               <h2 className="display mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tighter text-cream md:text-6xl">
                 Sei principi <br />
-                su cui non <span className="serif-italic">scendiamo</span> a patti.
+                su cui <span className="serif-italic">non</span> scendiamo a patti.
               </h2>
             </Reveal>
           </div>
