@@ -45,7 +45,7 @@ const VALUES = [
   { t: "Codice scritto a mano.", d: "Sviluppiamo con cura riga per riga. Il sito è veloce, pulito, e tuo per sempre." },
   { t: "Le tue immagini.", d: "Carichiamo le foto del tuo business. Niente stock photography, niente immagini generiche da archivio." },
   { t: "Copy che vende.", d: "Ogni parola è studiata per portare risultati. Headline, CTA, FAQ, tutto curato da un nostro esperto copywriter." },
-  { t: "Consegna garantita.", d: "48 ore dal pagamento al link di anteprima. Non promesse, ma il nostro impegno scritto." },
+  { t: "Velocità garantita.", d: "48 ore dal pagamento al link di anteprima." },
   { t: "Tuo per sempre.", d: "Codice, repository, dominio: tutto a tuo nome. Vuoi cambiare studio domani? Hai già tutto in mano." },
 ];
 
