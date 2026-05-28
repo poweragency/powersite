@@ -4,6 +4,7 @@ import content from "../content.json";
 import { JsonLd } from "../components/JsonLd";
 import { CookieBanner } from "../components/CookieBanner";
 import { Analytics } from "../components/Analytics";
+import { CustomCursor } from "../components/CustomCursor";
 import type { Content } from "../lib/content-schema";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "";
@@ -40,6 +41,7 @@ export default function RootLayout({
         {children}
         <CookieBanner />
         <Analytics />
+        <CustomCursor />
       </body>
     </html>
   );

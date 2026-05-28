@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { InteractiveGrid } from "../InteractiveGrid";
 
 interface Props {
   brandName: string;
@@ -12,6 +13,7 @@ interface Props {
 export function Hero({ brandName, headline, subheadline, ctaPrimary, ctaSecondary, image }: Props) {
   return (
     <section className="relative bg-secondary py-28 md:py-40 overflow-hidden">
+      <InteractiveGrid />
       {image && (
         <>
           <div

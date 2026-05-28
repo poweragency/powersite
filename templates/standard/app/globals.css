@@ -71,3 +71,86 @@ h1, h2, h3 {
 .container-narrow {
   @apply mx-auto max-w-5xl px-6;
 }
+
+/* ─── Griglia interattiva (hero): parallax + spotlight, colori dalla palette ───
+   Linee con --color-ink (contrasta sempre col fondo, light o dark), spotlight e
+   bagliore con --color-accent (colore brand). Vedi InteractiveGrid.tsx. */
+.interactive-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  --mx: 50%;
+  --my: 32%;
+  --gx: 0px;
+  --gy: 0px;
+}
+.interactive-grid::before {
+  content: "";
+  position: absolute;
+  inset: -24px;
+  background-image:
+    linear-gradient(hsl(var(--color-ink) / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--color-ink) / 0.06) 1px, transparent 1px);
+  background-size: 46px 46px;
+  transform: translate(var(--gx), var(--gy));
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-mask-image: radial-gradient(ellipse 78% 68% at 50% 42%, black 0%, transparent 80%);
+  mask-image: radial-gradient(ellipse 78% 68% at 50% 42%, black 0%, transparent 80%);
+}
+.interactive-grid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(480px circle at var(--mx) var(--my), hsl(var(--color-accent) / 0.10), transparent 60%),
+    linear-gradient(hsl(var(--color-accent) / 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--color-accent) / 0.16) 1px, transparent 1px);
+  background-size: 100% 100%, 46px 46px, 46px 46px;
+  -webkit-mask-image: radial-gradient(440px circle at var(--mx) var(--my), black 0%, rgba(0,0,0,0.35) 45%, transparent 78%);
+  mask-image: radial-gradient(440px circle at var(--mx) var(--my), black 0%, rgba(0,0,0,0.35) 45%, transparent 78%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .interactive-grid::before { transition: none; }
+}
+
+/* ─── Cursore custom (colore brand --color-accent) ───────────────── */
+.cursor-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 9999px;
+  opacity: 0;
+  will-change: transform;
+  pointer-events: none;
+}
+.cursor-dot {
+  width: 7px;
+  height: 7px;
+  background: hsl(var(--color-accent));
+  transition: opacity 0.2s ease;
+}
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid hsl(var(--color-accent) / 0.7);
+  transition: width 0.25s ease, height 0.25s ease, opacity 0.2s ease, border-color 0.25s ease;
+}
+.cursor-ring--active {
+  width: 56px;
+  height: 56px;
+  border-color: hsl(var(--color-accent) / 0.45);
+}
+@media (pointer: fine) {
+  body.has-custom-cursor,
+  body.has-custom-cursor * {
+    cursor: none !important;
+  }
+}
