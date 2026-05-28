@@ -1,21 +1,20 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { siteFx } from "../lib/fx";
 
 /**
- * Cursore custom premium (stile agenzia di design).
- *
- * - Dot centrale che segue il mouse 1:1 + anello (ring) che insegue con
- *   leggero ritardo (lerp) → senso di fluidità.
- * - `mix-blend-mode: difference`: il cursore si inverte sullo sfondo, quindi
- *   appare SCURO sulle aree chiare e chiaro sulle aree scure — sempre visibile
- *   ed elegante, niente colore acceso.
- * - Su elementi interattivi (a, button, input) l'anello si espande.
- * - Disattivato su touch (pointer: coarse) → cursore di sistema normale.
+ * Cursore custom in 3 varianti scelte dal tono del brand (siteFx):
+ * - ring : dot + anello con trailing (premium / professional)
+ * - dot  : singolo punto morbido che segue 1:1 (minimal)
+ * - glow : alone luminoso soffuso che segue (friendly / energetic)
+ * Colore = --color-accent del cliente. Si espande sugli elementi interattivi.
+ * Disattivato su touch → cursore di sistema normale.
  */
 export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
+  const { cursor } = siteFx();
 
   useEffect(() => {
     if (window.matchMedia("(pointer: coarse)").matches) return;
@@ -88,7 +87,7 @@ export function CustomCursor() {
   }, []);
 
   return (
-    <div aria-hidden className="cursor-layer">
+    <div aria-hidden className={`cursor-layer cursor-layer--${cursor}`}>
       <div ref={ringRef} className="cursor-ring" />
       <div ref={dotRef} className="cursor-dot" />
     </div>

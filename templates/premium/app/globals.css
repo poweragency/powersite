@@ -112,9 +112,9 @@ h1 {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── Griglia interattiva (hero): parallax + spotlight, colori dalla palette ───
-   Linee con --color-ink (contrasta sempre col fondo, light o dark), spotlight e
-   bagliore con --color-accent (colore brand). Vedi InteractiveGrid.tsx. */
+/* ─── Sfondi animati interattivi — 3 varianti scelte dal tono (siteFx) ───
+   grid / dots / aurora. Tutte: leggero drift autonomo + spotlight col mouse
+   (--mx/--my) + parallax (--gx/--gy). Colori dalla palette del cliente. */
 .interactive-grid {
   position: absolute;
   inset: 0;
@@ -129,38 +129,77 @@ h1 {
   content: "";
   position: absolute;
   inset: -24px;
-  background-image:
-    linear-gradient(hsl(var(--color-ink) / 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--color-ink) / 0.06) 1px, transparent 1px);
-  background-size: 46px 46px;
   transform: translate(var(--gx), var(--gy));
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  -webkit-mask-image: radial-gradient(ellipse 78% 68% at 50% 42%, black 0%, transparent 80%);
-  mask-image: radial-gradient(ellipse 78% 68% at 50% 42%, black 0%, transparent 80%);
 }
 .interactive-grid::after {
   content: "";
   position: absolute;
   inset: 0;
-  background:
+  background: radial-gradient(480px circle at var(--mx) var(--my), hsl(var(--color-accent) / 0.10), transparent 60%);
+  -webkit-mask-image: radial-gradient(440px circle at var(--mx) var(--my), black 0%, rgba(0,0,0,0.35) 45%, transparent 78%);
+  mask-image: radial-gradient(440px circle at var(--mx) var(--my), black 0%, rgba(0,0,0,0.35) 45%, transparent 78%);
+}
+
+/* GRID — griglia blueprint (tech / professional) */
+.bg-fx--grid::before {
+  background-image:
+    linear-gradient(hsl(var(--color-ink) / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--color-ink) / 0.06) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask-image: radial-gradient(ellipse 78% 68% at 50% 42%, black 0%, transparent 80%);
+  mask-image: radial-gradient(ellipse 78% 68% at 50% 42%, black 0%, transparent 80%);
+  animation: fxDriftGrid 26s linear infinite;
+}
+.bg-fx--grid::after {
+  background-image:
     radial-gradient(480px circle at var(--mx) var(--my), hsl(var(--color-accent) / 0.10), transparent 60%),
     linear-gradient(hsl(var(--color-accent) / 0.16) 1px, transparent 1px),
     linear-gradient(90deg, hsl(var(--color-accent) / 0.16) 1px, transparent 1px);
   background-size: 100% 100%, 46px 46px, 46px 46px;
-  -webkit-mask-image: radial-gradient(440px circle at var(--mx) var(--my), black 0%, rgba(0,0,0,0.35) 45%, transparent 78%);
-  mask-image: radial-gradient(440px circle at var(--mx) var(--my), black 0%, rgba(0,0,0,0.35) 45%, transparent 78%);
 }
-@media (prefers-reduced-motion: reduce) {
-  .interactive-grid::before { transition: none; }
+@keyframes fxDriftGrid {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 46px 46px, 46px 46px; }
 }
 
-/* ─── Cursore custom (colore brand --color-accent) ───────────────── */
-.cursor-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
+/* DOTS — trama di punti (raffinato / minimal / luxury) */
+.bg-fx--dots::before {
+  background-image: radial-gradient(hsl(var(--color-ink) / 0.10) 1.4px, transparent 1.6px);
+  background-size: 30px 30px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 42%, black 0%, transparent 82%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 42%, black 0%, transparent 82%);
+  animation: fxDriftDots 32s linear infinite;
 }
+.bg-fx--dots::after {
+  background-image:
+    radial-gradient(480px circle at var(--mx) var(--my), hsl(var(--color-accent) / 0.10), transparent 60%),
+    radial-gradient(hsl(var(--color-accent) / 0.22) 1.4px, transparent 1.6px);
+  background-size: 100% 100%, 30px 30px;
+}
+@keyframes fxDriftDots {
+  from { background-position: 0 0; }
+  to { background-position: 0 30px; }
+}
+
+/* AURORA — macchie gradient morbide che fluttuano (caldo / friendly) */
+.bg-fx--aurora::before {
+  background:
+    radial-gradient(42% 52% at 25% 30%, hsl(var(--color-accent) / 0.14), transparent 70%),
+    radial-gradient(38% 48% at 78% 62%, hsl(var(--color-primary) / 0.12), transparent 72%),
+    radial-gradient(32% 42% at 55% 88%, hsl(var(--color-accent) / 0.08), transparent 70%);
+  animation: fxAurora 16s ease-in-out infinite alternate;
+}
+@keyframes fxAurora {
+  from { transform: translate(var(--gx), var(--gy)) scale(1); }
+  to { transform: translate(calc(var(--gx) + 18px), calc(var(--gy) - 14px)) scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .interactive-grid::before { animation: none !important; transition: none; }
+}
+
+/* ─── Cursori — 3 varianti (siteFx), colore --color-accent ─── */
+.cursor-layer { position: fixed; inset: 0; z-index: 9999; pointer-events: none; }
 .cursor-dot,
 .cursor-ring {
   position: fixed;
@@ -171,23 +210,29 @@ h1 {
   will-change: transform;
   pointer-events: none;
 }
-.cursor-dot {
-  width: 7px;
-  height: 7px;
-  background: hsl(var(--color-accent));
-  transition: opacity 0.2s ease;
+.cursor-dot { transition: opacity 0.2s ease; }
+.cursor-ring { transition: width 0.25s ease, height 0.25s ease, opacity 0.2s ease, border-color 0.25s ease; }
+
+/* ring — dot + anello (premium / professional) */
+.cursor-layer--ring .cursor-dot { width: 7px; height: 7px; background: hsl(var(--color-accent)); }
+.cursor-layer--ring .cursor-ring { width: 34px; height: 34px; border: 1.5px solid hsl(var(--color-accent) / 0.7); }
+.cursor-layer--ring .cursor-ring--active { width: 56px; height: 56px; border-color: hsl(var(--color-accent) / 0.45); }
+
+/* dot — singolo punto morbido (minimal) */
+.cursor-layer--dot .cursor-ring { display: none; }
+.cursor-layer--dot .cursor-dot { width: 14px; height: 14px; background: hsl(var(--color-accent) / 0.85); }
+
+/* glow — alone luminoso soffuso (friendly / energetic) */
+.cursor-layer--glow .cursor-dot { display: none; }
+.cursor-layer--glow .cursor-ring {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: radial-gradient(circle, hsl(var(--color-accent) / 0.40), transparent 70%);
+  filter: blur(3px);
 }
-.cursor-ring {
-  width: 34px;
-  height: 34px;
-  border: 1.5px solid hsl(var(--color-accent) / 0.7);
-  transition: width 0.25s ease, height 0.25s ease, opacity 0.2s ease, border-color 0.25s ease;
-}
-.cursor-ring--active {
-  width: 56px;
-  height: 56px;
-  border-color: hsl(var(--color-accent) / 0.45);
-}
+.cursor-layer--glow .cursor-ring--active { width: 70px; height: 70px; }
+
 @media (pointer: fine) {
   body.has-custom-cursor,
   body.has-custom-cursor * {

@@ -1,19 +1,19 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { siteFx } from "../lib/fx";
 
 /**
- * Griglia blueprint interattiva per l'hero.
- *
- * - SPOTLIGHT: un alone azzurro segue il mouse e illumina la griglia attorno
- *   al cursore (CSS vars --mx/--my aggiornate via rAF, niente re-render React).
- * - PARALLAX: la griglia si sposta di pochi px seguendo il mouse (--gx/--gy).
- * - Senza mouse (touch/idle): resta statica come la .tech-grid normale.
- *
- * Si aggancia ai movimenti del mouse sulla sezione genitore (l'hero).
+ * Sfondo animato interattivo per l'hero, in 3 varianti scelte dal tono del
+ * brand (siteFx): grid / dots / aurora. Tutte:
+ * - leggermente animate in autonomia (drift lento via CSS keyframes)
+ * - si illuminano sotto al mouse (spotlight, --mx/--my)
+ * - parallax leggero col mouse (--gx/--gy)
+ * Niente effetti su touch (resta lo sfondo statico animato).
  */
 export function InteractiveGrid() {
   const ref = useRef<HTMLDivElement>(null);
+  const { bg } = siteFx();
 
   useEffect(() => {
     const el = ref.current;
@@ -49,5 +49,5 @@ export function InteractiveGrid() {
     };
   }, []);
 
-  return <div ref={ref} className="interactive-grid" aria-hidden />;
+  return <div ref={ref} className={`interactive-grid bg-fx--${bg}`} aria-hidden />;
 }
