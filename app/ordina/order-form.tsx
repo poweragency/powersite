@@ -1278,7 +1278,7 @@ export default function OrderForm() {
                       <div
                         key={t.key}
                         className={cn(
-                          "group relative rounded-2xl border transition-all",
+                          "group relative flex flex-col rounded-2xl border transition-all",
                           active
                             ? "border-brass bg-brass/10 shadow-[0_0_30px_-10px_rgba(46,111,176,0.4)]"
                             : t.recommended
@@ -1294,7 +1294,7 @@ export default function OrderForm() {
                         <button
                           type="button"
                           onClick={() => chooseTier(t.key)}
-                          className="block w-full p-5 text-left"
+                          className="flex-1 w-full p-5 text-left"
                         >
                           <div className="flex items-center justify-between">
                             <span className="font-display text-lg font-bold tracking-tighter text-cream">{t.name}</span>
@@ -1336,7 +1336,7 @@ export default function OrderForm() {
                               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                               <circle cx="12" cy="12" r="3" />
                             </svg>
-                            <span>Vedi esempi siti {t.name}</span>
+                            <span>Vedi esempi di sito {t.name}</span>
                           </button>
                         </div>
                       </div>
