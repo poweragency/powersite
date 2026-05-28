@@ -16,6 +16,39 @@ type Device = "desktop" | "mobile";
  * `min(maxW/baseW, maxH/baseH)`. Così se manca altezza si stringe, se
  * manca larghezza si stringe — qualunque sia il vincolo prevalente.
  */
+/** Cornice MacBook Pro (CSS): schermo con bezel + notch camera + base/cerniera. */
+function MacBookFrame({ width, height, children }: { width: number; height: number; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative rounded-t-[14px] bg-[#0d0d0f] p-[10px] shadow-[0_30px_70px_-25px_rgba(0,0,0,0.75)]">
+        <div className="absolute left-1/2 top-[3.5px] h-[5px] w-[5px] -translate-x-1/2 rounded-full bg-[#27272b]" aria-hidden />
+        <div className="relative overflow-hidden rounded-[3px] bg-white" style={{ width, height }}>
+          {children}
+        </div>
+      </div>
+      {/* Base / cerniera, leggermente più larga dello schermo */}
+      <div
+        className="relative h-[14px] rounded-b-[12px] bg-gradient-to-b from-[#d0d4d8] to-[#a4a9ae]"
+        style={{ width: width * 1.12 }}
+      >
+        <div className="absolute left-1/2 top-0 h-[6px] w-[15%] -translate-x-1/2 rounded-b-[7px] bg-[#888d93]" aria-hidden />
+      </div>
+    </div>
+  );
+}
+
+/** Cornice iPhone Pro Max (CSS): bezel nero arrotondato + Dynamic Island. */
+function IPhoneFrame({ width, height, children }: { width: number; height: number; children: React.ReactNode }) {
+  return (
+    <div className="relative rounded-[2.6rem] bg-[#0d0d0f] p-[11px] shadow-[0_30px_70px_-25px_rgba(0,0,0,0.75)]">
+      <div className="absolute left-1/2 top-[20px] z-10 h-[22px] w-[32%] -translate-x-1/2 rounded-full bg-black" aria-hidden />
+      <div className="relative overflow-hidden rounded-[1.9rem] bg-white" style={{ width, height }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function ResolutionPreview({ url, device }: { url: string; device: Device }) {
   // Mobile usa un VIEWPORT REALE da telefono (390px di larghezza CSS): così
   // i media-query del sito scattano sul layout mobile vero (menu hamburger,
@@ -34,9 +67,15 @@ function ResolutionPreview({ url, device }: { url: string; device: Device }) {
       const availW = container.clientWidth;
       const availH = container.clientHeight;
       if (availW <= 0 || availH <= 0) return;
-      // Mobile: non ingrandiamo oltre 1:1 (il telefono resta a misura reale).
-      const s = Math.min(availW / baseW, availH / baseH);
-      setScale(device === "mobile" ? Math.min(s, 1) : s);
+      // Lasciamo spazio alle cornici device (bezel + base MacBook / bezel iPhone).
+      let s: number;
+      if (device === "desktop") {
+        s = Math.min(availW / (baseW * 1.12), (availH - 64) / baseH);
+      } else {
+        s = Math.min((availW - 28) / baseW, (availH - 28) / baseH);
+        s = Math.min(s, 1); // il telefono non si ingrandisce oltre il reale
+      }
+      setScale(Math.max(s, 0));
     };
     update();
     const ro = new ResizeObserver(update);
@@ -47,34 +86,36 @@ function ResolutionPreview({ url, device }: { url: string; device: Device }) {
   const scaledW = baseW * scale;
   const scaledH = baseH * scale;
 
+  const iframe = (
+    <iframe
+      src={url}
+      title="Preview"
+      loading="lazy"
+      /* Interazione e scroll DENTRO l'anteprima sono permessi.
+         Niente allow-popups / allow-top-navigation → l'iframe non può aprire
+         il sito in una nuova scheda né navigare fuori dal modal. */
+      sandbox="allow-same-origin allow-scripts allow-forms"
+      style={{
+        width: `${baseW}px`,
+        height: `${baseH}px`,
+        transform: `scale(${scale})`,
+        transformOrigin: "top left",
+      }}
+      className="absolute left-0 top-0 border-0"
+    />
+  );
+
   return (
     <div ref={containerRef} className="flex h-full w-full items-center justify-center">
       {scale > 0 && (
         <div className="flex flex-col items-center gap-3">
-          <div
-            className="relative overflow-hidden rounded-lg border border-bone/10 bg-white shadow-[0_20px_60px_-20px_rgba(0,0,0,0.5)]"
-            style={{ width: `${scaledW}px`, height: `${scaledH}px` }}
-          >
-            <iframe
-              src={url}
-              title="Preview"
-              loading="lazy"
-              /* Interazione e scroll DENTRO l'anteprima sono permessi.
-                 Niente allow-popups / allow-top-navigation → l'iframe non può
-                 aprire il sito in una nuova scheda né navigare fuori dal modal:
-                 le anteprime restano visibili solo da qui. */
-              sandbox="allow-same-origin allow-scripts allow-forms"
-              style={{
-                width: `${baseW}px`,
-                height: `${baseH}px`,
-                transform: `scale(${scale})`,
-                transformOrigin: "top left",
-              }}
-              className="absolute left-0 top-0 border-0"
-            />
-          </div>
+          {device === "desktop" ? (
+            <MacBookFrame width={scaledW} height={scaledH}>{iframe}</MacBookFrame>
+          ) : (
+            <IPhoneFrame width={scaledW} height={scaledH}>{iframe}</IPhoneFrame>
+          )}
           <p className="font-mono text-[10px] uppercase tracking-widest text-mist">
-            Risoluzione · {baseW} × {baseH} · scale {(scale * 100).toFixed(0)}%
+            {device === "desktop" ? "MacBook Pro" : "iPhone Pro Max"} · {baseW} × {baseH}
           </p>
         </div>
       )}
