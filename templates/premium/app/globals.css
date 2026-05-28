@@ -329,3 +329,16 @@ h1 {
   .hero-line { width: 64px; }
   .fx-lift { transition: none; }
 }
+
+/* FAQ accordion: apertura morbida (altezza animata via grid-template-rows) */
+.faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.faq-answer--open {
+  grid-template-rows: 1fr;
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq-answer { transition: none; }
+}

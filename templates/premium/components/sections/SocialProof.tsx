@@ -26,7 +26,7 @@ export function SocialProof({ title, testimonials }: Props) {
           {testimonials.map((t, i) => (
             <figure
               key={i}
-              className={`bg-canvas p-8 md:p-10 rounded-3xl border border-primary/5 shadow-sm flex flex-col ${tall ? "min-h-[320px]" : ""}`}
+              className={`fx-lift bg-canvas p-8 md:p-10 rounded-3xl border border-primary/5 shadow-sm flex flex-col ${tall ? "min-h-[320px]" : ""}`}
             >
               {t.rating !== undefined && (
                 <div className="text-accent text-lg mb-4 tracking-wider" aria-label={`${t.rating} stelle`}>
