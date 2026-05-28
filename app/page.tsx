@@ -274,7 +274,6 @@ export default function HomePage() {
                 A partire da
                 <br />
                 <span className="text-flame">{formatEur(397)}</span>
-                <span className="text-mist">.</span>
               </h2>
             </Reveal>
 
