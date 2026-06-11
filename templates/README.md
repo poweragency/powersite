@@ -23,19 +23,14 @@ templates/{tier}/
 
 - **standard/** — landing 5 sezioni, design pulito, mobile-first
 - **premium/** — animazioni Framer Motion, A/B varianti, multilingua
-- **business/** — hero con video AI di apertura, design cinematografico
+- **business ("Signature")** — ⚠️ NON ha una cartella propria: **riusa `premium/`** (mapping in `lib/orchestrator/steps/build-project.ts`). Il differenziatore del tier è il video AI di apertura, prodotto manualmente dal team (la pipeline prepara `_signature-video/` nella repo cliente). Creare `business/` solo se/quando si deciderà un design dedicato.
 
 ## Schema `content.json`
 
 Vedi [`lib/orchestrator/steps/generate-content.ts`](../lib/orchestrator/steps/generate-content.ts) per la definizione TypeScript di `GeneratedContent`.
 
-## Come pubblicarli come "template repo" GitHub
+## Come la pipeline usa i template (stato reale)
 
-Una volta sviluppato un template:
+La pipeline **copia la cartella locale del template** e crea la repo cliente via **Git Trees API** (`lib/orchestrator/steps/create-github-repo.ts`) — serverless-safe, niente shell git.
 
-1. `cd templates/standard`
-2. Push come repo dedicata (es. `power-agency/template-standard`)
-3. Su GitHub → Settings → ✅ "Template repository"
-4. Impostare la variabile `GITHUB_TEMPLATE_REPO_STANDARD` nel `.env` del SaaS
-
-La pipeline userà l'API GitHub `POST /repos/{template_owner}/{template_repo}/generate` per creare le repo cliente da questo template (anziché clonare manualmente).
+> Nota storica: una versione precedente di questo doc descriveva un meccanismo a "template repository GitHub" (`POST /repos/{owner}/{template}/generate` + env `GITHUB_TEMPLATE_REPO_*`). **Non è mai stato implementato**: quelle env non esistono in `.env.example` e la pipeline non le legge. Se in futuro si vorrà quel meccanismo, va costruito — oggi la fonte dei template è questa cartella.
