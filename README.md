@@ -69,3 +69,14 @@ npm run setup:mantenimento   # DEPRECATO (canone mensile include il mantenimento
 - Video Signature: produzione manuale fuori dalla pipeline.
 
 Ultimo sviluppo: 28/05/2026 (alias deploy) + note legali 08/06/2026.
+
+## Icone, logo e favicon
+
+Set stile Power Hub (monogramma **PL** bianco su nero `#0a0a0a`; si ripete con PowerLeads, scelta voluta):
+- `public/icon-192.png`, `icon-512.png`, `icon-maskable-512.png` (PWA; maskable con safe zone ~80%)
+- `app/apple-icon.png` (180×180) e `app/icon.png` (favicon via convention, copia di `icon-192.png`)
+- Sostituiscono i vecchi `app/icon.tsx`/`app/apple-icon.tsx` (next/og dinamici). ⚠️ Il JSON-LD `Organization.logo` ora punta a `/icon-512.png` (prima alla route `/icon`).
+
+PWA: `app/manifest.ts` (standalone, theme `#0B1220`) + `appleWebApp` in `app/layout.tsx`.
+Il logo del sito (fulmine + wordmark `power·agency` in `components/Logo.tsx`) è disegnato ad hoc e resta.
+Pattern di riferimento: `Z:\SECOND-BRAIN\sources\stack\pattern-icone-pwa-progetto.md`.
