@@ -47,6 +47,12 @@ export const metadata: Metadata = {
     title: "Power Agency — Crea il tuo sito gratis",
     description: "Paghi solo se ti piace, da 29,97 €/mese. Consegna in 48 ore.",
   },
+  applicationName: "PowerLanding",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "PowerLanding",
+  },
 };
 
 export const viewport: Viewport = {
