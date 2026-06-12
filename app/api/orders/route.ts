@@ -51,14 +51,7 @@ export async function POST(req: NextRequest) {
       guarantee: form.get("guarantee")?.toString() || undefined,
       videoScript: form.get("videoScript")?.toString() || undefined,
 
-      // Indirizzo strutturato
-      worksRemotely: form.get("worksRemotely")?.toString() === "true",
-      addressStreet: form.get("addressStreet")?.toString() || undefined,
-      addressNumber: form.get("addressNumber")?.toString() || undefined,
-      addressCity: form.get("addressCity")?.toString() || undefined,
-      addressCap: form.get("addressCap")?.toString() || undefined,
-      addressProvince: form.get("addressProvince")?.toString().toUpperCase() || undefined,
-      openingHours: form.get("openingHours")?.toString() || undefined,
+      // Sede & orari rimossi dal briefing: si raccolgono dopo via WhatsApp.
 
       // Trust signals quantitativi
       yearsExperience: parseIntOpt(form.get("yearsExperience")),
@@ -193,13 +186,7 @@ export async function POST(req: NextRequest) {
       guarantee: data.guarantee,
       catalogPdfUrl,
 
-      worksRemotely: data.worksRemotely,
-      addressStreet: data.addressStreet,
-      addressNumber: data.addressNumber,
-      addressCity: data.addressCity,
-      addressCap: data.addressCap || undefined,
-      addressProvince: data.addressProvince || undefined,
-      openingHours: data.openingHours,
+      // Sede & orari rimossi dal briefing: si raccolgono dopo via WhatsApp.
 
       yearsExperience: data.yearsExperience,
       clientsServed: data.clientsServed,

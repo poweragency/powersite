@@ -259,9 +259,6 @@ export default function OrderForm() {
   const [entranceDesktop, setEntranceDesktop] = useState<File | null>(null);
   const [entranceDesktopMeta, setEntranceDesktopMeta] = useState<{ w: number; h: number } | null>(null);
   const [entranceDesktopError, setEntranceDesktopError] = useState<string | null>(null);
-  const [worksRemotely, setWorksRemotely] = useState(
-    typeof draftState.worksRemotely === "boolean" ? draftState.worksRemotely : false,
-  );
   const [logoChoice, setLogoChoice] = useState<"upload" | "design" | null>(
     draftState.logoChoice === "upload" || draftState.logoChoice === "design"
       ? (draftState.logoChoice as "upload" | "design")
@@ -336,7 +333,6 @@ export default function OrderForm() {
         addons,
         forceAllImages,
         acceptedTerms,
-        worksRemotely,
         logoChoice,
         step,
         signatureMode,
@@ -361,7 +357,7 @@ export default function OrderForm() {
       form.removeEventListener("change", handler);
       if (timer) clearTimeout(timer);
     };
-  }, [tier, addons, forceAllImages, acceptedTerms, worksRemotely, logoChoice, step, signatureMode, videoScript]);
+  }, [tier, addons, forceAllImages, acceptedTerms, logoChoice, step, signatureMode, videoScript]);
 
   // Quando l'utente sceglie "voglio un logo nuovo" → seleziona auto addon
   // logo_design; quando deseleziona o sceglie "upload" → rimuovi addon.
@@ -744,61 +740,9 @@ export default function OrderForm() {
                 </div>
               </section>
 
-              {/* ─── II. SEDE & ORARI ───────────────── */}
+              {/* ─── II. ESPERIENZA ──────────────────── */}
               <section>
-                <SectionHeader n="II" title="Sede & orari" hint="opz." />
-                <label className="mb-5 flex cursor-pointer items-center gap-3 rounded-xl border border-bone/10 bg-coal/50 p-4 text-sm text-mist transition-colors hover:bg-coal">
-                  <input
-                    type="checkbox"
-                    checked={worksRemotely}
-                    onChange={(e) => setWorksRemotely(e.target.checked)}
-                    className="h-4 w-4 accent-brass"
-                  />
-                  <span>
-                    <strong className="text-cream">Lavoro solo online</strong> — niente sede fisica
-                  </span>
-                </label>
-                <input type="hidden" name="worksRemotely" value={String(worksRemotely)} />
-                {!worksRemotely && (
-                  <div className="grid gap-5 md:grid-cols-3">
-                    <div className="md:col-span-2">
-                      <label className="label">Via</label>
-                      <input name="addressStreet" type="text" placeholder="es. Via Brera" className="input" autoComplete="address-line1" defaultValue={draftValues.addressStreet ?? ""} />
-                    </div>
-                    <div>
-                      <label className="label">N° civico</label>
-                      <input name="addressNumber" type="text" placeholder="12" className="input" defaultValue={draftValues.addressNumber ?? ""} />
-                    </div>
-                    <div>
-                      <label className="label">CAP</label>
-                      <input name="addressCap" type="text" maxLength={5} pattern="\d{5}" placeholder="20121" className="input" autoComplete="postal-code" defaultValue={draftValues.addressCap ?? ""} title="CAP non valido: devono essere 5 cifre (es. 20121)" />
-                    </div>
-                    <div className="md:col-span-1">
-                      <label className="label">Città</label>
-                      <input name="addressCity" type="text" placeholder="Milano" className="input" autoComplete="address-level2" defaultValue={draftValues.addressCity ?? ""} />
-                    </div>
-                    <div>
-                      <label className="label">Prov.</label>
-                      <input name="addressProvince" type="text" maxLength={2} pattern="[A-Za-z]{2}" placeholder="MI" className="input uppercase" defaultValue={draftValues.addressProvince ?? ""} title="Sigla provincia non valida: 2 lettere (es. MI, RM, TO)" />
-                    </div>
-                    <div className="md:col-span-3">
-                      <label className="label">Orari di apertura (opz.)</label>
-                      <textarea
-                        name="openingHours"
-                        rows={3}
-                        placeholder={"Lun-Ven: 9:00 - 19:00\nSab: 9:00 - 13:00\nDom: chiuso"}
-                        className="textarea font-mono text-xs"
-                        defaultValue={draftValues.openingHours ?? ""}
-                      />
-                      <p className="mt-2 text-xs text-mist">Aiuta i clienti a sapere quando contattarti. Finisce nel footer + FAQ.</p>
-                    </div>
-                  </div>
-                )}
-              </section>
-
-              {/* ─── III. ESPERIENZA ──────────────────── */}
-              <section>
-                <SectionHeader n="III" title="La tua esperienza" hint="opz. ma fortemente consigliato" />
+                <SectionHeader n="II" title="La tua esperienza" hint="opz. ma fortemente consigliato" />
                 <p className="mb-5 text-xs text-mist">
                   Numeri e credenziali alimentano la sezione &ldquo;perché fidarsi di te&rdquo; del sito.
                   <strong className="text-bone"> Non inventiamo dati</strong>: lascia vuoto se non hai certezze.
@@ -825,9 +769,9 @@ export default function OrderForm() {
                 </div>
               </section>
 
-              {/* ─── IV. LOGO ──────────────────────────── */}
+              {/* ─── III. LOGO ─────────────────────────── */}
               <section>
-                <SectionHeader n="IV" title="Logo aziendale" hint="scegli un'opzione" />
+                <SectionHeader n="III" title="Logo aziendale" hint="scegli un'opzione" />
                 <input type="hidden" name="logoChoice" value={logoChoice ?? ""} />
                 <div className="grid gap-3 md:grid-cols-2">
                   <button
@@ -944,9 +888,9 @@ export default function OrderForm() {
                 )}
               </section>
 
-              {/* ─── V. BRIEF ─────────────────────────── */}
+              {/* ─── IV. BRIEF ────────────────────────── */}
               <section>
-                <SectionHeader n="V" title="Il tuo brand" />
+                <SectionHeader n="IV" title="Il tuo brand" />
                 <div className="space-y-5">
                   <div>
                     <label className="label">Settore / nicchia *</label>
@@ -1074,9 +1018,9 @@ export default function OrderForm() {
                 </div>
               </section>
 
-              {/* ─── VI. IMMAGINI ────────────────────── */}
+              {/* ─── V. IMMAGINI ────────────────────── */}
               <section>
-                <SectionHeader n="VI" title="Le tue foto" hint={`${images.length}/30`} />
+                <SectionHeader n="V" title="Le tue foto" hint={`${images.length}/30`} />
                 <p className="mb-5 text-sm text-mist">
                   Solo le tue foto. Niente stock photography, niente archivio.
                   Max 30 file, 10MB l&apos;uno.

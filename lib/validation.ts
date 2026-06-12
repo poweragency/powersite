@@ -27,14 +27,8 @@ export const orderIntakeSchema = z.object({
   industryCritique: z.string().max(800).optional(),
   guarantee: z.string().max(500).optional(),
 
-  // Indirizzo strutturato (opzionali; obbligatori solo se NON works_remotely)
-  worksRemotely: z.boolean().default(false),
-  addressStreet: z.string().max(120).optional(),
-  addressNumber: z.string().max(10).optional(),
-  addressCity: z.string().max(80).optional(),
-  addressCap: z.string().regex(/^\d{5}$/, "CAP non valido (5 cifre)").optional().or(z.literal("")),
-  addressProvince: z.string().regex(/^[A-Z]{2}$/, "Sigla provincia (2 lettere maiuscole, es. MI)").optional().or(z.literal("")),
-  openingHours: z.string().max(400).optional(),
+  // NB: Sede & orari (indirizzo strutturato + openingHours) NON sono più
+  // raccolti nel briefing. Si gestiscono dopo, via WhatsApp con il cliente.
 
   // Trust signals (opzionali — meglio vuoto che inventato)
   yearsExperience: z.number().int().min(0).max(150).optional(),
