@@ -1,4 +1,10 @@
 /**
+ * ⚠️ DEPRECATO (modello "canone mensile"): il prezzo del tier è ora un canone
+ * mensile che include già dominio + hosting + mantenimento. Non esiste più una
+ * subscription "Mantenimento" separata da 19€/mese, e il checkout non usa più
+ * STRIPE_PRICE_MAINTENANCE. Questo script resta solo come riferimento storico
+ * per chi avesse Payment Link di mantenimento già in circolazione.
+ *
  * Setup idempotente del prodotto Stripe "Mantenimento Power" — subscription
  * mensile 19€/mese proposta come UPSELL durante la chiamata di delivery.
  *

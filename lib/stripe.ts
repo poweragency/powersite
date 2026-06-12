@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import type { AddonKey, Tier } from "@/lib/types";
-import { MONTHLY_MAINTENANCE_EUR } from "@/lib/catalog";
+import { isAddonIncludedInTier, isQuoteOnlyAddon } from "@/lib/catalog";
 
 let _client: Stripe | null = null;
 
@@ -11,16 +11,6 @@ export function stripe(): Stripe {
   _client = new Stripe(key, { apiVersion: "2025-02-24.acacia" });
   return _client;
 }
-
-/**
- * Price ID di Stripe del subscription ricorrente mensile (manutenzione +
- * hosting). Va creato su Stripe Dashboard come Product "Manutenzione +
- * hosting" → Price ricorrente 19€/mese. L'ID (price_xxx) va in
- * STRIPE_PRICE_MAINTENANCE. Vedi MONTHLY_MAINTENANCE_EUR in catalog.ts.
- */
-const MAINTENANCE_PRICE_ENV = "STRIPE_PRICE_MAINTENANCE";
-
-export { MONTHLY_MAINTENANCE_EUR };
 
 const TIER_PRICE_ENV: Record<Tier, string> = {
   standard: "STRIPE_PRICE_STANDARD",
@@ -50,29 +40,37 @@ function priceFor(envVar: string, label: string): string {
 /**
  * Costruisce i line items della Checkout Session in mode='subscription'.
  *
- * Mescola:
- *   - 1 price ricorrente (manutenzione + hosting 19€/mese) — sempre presente
- *   - 1 price one-time del tier
- *   - N price one-time degli addon scelti
+ * Modello "canone mensile" (niente upfront del sito):
+ *   - 1 price RICORRENTE mensile del tier (29,97 / 49,97 / 69,97 €/mese):
+ *     include dominio + hosting + mantenimento.
+ *   - N price ricorrenti mensili degli addon mensili scelti.
+ *   - eventuali price ONE-TIME degli addon una-tantum (es. logo 147€).
  *
- * Stripe gestisce nativamente i mix: i one-time vengono fatturati alla
- * PRIMA invoice insieme al primo mese ricorrente. Dal secondo mese
- * il cliente paga solo i 19€ ricorrenti.
+ * Esclusioni:
+ *   - addon GIÀ INCLUSI nel tier (es. SEO/GEO/GAIO nel Signature): il loro
+ *     canone è nel prezzo del pacchetto → niente line item (no doppio addebito).
+ *   - addon "su preventivo" (gestionale su misura): nessun prezzo a listino →
+ *     niente line item, solo lead nel CRM.
+ *
+ * Stripe gestisce nativamente i mix recurring + one-time nello stesso
+ * checkout: gli one-time vengono fatturati alla PRIMA invoice insieme al
+ * primo mese; dal secondo mese il cliente paga solo i ricorrenti.
+ *
+ * NB: i Price ID in STRIPE_PRICE_* devono ora essere RICORRENTI mensili (tier
+ * e addon mensili) e ONE-TIME per il logo. Vedi .env.example.
  *
  * Vedi: https://docs.stripe.com/billing/subscriptions/checkout#one-time-charges
  */
 export function buildLineItems(tier: Tier, addons: AddonKey[]) {
   const items: Stripe.Checkout.SessionCreateParams.LineItem[] = [
-    // Recurring: manutenzione mensile (sempre per primo per chiarezza nel checkout)
-    {
-      price: priceFor(MAINTENANCE_PRICE_ENV, `manutenzione ${MONTHLY_MAINTENANCE_EUR}€/mese`),
-      quantity: 1,
-    },
-    // One-time: tier
+    // Recurring: canone mensile del tier (sempre per primo nel checkout)
     { price: priceFor(TIER_PRICE_ENV[tier], `tier ${tier}`), quantity: 1 },
   ];
-  // One-time: addon scelti
   for (const addon of addons) {
+    // Inclusi nel tier → già pagati nel canone del pacchetto.
+    if (isAddonIncludedInTier(tier, addon)) continue;
+    // Su preventivo → nessun addebito, solo segnalazione lato CRM.
+    if (isQuoteOnlyAddon(addon)) continue;
     items.push({ price: priceFor(ADDON_PRICE_ENV[addon], `addon ${addon}`), quantity: 1 });
   }
   return items;

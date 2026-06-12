@@ -40,7 +40,7 @@ function makeOrder(tier: Tier, scenario: "dentista" | "ristorante" = "dentista")
         "Aperto tutti i giorni 12-15 e 19-23. Domenica sera chiuso. Prenotazione obbligatoria nei weekend.",
       tier,
       addons: [],
-      totalEur: tier === "standard" ? 397 : 697,
+      totalEur: tier === "standard" ? 29.97 : 49.97,
       forceAllImages: false,
       imageBlobUrls: [],
     };
@@ -64,7 +64,7 @@ function makeOrder(tier: Tier, scenario: "dentista" | "ristorante" = "dentista")
     contentNotes: "Aperto lun-ven 8-20, parcheggio convenzionato. Certificazione ISO 9001 dal 2018.",
     tier,
     addons: [],
-    totalEur: tier === "standard" ? 397 : 697,
+    totalEur: tier === "standard" ? 29.97 : 49.97,
     forceAllImages: false,
     imageBlobUrls: [],
   };

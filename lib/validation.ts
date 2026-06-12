@@ -41,34 +41,18 @@ export const orderIntakeSchema = z.object({
   clientsServed: z.number().int().min(0).max(10_000_000).optional(),
   certifications: z.string().max(1000).optional(),
 
-  // Social media (URL opzionali)
-  socialInstagram: z.string().url().max(200).optional().or(z.literal("")),
-  socialFacebook: z.string().url().max(200).optional().or(z.literal("")),
-  socialLinkedin: z.string().url().max(200).optional().or(z.literal("")),
-  socialTiktok: z.string().url().max(200).optional().or(z.literal("")),
-
-  // Dati legali (tutti opzionali; necessari per footer GDPR)
-  legalCompanyName: z.string().max(200).optional(),
-  legalVatNumber: z.string().regex(/^\d{11}$/, "P.IVA non valida (11 cifre)").optional().or(z.literal("")),
-  legalFiscalCode: z.string().max(16).optional(),
-  legalRea: z.string().max(50).optional(),
-  legalPec: z.string().email("PEC non valida").optional().or(z.literal("")),
-  legalShareCapital: z.string().max(50).optional(),
+  // NB: Social media e Dati legali NON sono più raccolti nel briefing.
+  // Si gestiscono dopo, via WhatsApp con il cliente.
 
   // Pacchetto
   tier: z.enum(["standard", "premium", "business"]),
+  // "Modulo contatti" (canone) e "Gestionale su misura" (su preventivo) sono
+  // ora voci indipendenti: nessun vincolo di mutua esclusività.
   addons: z.array(z.enum([
     "seo","geo","gaio","analytics","chatbot","email_funnel",
     "booking","contact_form_integration","contact_form_bespoke",
     "logo_design",
-  ]))
-    .default([])
-    // Mutual exclusivity: solo UNA delle 2 varianti "Modulo contatti" può
-    // essere attiva (il form è uno solo, varia dove arrivano le richieste).
-    .refine(
-      (addons) => !(addons.includes("contact_form_integration") && addons.includes("contact_form_bespoke")),
-      { message: "Scegli solo UNA opzione per il modulo contatti: collegamento al tuo gestionale OPPURE gestionale su misura" },
-    ),
+  ])).default([]),
 
   // Immagini
   forceAllImages: z.boolean().default(false),

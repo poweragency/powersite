@@ -8,11 +8,18 @@ SaaS che **vende e genera landing page con AI**: il cliente compila il brief e p
 
 I tier, gli addon e i prezzi vivono in **`lib/catalog.ts` (SSOT)** — non duplicarli altrove.
 
-- **standard** — landing 5 sezioni, mobile-first.
-- **premium** — multi-pagina, animazioni Framer Motion, hero cinematografico.
-- **business ("Signature")** — tutto Premium + **video AI di apertura** + SEO/GEO/GAIO inclusi. ⚠️ Il tier business **riusa il template `premium/`** (`build-project.ts`): il differenziatore è il video, che viene prodotto **manualmente** dal team (la pipeline prepara `_signature-video/` nella repo cliente e tagga il lead CRM `video-signature:da-girare-*`).
+**Modello commerciale: "crea il sito gratis, paghi solo se ti piace".** Niente upfront del sito: il prezzo del tier è un **canone mensile** (dominio + hosting + mantenimento inclusi). Gli addon si sommano al canone, tranne il **logo** (una-tantum) e il **gestionale su misura** (su preventivo, nessun prezzo).
 
-10 addon (SEO, GEO, GAIO, analytics, chatbot, email funnel, booking, 2 varianti modulo contatti mutuamente esclusive, logo design); SEO/GEO/GAIO sono inclusi nel Signature (`isAddonIncludedInTier()`). In più: abbonamento **Mantenimento** mensile (subscription Stripe, setup con `npm run setup:mantenimento`).
+- **standard** — landing 5 sezioni, mobile-first · **29,97 €/mese** (barrato 44,97).
+- **premium** — multi-pagina, animazioni Framer Motion, hero cinematografico · **49,97 €/mese** (barrato 74,97).
+- **business ("Signature")** — tutto Premium + **video AI di apertura** + SEO/GEO/GAIO inclusi · **69,97 €/mese** (barrato 109,97). ⚠️ Il tier business **riusa il template `premium/`** (`build-project.ts`): il differenziatore è il video, prodotto **manualmente** dal team (la pipeline prepara `_signature-video/` nella repo cliente e tagga il lead CRM `video-signature:da-girare-*`).
+
+Addon in `lib/catalog.ts` con campo `billing` (`"monthly"` default | `"oneoff"`) e flag `quoteOnly`:
+- **mensili**: SEO/GEO/GAIO (1,50 €), analytics (2 €), chatbot (5 €), newsletter/email funnel (3 €), booking & e-commerce (5 €), **Modulo contatti** (4 €) — SEO/GEO/GAIO sono inclusi nel Signature (`isAddonIncludedInTier()`, non ri-addebitati);
+- **una-tantum**: **logo design** (147 €);
+- **su preventivo** (`quoteOnly`): **Gestionale su misura** — solo una spunta, nessun addebito; genera lead nel CRM e un tecnico ricontatta.
+
+Stripe: i Price di tier e addon mensili devono essere **ricorrenti mensili**, il logo **one-time**; non c'è più una subscription "Mantenimento" separata (`scripts/setup-mantenimento.ts` è deprecato). Calcoli: `calculateMonthlyTotal()` / `calculateMonthlyOriginalTotal()` (canone) e `calculateOneoffTotal()` (una-tantum).
 
 ## Pipeline (7 step — `lib/orchestrator/pipeline.ts`)
 
@@ -42,13 +49,13 @@ npm run build / typecheck / lint
 npm run test:gen             # pipeline AI + build locale senza GitHub/Vercel (npx tsx scripts/test-generation.ts standard "Studio Bianchi")
 npm run test:addons          # confronto content con/senza addon
 npm run test:tiers           # confronto Standard vs Premium su stesso brief
-npm run setup:mantenimento   # setup idempotente del prodotto Stripe "Mantenimento"
+npm run setup:mantenimento   # DEPRECATO (canone mensile include il mantenimento)
 ```
 
 ## Env (vedi `.env.example`)
 
 - **Anthropic:** `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL_COPY`, `ANTHROPIC_MODEL_LAYOUT`
-- **Stripe:** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_PRICE_{STANDARD,PREMIUM,BUSINESS}`, 10× `STRIPE_PRICE_ADDON_*`, `STRIPE_PRICE_MAINTENANCE`
+- **Stripe:** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_PRICE_{STANDARD,PREMIUM,BUSINESS}` (ricorrenti mensili), `STRIPE_PRICE_ADDON_*` (mensili; `LOGO_DESIGN` one-time; `CONTACT_FORM_BESPOKE` e `STRIPE_PRICE_MAINTENANCE` non più usati)
 - **GitHub:** `GITHUB_TOKEN` (fine-grained: Administration+Contents write), `GITHUB_OWNER_TYPE`, `GITHUB_OWNER`
 - **Vercel:** `VERCEL_TOKEN`, `VERCEL_TEAM_ID`, `VERCEL_PROJECT_DOMAIN_BASE`, `BLOB_READ_WRITE_TOKEN`
 - **CRM (Supabase Power Hub):** `POWERHUB_SUPABASE_URL`, `POWERHUB_SUPABASE_SERVICE_ROLE_KEY` (server-only), `POWERHUB_ANON_KEY` (iniettata nei progetti cliente per il form contatti)

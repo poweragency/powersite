@@ -55,8 +55,9 @@ export function orderConfirmation(p: OrderConfirmationParams) {
         <tr><td style="padding:18px 20px;">
           <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#C9A55C;font-weight:600;">Pacchetto</div>
           <div style="margin-top:4px;font-size:18px;color:#F4EDE0;font-weight:600;">${escape(p.tier)}</div>
-          <div style="margin-top:14px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#C9A55C;font-weight:600;">Totale</div>
-          <div style="margin-top:4px;font-size:18px;color:#F4EDE0;font-weight:600;">€${p.totalEur.toFixed(2)}</div>
+          <div style="margin-top:14px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#C9A55C;font-weight:600;">Canone mensile</div>
+          <div style="margin-top:4px;font-size:18px;color:#F4EDE0;font-weight:600;">€${p.totalEur.toFixed(2)}/mese</div>
+          <div style="margin-top:4px;font-size:12px;color:#9C9180;">Dominio e hosting inclusi.</div>
           <div style="margin-top:14px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#9C9180;font-weight:500;">Riferimento</div>
           <div style="margin-top:4px;font-family:'Courier New',monospace;font-size:13px;color:#EBE2D3;">${escape(p.orderId)}</div>
         </td></tr>

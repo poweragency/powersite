@@ -18,12 +18,15 @@ export function slugify(input: string): string {
     .slice(0, 40);
 }
 
-export function formatEur(cents: number): string {
+export function formatEur(amount: number): string {
+  // I prezzi ora sono mensili e con decimali (es. 29,97 €). Mostriamo sempre
+  // 2 decimali per coerenza tra canoni mensili (29,97) e una-tantum (147,00).
   return new Intl.NumberFormat("it-IT", {
     style: "currency",
     currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(cents);
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
 }
 
 /**

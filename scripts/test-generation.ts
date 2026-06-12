@@ -59,7 +59,7 @@ function makeFakeOrder(tier: Tier, company: string): OrderPayload {
       "Includere fascia oraria 8-20 lun-ven, parcheggio convenzionato, pagamento rateale tasso zero.",
     tier,
     addons: ["seo"],
-    totalEur: tier === "standard" ? 397 : tier === "premium" ? 697 : 1297,
+    totalEur: tier === "standard" ? 29.97 : tier === "premium" ? 49.97 : 69.97,
     forceAllImages: false,
     imageBlobUrls: [], // niente immagini reali in test locale, vuoto
   };

@@ -34,7 +34,7 @@ function makeOrder(addons: AddonKey[]): OrderPayload {
     contentNotes: "Aperto lun-ven 8-20, parcheggio convenzionato",
     tier: "standard" as Tier,
     addons,
-    totalEur: 397,
+    totalEur: 29.97,
     forceAllImages: false,
     imageBlobUrls: [],
   };

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { after } from "next/server";
 import { orderIntakeSchema } from "@/lib/validation";
-import { calculateTotal } from "@/lib/catalog";
+import { calculateMonthlyTotal, calculateOneoffTotal } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
 import { uploadImage, uploadEntranceImage, uploadLogo, uploadCatalogPdf, uploadManifest } from "@/lib/blob";
 import { stripe, buildLineItems } from "@/lib/stripe";
@@ -65,19 +65,8 @@ export async function POST(req: NextRequest) {
       clientsServed: parseIntOpt(form.get("clientsServed")),
       certifications: form.get("certifications")?.toString() || undefined,
 
-      // Social media
-      socialInstagram: form.get("socialInstagram")?.toString() || undefined,
-      socialFacebook: form.get("socialFacebook")?.toString() || undefined,
-      socialLinkedin: form.get("socialLinkedin")?.toString() || undefined,
-      socialTiktok: form.get("socialTiktok")?.toString() || undefined,
-
-      // Dati legali (footer GDPR + pagine /legal/privacy/cookies del sito)
-      legalCompanyName: form.get("legalCompanyName")?.toString() || undefined,
-      legalVatNumber: form.get("legalVatNumber")?.toString().replace(/\D/g, "") || undefined,
-      legalFiscalCode: form.get("legalFiscalCode")?.toString().toUpperCase() || undefined,
-      legalRea: form.get("legalRea")?.toString() || undefined,
-      legalPec: form.get("legalPec")?.toString() || undefined,
-      legalShareCapital: form.get("legalShareCapital")?.toString() || undefined,
+      // Social media e Dati legali NON sono più raccolti in fase di briefing:
+      // si gestiscono dopo, via WhatsApp con il cliente. (Campi rimossi dal form.)
 
       tier: form.get("tier")?.toString() ?? "standard",
       addons: JSON.parse(form.get("addons")?.toString() || "[]"),
@@ -112,7 +101,10 @@ export async function POST(req: NextRequest) {
 
     const nonce = crypto.randomUUID();
     const companySlug = slugify(data.company) || "client";
-    const totalEur = calculateTotal(data.tier, data.addons);
+    // totalEur = CANONE MENSILE ricorrente (tier + addon mensili). Il logo e
+    // gli altri eventuali addebiti una-tantum sono calcolati a parte.
+    const totalEur = calculateMonthlyTotal(data.tier, data.addons);
+    const oneoffEur = calculateOneoffTotal(data.addons);
 
     // 1. Carica immagini su Vercel Blob
     const imageBlobUrls: string[] = [];
@@ -213,17 +205,7 @@ export async function POST(req: NextRequest) {
       clientsServed: data.clientsServed,
       certifications: data.certifications,
 
-      socialInstagram: data.socialInstagram || undefined,
-      socialFacebook: data.socialFacebook || undefined,
-      socialLinkedin: data.socialLinkedin || undefined,
-      socialTiktok: data.socialTiktok || undefined,
-
-      legalCompanyName: data.legalCompanyName || undefined,
-      legalVatNumber: data.legalVatNumber || undefined,
-      legalFiscalCode: data.legalFiscalCode || undefined,
-      legalRea: data.legalRea || undefined,
-      legalPec: data.legalPec || undefined,
-      legalShareCapital: data.legalShareCapital || undefined,
+      // Social e Dati legali rimossi dal briefing: si raccolgono dopo via WhatsApp.
 
       logoBlobUrl,
 
@@ -306,10 +288,11 @@ export async function POST(req: NextRequest) {
     }
 
     // 3b. Modalità Stripe normale (default): crea Checkout Session.
-    //     mode='subscription' perche' include la manutenzione mensile 19€
-    //     (vedi MONTHLY_MAINTENANCE_EUR). Stripe accetta line items misti
-    //     (recurring + one-time) nello stesso checkout: la prima invoice
-    //     fattura tier + addon + primo mese, dal secondo solo i 19€.
+    //     mode='subscription' perche' il tier è ora un CANONE MENSILE
+    //     (dominio + hosting + mantenimento inclusi). Stripe accetta line
+    //     items misti (recurring + one-time): la prima invoice fattura il
+    //     primo mese + eventuali una-tantum (es. logo), dal secondo solo i
+    //     ricorrenti. Vedi buildLineItems().
     const session = await stripe().checkout.sessions.create({
       mode: "subscription",
       customer_email: data.email,
@@ -332,7 +315,9 @@ export async function POST(req: NextRequest) {
         email: data.email,
         company_slug: companySlug,
         manifest_url: manifest.url,
+        // total_eur = canone mensile ricorrente; oneoff_eur = una-tantum (es. logo).
         total_eur: String(totalEur),
+        oneoff_eur: String(oneoffEur),
       },
     });
 

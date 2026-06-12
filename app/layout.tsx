@@ -29,14 +29,14 @@ const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://poweragency.it";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Power Agency — Atelier digitale. Sito web su misura in 48h.",
+  title: "Power Agency — Crea il tuo sito gratis, paghi solo se ti piace.",
   description:
-    "Un piccolo studio italiano che disegna siti web sartoriali. Niente template. Niente account. Solo lavoro su misura, consegnato in 48 ore.",
+    "Un piccolo studio italiano che disegna siti web sartoriali. Crei il sito gratis, paghi solo se ti piace: canone da 29,97 €/mese, dominio e hosting inclusi. Consegna in 48 ore.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Power Agency — Atelier digitale",
+    title: "Power Agency — Crea il tuo sito gratis",
     description:
-      "Siti web sartoriali, disegnati per te. Consegna in 48 ore.",
+      "Paghi solo se ti piace, da 29,97 €/mese. Dominio e hosting inclusi. Consegna in 48 ore.",
     type: "website",
     locale: "it_IT",
     url: SITE_URL,
@@ -44,8 +44,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Power Agency — Atelier digitale",
-    description: "Siti web sartoriali, consegna in 48 ore.",
+    title: "Power Agency — Crea il tuo sito gratis",
+    description: "Paghi solo se ti piace, da 29,97 €/mese. Consegna in 48 ore.",
   },
 };
 

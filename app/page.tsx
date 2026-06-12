@@ -6,6 +6,10 @@ import { Reveal } from "@/components/Reveal";
 import { Marquee } from "@/components/Marquee";
 import { InteractiveGrid } from "@/components/InteractiveGrid";
 import { formatEur } from "@/lib/utils";
+import { TIERS } from "@/lib/catalog";
+
+// Prezzo "a partire da": canone mensile del tier più economico (SSOT catalog).
+const FROM_PRICE_EUR = TIERS[0].priceEur;
 
 const MARQUEE = [
   "Atelier digitale",
@@ -121,10 +125,9 @@ export default function HomePage() {
 
             {/* Headline */}
             <h1 className="display mt-12 text-balance text-5xl font-bold leading-[1] text-cream sm:text-6xl md:mt-14 md:text-7xl lg:text-[7.5rem] lg:leading-[0.95]">
-              <Reveal delay={120} inline className="block">Sito web</Reveal>
-              <Reveal delay={280} inline className="block">su misura</Reveal>
-              <Reveal delay={440} inline className="block">
-                <span className="text-flame">in 48 ore</span>
+              <Reveal delay={120} inline className="block">Crea il tuo sito</Reveal>
+              <Reveal delay={280} inline className="block">
+                <span className="text-flame">gratis</span>
               </Reveal>
             </h1>
 
@@ -136,9 +139,10 @@ export default function HomePage() {
             {/* Subhead */}
             <Reveal delay={780}>
               <p className="mx-auto mt-10 max-w-xl text-pretty text-base leading-relaxed text-bone/80 md:text-lg">
-                Un sito disegnato e costruito per te, dal nostro studio.
+                Paghi solo se ti piace — a partire da{" "}
+                <span className="text-bone">{formatEur(FROM_PRICE_EUR)}/mese</span>.
                 <br />
-                Una consegna alla volta, con cura artigianale.
+                Dominio e hosting inclusi. Pronto in 48 ore.
               </p>
             </Reveal>
 
@@ -273,18 +277,19 @@ export default function HomePage() {
               <h2 className="display mt-8 text-balance text-5xl font-bold leading-[0.95] tracking-tightest text-cream md:text-7xl lg:text-[7rem]">
                 A partire da
                 <br />
-                <span className="text-flame">{formatEur(397)}</span>
+                <span className="text-flame">{formatEur(FROM_PRICE_EUR)}</span>
+                <span className="display text-2xl font-normal text-mist md:text-4xl">/mese</span>
               </h2>
             </Reveal>
 
             <Reveal delay={300}>
               <p className="mx-auto mt-10 max-w-2xl text-pretty text-lg leading-relaxed text-mist">
-                Tre livelli pensati per ogni esigenza —{" "}
+                Crei il sito gratis, paghi solo se ti piace. Tre livelli —{" "}
                 <span className="text-bone">Standard</span>,{" "}
                 <span className="text-bone">Premium</span>,{" "}
-                <span className="text-bone">Signature</span>.
-                Tutto compreso: progettazione, sviluppo, deploy, hosting, email
-                di consegna.
+                <span className="text-bone">Signature</span> — con un canone
+                mensile tutto incluso: progettazione, sviluppo, deploy,
+                dominio, hosting e mantenimento.
               </p>
             </Reveal>
 
@@ -425,7 +430,7 @@ export default function HomePage() {
           <Reveal delay={450}>
             <div className="mt-12 flex flex-wrap justify-center gap-4">
               <Link href="/ordina?tier=premium" className="btn-flame btn-xl">
-                Avvia il progetto — da {formatEur(397)}
+                Avvia il progetto — da {formatEur(FROM_PRICE_EUR)}/mese
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12" />
                   <polyline points="12 5 19 12 12 19" />

@@ -14,7 +14,6 @@
 
 import type { OrderPayload } from "@/lib/types";
 import { getPowerhubClient } from "@/lib/supabase/powerhub";
-import { MONTHLY_MAINTENANCE_EUR } from "@/lib/catalog";
 
 export interface InsertCrmLeadArgs {
   order: OrderPayload;
@@ -116,14 +115,15 @@ export async function insertCrmLead(args: InsertCrmLeadArgs): Promise<InsertCrmL
     repo_url: repoUrl,
     ...(tags.length > 0 ? { tags } : {}),
 
-    // Subscription mensile (19€/mese manutenzione + hosting).
+    // Subscription mensile: il CANONE del piano (tier + addon mensili, dominio
+    // e hosting inclusi). order.totalEur è il canone ricorrente.
     // Popolata solo se Stripe ha creato la subscription. In BYPASS_STRIPE
     // resta a default 'none' / null perche' nessun pagamento e' avvenuto.
     ...(order.stripeSubscriptionId
       ? {
           subscription_status: "active" as const,
           subscription_started_at: new Date().toISOString(),
-          subscription_eur_monthly: MONTHLY_MAINTENANCE_EUR,
+          subscription_eur_monthly: order.totalEur,
         }
       : {}),
   };
@@ -145,7 +145,7 @@ export async function insertCrmLead(args: InsertCrmLeadArgs): Promise<InsertCrmL
     console.log(
       `[insert-crm-lead] ${alreadyExisted ? "updated" : "inserted"} lead ${data?.id} (nonce=${order.nonce})` +
         (order.stripeSubscriptionId
-          ? ` subscription=${order.stripeSubscriptionId} (${MONTHLY_MAINTENANCE_EUR}€/mo)`
+          ? ` subscription=${order.stripeSubscriptionId} (${order.totalEur}€/mo)`
           : ""),
     );
     return { ok: true, leadId: data?.id, alreadyExisted };

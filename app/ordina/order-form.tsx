@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ADDONS, TIERS, calculateTotal, calculateOriginalTotal, getTier, MONTHLY_MAINTENANCE_EUR } from "@/lib/catalog";
+import { ADDONS, TIERS, getTier, getAddon, getAddonBilling, calculateMonthlyTotal, calculateMonthlyOriginalTotal, calculateOneoffTotal } from "@/lib/catalog";
 import type { AddonKey, Tier } from "@/lib/types";
 import { cn, formatEur } from "@/lib/utils";
 import { ShowcaseModal } from "@/components/ShowcaseModal";
@@ -374,8 +374,11 @@ export default function OrderForm() {
     if (option !== "upload") setLogoFile(null);
   }
 
-  const total = useMemo(() => calculateTotal(tier, addons), [tier, addons]);
-  const originalTotal = useMemo(() => calculateOriginalTotal(tier, addons), [tier, addons]);
+  // Canone mensile ricorrente + ancora barrata + addebito una-tantum (logo).
+  const monthlyTotal = useMemo(() => calculateMonthlyTotal(tier, addons), [tier, addons]);
+  const monthlyOriginalTotal = useMemo(() => calculateMonthlyOriginalTotal(tier, addons), [tier, addons]);
+  const oneoffTotal = useMemo(() => calculateOneoffTotal(addons), [addons]);
+  const logoPriceEur = getAddon("logo_design")?.priceEur ?? 147;
 
   // Set degli addon inclusi automaticamente dal tier corrente — non
   // ri-addebitati nel totale + lockati nella griglia addon (non puoi
@@ -405,20 +408,11 @@ export default function OrderForm() {
     // Gli addon inclusi nel tier non sono toggleabili (sono parte del pacchetto)
     if (tierIncludedAddons.has(key)) return;
 
-    // Mutual exclusivity per i 2 addon "Modulo contatti": cliccandone uno,
-    // l'altro si deseleziona automaticamente (è UNA scelta tra due opzioni
-    // di delivery, non due cose acquistabili insieme).
-    const CONTACT_FORM_PAIR: AddonKey[] = ["contact_form_integration", "contact_form_bespoke"];
-    setAddons((curr) => {
-      if (curr.includes(key)) {
-        return curr.filter((k) => k !== key);
-      }
-      if (CONTACT_FORM_PAIR.includes(key)) {
-        const other = CONTACT_FORM_PAIR.find((k) => k !== key)!;
-        return [...curr.filter((k) => k !== other), key];
-      }
-      return [...curr, key];
-    });
+    // "Modulo contatti" e "Gestionale su misura" sono voci indipendenti:
+    // toggle semplice, nessun vincolo di mutua esclusività.
+    setAddons((curr) =>
+      curr.includes(key) ? curr.filter((k) => k !== key) : [...curr, key],
+    );
   }
 
   function onImagesSelected(e: React.ChangeEvent<HTMLInputElement>) {
@@ -861,9 +855,9 @@ export default function OrderForm() {
                   >
                     <span className="flex w-full items-baseline justify-between">
                       <span className="font-semibold text-cream">Non ho un logo</span>
-                      <span className="font-mono text-xs text-brass">+{formatEur(197)}</span>
+                      <span className="font-mono text-xs text-brass">+{formatEur(logoPriceEur)} <span className="text-[10px] font-normal text-mist">una tantum</span></span>
                     </span>
-                    <span className="text-xs text-mist">Te lo disegniamo noi — addon &ldquo;Logo design su misura&rdquo;.</span>
+                    <span className="text-xs text-mist">Te lo disegniamo noi — addon &ldquo;Logo design su misura&rdquo;, pagamento una-tantum.</span>
                   </button>
                 </div>
                 {logoChoice === "upload" && (
@@ -950,35 +944,9 @@ export default function OrderForm() {
                 )}
               </section>
 
-              {/* ─── V. SOCIAL ─────────────────────────── */}
+              {/* ─── V. BRIEF ─────────────────────────── */}
               <section>
-                <SectionHeader n="V" title="Social media" hint="opz." />
-                <p className="mb-5 text-xs text-mist">
-                  Quelli che hai. Finiscono nel footer del sito + danno credibilità.
-                </p>
-                <div className="grid gap-5 md:grid-cols-2">
-                  <div>
-                    <label className="label">Instagram</label>
-                    <input name="socialInstagram" type="url" placeholder="https://instagram.com/..." className="input" defaultValue={draftValues.socialInstagram ?? ""} title="URL Instagram non valido (es. https://instagram.com/tuoaccount)" />
-                  </div>
-                  <div>
-                    <label className="label">Facebook</label>
-                    <input name="socialFacebook" type="url" placeholder="https://facebook.com/..." className="input" defaultValue={draftValues.socialFacebook ?? ""} title="URL Facebook non valido (es. https://facebook.com/tuapagina)" />
-                  </div>
-                  <div>
-                    <label className="label">LinkedIn</label>
-                    <input name="socialLinkedin" type="url" placeholder="https://linkedin.com/..." className="input" defaultValue={draftValues.socialLinkedin ?? ""} title="URL LinkedIn non valido (es. https://linkedin.com/in/tuoprofilo)" />
-                  </div>
-                  <div>
-                    <label className="label">TikTok</label>
-                    <input name="socialTiktok" type="url" placeholder="https://tiktok.com/@..." className="input" defaultValue={draftValues.socialTiktok ?? ""} title="URL TikTok non valido (es. https://tiktok.com/@tuoaccount)" />
-                  </div>
-                </div>
-              </section>
-
-              {/* ─── VI. BRIEF ────────────────────────── */}
-              <section>
-                <SectionHeader n="VI" title="Il tuo brand" />
+                <SectionHeader n="V" title="Il tuo brand" />
                 <div className="space-y-5">
                   <div>
                     <label className="label">Settore / nicchia *</label>
@@ -1106,94 +1074,9 @@ export default function OrderForm() {
                 </div>
               </section>
 
-              {/* ─── VII. DATI LEGALI ────────────────── */}
+              {/* ─── VI. IMMAGINI ────────────────────── */}
               <section>
-                <SectionHeader n="VII" title="Dati legali azienda" hint="opz. ma necessari per pubblicare" />
-                <p className="mb-5 text-xs leading-relaxed text-mist">
-                  Servono per generare automaticamente le pagine{" "}
-                  <strong className="text-bone">Note legali</strong>,{" "}
-                  <strong className="text-bone">Privacy</strong> e{" "}
-                  <strong className="text-bone">Cookie policy</strong> del tuo
-                  sito (obbligatorie per legge in Italia — D.lgs 70/2003).
-                  Puoi anche inviarceli via WhatsApp dopo il brief.
-                </p>
-                <div className="grid gap-5 md:grid-cols-2">
-                  <div className="md:col-span-2">
-                    <label className="label">Ragione sociale completa</label>
-                    <input
-                      name="legalCompanyName"
-                      type="text"
-                      maxLength={200}
-                      placeholder="es. Studio Bianchi S.r.l. / Mario Rossi Ditta Individuale"
-                      className="input"
-                      defaultValue={draftValues.legalCompanyName ?? ""}
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Partita IVA</label>
-                    <input
-                      name="legalVatNumber"
-                      type="text"
-                      maxLength={11}
-                      pattern="\d{11}"
-                      placeholder="01234567890"
-                      className="input"
-                      defaultValue={draftValues.legalVatNumber ?? ""}
-                      title="P.IVA: 11 cifre senza spazi"
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Codice Fiscale</label>
-                    <input
-                      name="legalFiscalCode"
-                      type="text"
-                      maxLength={16}
-                      placeholder="RSSMRA80A01F205Z (o uguale a P.IVA)"
-                      className="input uppercase"
-                      defaultValue={draftValues.legalFiscalCode ?? ""}
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Iscrizione REA</label>
-                    <input
-                      name="legalRea"
-                      type="text"
-                      maxLength={50}
-                      placeholder="es. MI-1234567"
-                      className="input"
-                      defaultValue={draftValues.legalRea ?? ""}
-                      title="Formato: SIGLA_PROVINCIA-NUMERO (es. MI-1234567)"
-                    />
-                  </div>
-                  <div>
-                    <label className="label">PEC</label>
-                    <input
-                      name="legalPec"
-                      type="email"
-                      maxLength={200}
-                      placeholder="azienda@pec.it"
-                      className="input"
-                      defaultValue={draftValues.legalPec ?? ""}
-                      title="Email PEC obbligatoria per imprese italiane"
-                    />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="label">Capitale sociale (opz., solo SRL/SPA)</label>
-                    <input
-                      name="legalShareCapital"
-                      type="text"
-                      maxLength={50}
-                      placeholder='es. "10.000 € i.v." (interamente versato)'
-                      className="input"
-                      defaultValue={draftValues.legalShareCapital ?? ""}
-                    />
-                  </div>
-                </div>
-              </section>
-
-              {/* ─── VIII. IMMAGINI ────────────────────── */}
-              <section>
-                <SectionHeader n="VIII" title="Le tue foto" hint={`${images.length}/30`} />
+                <SectionHeader n="VI" title="Le tue foto" hint={`${images.length}/30`} />
                 <p className="mb-5 text-sm text-mist">
                   Solo le tue foto. Niente stock photography, niente archivio.
                   Max 30 file, 10MB l&apos;uno.
@@ -1308,12 +1191,14 @@ export default function OrderForm() {
                           </div>
                           <div className="mt-3 flex items-baseline gap-2">
                             <span className="display text-3xl font-bold tracking-tightest text-cream">{formatEur(t.priceEur)}</span>
+                            <span className="font-mono text-xs text-mist">/mese</span>
                             {t.priceEurOriginal && t.priceEurOriginal > t.priceEur && (
                               <span className="font-mono text-sm text-mist line-through decoration-flame/70 decoration-[1.5px]">
                                 {formatEur(t.priceEurOriginal)}
                               </span>
                             )}
                           </div>
+                          <div className="mt-1 text-[10px] uppercase tracking-widest text-smoke">Dominio + hosting inclusi</div>
                           <div className="mt-2 min-h-[2rem] text-xs leading-relaxed text-mist">{t.description}</div>
                           <ul className="mt-3 space-y-1.5 border-t border-bone/5 pt-3">
                             {t.features.map((f, fi) => (
@@ -1520,8 +1405,15 @@ export default function OrderForm() {
                               <span className="shrink-0 rounded-full bg-emerald-500/20 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-emerald-300">
                                 Incluso
                               </span>
+                            ) : getAddonBilling(a.key) === "quote" ? (
+                              <span className="shrink-0 rounded-full bg-brass/15 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-brass">
+                                Su preventivo
+                              </span>
                             ) : (
-                              <span className="shrink-0 font-mono text-xs font-medium text-brass">+{formatEur(a.priceEur)}</span>
+                              <span className="shrink-0 font-mono text-xs font-medium text-brass">
+                                +{formatEur(a.priceEur)}
+                                <span className="text-[10px] font-normal text-mist">{getAddonBilling(a.key) === "oneoff" ? " una tantum" : "/mese"}</span>
+                              </span>
                             )}
                           </span>
                           <span className="mt-1 block text-xs leading-relaxed text-mist">
@@ -1564,8 +1456,8 @@ export default function OrderForm() {
                     Stai compilando il <span className="serif-italic">brief</span>.
                   </p>
                   <p className="mt-4 text-sm leading-relaxed text-mist">
-                    Cinque minuti per dirci chi sei. Poi scegli il pacchetto
-                    e procedi al pagamento.
+                    Cinque minuti per dirci chi sei. Poi scegli il piano:
+                    canone mensile, dominio e hosting inclusi.
                   </p>
 
                   <div className="hairline my-7" />
@@ -1608,7 +1500,7 @@ export default function OrderForm() {
                                   {formatEur(orig)}
                                 </span>
                               )}
-                              <span className="font-mono text-sm font-semibold text-cream">{formatEur(t?.priceEur ?? 0)}</span>
+                              <span className="font-mono text-sm font-semibold text-cream">{formatEur(t?.priceEur ?? 0)}<span className="text-[10px] font-normal text-mist">/mese</span></span>
                             </>
                           );
                         })()}
@@ -1621,6 +1513,7 @@ export default function OrderForm() {
                       const addon = ADDONS.find((a) => a.key === k);
                       if (!addon) return null;
                       const isIncluded = tierIncludedAddons.has(k);
+                      const billing = getAddonBilling(k);
                       return (
                         <div key={k} className="flex items-baseline justify-between">
                           <span className="text-xs text-mist">+ {addon.name}</span>
@@ -1633,8 +1526,10 @@ export default function OrderForm() {
                                 Incluso
                               </span>
                             </span>
+                          ) : billing === "quote" ? (
+                            <span className="font-mono text-[10px] uppercase tracking-widest text-brass">Su preventivo</span>
                           ) : (
-                            <span className="font-mono text-xs text-bone">{formatEur(addon.priceEur)}</span>
+                            <span className="font-mono text-xs text-bone">{formatEur(addon.priceEur)}<span className="text-[10px] font-normal text-mist">{billing === "oneoff" ? " una tantum" : "/mese"}</span></span>
                           )}
                         </div>
                       );
@@ -1644,36 +1539,39 @@ export default function OrderForm() {
                   <div className="hairline my-5" />
 
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="text-sm text-mist">Totale oggi</span>
+                    <span className="text-sm text-mist">Canone mensile</span>
                     <span className="flex items-baseline gap-3">
-                      {originalTotal > total && (
+                      {monthlyOriginalTotal > monthlyTotal && (
                         <span className="display text-2xl font-bold text-flame/85 line-through decoration-flame decoration-[1.5px]">
-                          {formatEur(originalTotal)}
+                          {formatEur(monthlyOriginalTotal)}
                         </span>
                       )}
                       <span className="display text-4xl font-bold tracking-tightest text-cream">
-                        {formatEur(total)}
+                        {formatEur(monthlyTotal)}<span className="display text-base font-normal text-mist">/mese</span>
                       </span>
                     </span>
                   </div>
-                  {originalTotal > total && (
+                  {monthlyOriginalTotal > monthlyTotal && (
                     <p className="mt-1 text-right text-[10px] font-bold uppercase tracking-widest text-flame">
-                      Risparmi {formatEur(originalTotal - total)}
+                      Risparmi {formatEur(monthlyOriginalTotal - monthlyTotal)}/mese
                     </p>
                   )}
-                  <p className="mt-1 text-right text-[10px] uppercase tracking-widest text-smoke">Operazione non soggetta a IVA</p>
-
-                  {/* Mantenimento mensile obbligatorio: hosting + dominio + supporto */}
-                  <div className="mt-5 rounded-xl border border-brass/20 bg-brass/5 p-4">
-                    <div className="flex items-baseline justify-between gap-3">
-                      <span className="text-xs font-semibold text-bone">+ Mantenimento</span>
-                      <span className="font-mono text-sm font-bold text-brass">{formatEur(MONTHLY_MAINTENANCE_EUR)}<span className="text-[10px] font-normal text-mist">/mese</span></span>
+                  {oneoffTotal > 0 && (
+                    <div className="mt-4 flex items-baseline justify-between gap-3 border-t border-bone/5 pt-4">
+                      <span className="text-xs text-mist">Una tantum oggi (logo)</span>
+                      <span className="font-mono text-sm font-semibold text-cream">{formatEur(oneoffTotal)}</span>
                     </div>
+                  )}
+                  <p className="mt-2 text-right text-[10px] uppercase tracking-widest text-smoke">Operazione non soggetta a IVA</p>
+
+                  {/* Canone tutto-incluso: dominio + hosting + mantenimento */}
+                  <div className="mt-5 rounded-xl border border-brass/20 bg-brass/5 p-4">
+                    <span className="text-xs font-semibold text-bone">Tutto incluso nel canone</span>
                     <p className="mt-2 text-[11px] leading-relaxed text-mist">
-                      Include <strong className="text-bone">hosting</strong>,
-                      mantenimento del <strong className="text-bone">dominio</strong> e
-                      risoluzione di eventuali <strong className="text-bone">problemi tecnici</strong> dal nostro lato.
-                      Si attiva al momento del go-live del sito.
+                      Il canone mensile comprende <strong className="text-bone">dominio</strong>,{" "}
+                      <strong className="text-bone">hosting</strong> e{" "}
+                      <strong className="text-bone">mantenimento</strong> (risoluzione problemi tecnici dal nostro lato).
+                      Nessun costo di attivazione: paghi solo il mese.
                     </p>
                   </div>
 

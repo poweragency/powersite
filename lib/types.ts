@@ -32,7 +32,7 @@ export interface TierSpec {
   features: string[];
   /**
    * Addon inclusi automaticamente in questo tier: il prezzo è già nel
-   * pacchetto (non vengono ri-addebitati in calculateTotal) ma le loro
+   * pacchetto (non vengono ri-addebitati nel canone) ma le loro
    * regole di prompting vengono comunque applicate dalla pipeline AI.
    */
   includedAddons?: AddonKey[];
@@ -44,7 +44,21 @@ export interface TierSpec {
 export interface AddonSpec {
   key: AddonKey;
   name: string;
+  /**
+   * Prezzo in €. Interpretato in base a `billing`:
+   *  - "monthly" (default) → canone mensile aggiunto all'abbonamento del tier
+   *  - "oneoff" → addebito una-tantum (es. logo su misura)
+   * Ignorato se `quoteOnly` è true (nessun prezzo, solo richiesta di contatto).
+   */
   priceEur: number;
+  /** Periodicità dell'addebito. Default "monthly". */
+  billing?: "monthly" | "oneoff";
+  /**
+   * Addon "su preventivo": niente prezzo a listino, è solo una spunta che
+   * segnala l'interesse. Un tecnico ricontatta il cliente per definire lo
+   * sviluppo. Non genera line item Stripe (es. gestionale su misura).
+   */
+  quoteOnly?: boolean;
   description: string;
   icon: string;
 }
