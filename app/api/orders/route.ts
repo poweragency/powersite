@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { after } from "next/server";
 import { orderIntakeSchema } from "@/lib/validation";
-import { calculateMonthlyTotal, calculateOneoffTotal } from "@/lib/catalog";
+import { calculateMonthlyTotal } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
 import { uploadImage, uploadEntranceImage, uploadLogo, uploadCatalogPdf, uploadManifest } from "@/lib/blob";
-import { stripe, buildLineItems } from "@/lib/stripe";
 import { sendEmail } from "@/lib/email/send";
 import { orderConfirmation } from "@/lib/email/templates";
 import { TIERS } from "@/lib/catalog";
@@ -94,10 +93,10 @@ export async function POST(req: NextRequest) {
 
     const nonce = crypto.randomUUID();
     const companySlug = slugify(data.company) || "client";
-    // totalEur = CANONE MENSILE ricorrente (tier + addon mensili). Il logo e
-    // gli altri eventuali addebiti una-tantum sono calcolati a parte.
+    // totalEur = CANONE MENSILE indicativo (tier + addon mensili): NON viene
+    // addebitato ora. L'anteprima è gratuita; il canone si attiva solo se il
+    // cliente decide di tenere il sito (gestito a parte). Salvato nel CRM.
     const totalEur = calculateMonthlyTotal(data.tier, data.addons);
-    const oneoffEur = calculateOneoffTotal(data.addons);
 
     // 1. Carica immagini su Vercel Blob
     const imageBlobUrls: string[] = [];
@@ -211,104 +210,68 @@ export async function POST(req: NextRequest) {
     // della request stessa (così funziona su qualsiasi porta del dev server).
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? req.nextUrl.origin;
 
-    // 3a. Modalità BYPASS_STRIPE: salta pagamento, triggera pipeline async
-    //     e reindirizza a /grazie. Pipeline gira in background su /api/orchestrate.
-    if (process.env.BYPASS_STRIPE === "true") {
-      const secret = process.env.ORCHESTRATE_SECRET || process.env.CRON_SECRET;
-      if (!secret) {
-        console.error("[/api/orders] BYPASS_STRIPE attivo ma ORCHESTRATE_SECRET mancante");
-        return NextResponse.json(
-          { error: "Configurazione server incompleta (ORCHESTRATE_SECRET)" },
-          { status: 500 },
-        );
-      }
-
-      // Su Vercel serverless le fetch fire-and-forget vengono CANCELLATE quando
-      // la function ritorna. Usiamo `after()` (Next.js 15) che garantisce
-      // l'esecuzione DOPO la response, mantenendo viva la function.
-      // L'URL del manifest e il secret vanno catturati ora.
-      const manifestUrl = manifest.url;
-      const orchestrateSecret = secret;
-
-      // Mail conferma — no-op se RESEND_API_KEY non è settata.
-      const tierName = TIERS.find((t) => t.key === payload.tier)?.name ?? payload.tier;
-      sendEmail({
-        to: payload.email,
-        subject: `Ordine ricevuto — ${payload.company}`,
-        html: orderConfirmation({
-          firstName: payload.firstName || payload.company,
-          company: payload.company,
-          tier: tierName,
-          totalEur,
-          orderId: payload.nonce,
-        }),
-      }).catch((e) => console.warn("[/api/orders] order confirmation email error:", e));
-
-      after(async () => {
-        try {
-          const res = await fetch(`${appUrl}/api/orchestrate`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${orchestrateSecret}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ manifestUrl, nonce }),
-          });
-          if (!res.ok) {
-            console.error(
-              `[/api/orders] orchestrate fallito ${res.status} per ${nonce}:`,
-              await res.text(),
-            );
-          } else {
-            console.log(`[/api/orders] orchestrate OK per ${nonce}`);
-          }
-        } catch (e) {
-          console.error(`[/api/orders] orchestrate fetch error per ${nonce}:`, e);
-        }
-      });
-
-      console.log(`[/api/orders] BYPASS_STRIPE — pipeline scheduled for ${nonce}`);
-      return NextResponse.json({
-        orderId: nonce,
-        redirectUrl: `/grazie?nonce=${nonce}`,
-      });
+    // 3. Anteprima GRATUITA: nessun pagamento all'invio. Il cliente richiede
+    //    l'anteprima → triggeriamo la pipeline async e reindirizziamo a
+    //    /grazie. La pipeline gira in background su /api/orchestrate.
+    //    L'eventuale canone mensile (se il cliente decide di tenere il sito)
+    //    si gestisce dopo, fuori da questo flusso.
+    const secret = process.env.ORCHESTRATE_SECRET || process.env.CRON_SECRET;
+    if (!secret) {
+      console.error("[/api/orders] ORCHESTRATE_SECRET mancante");
+      return NextResponse.json(
+        { error: "Configurazione server incompleta (ORCHESTRATE_SECRET)" },
+        { status: 500 },
+      );
     }
 
-    // 3b. Modalità Stripe normale (default): crea Checkout Session.
-    //     mode='subscription' perche' il tier è ora un CANONE MENSILE
-    //     (dominio + hosting + mantenimento inclusi). Stripe accetta line
-    //     items misti (recurring + one-time): la prima invoice fattura il
-    //     primo mese + eventuali una-tantum (es. logo), dal secondo solo i
-    //     ricorrenti. Vedi buildLineItems().
-    const session = await stripe().checkout.sessions.create({
-      mode: "subscription",
-      customer_email: data.email,
-      line_items: buildLineItems(data.tier, data.addons),
-      success_url: `${appUrl}/grazie?nonce=${nonce}`,
-      cancel_url: `${appUrl}/ordina?canceled=1`,
-      // Metadata duplicato sulla subscription cosi' arriva anche negli
-      // event invoice.* futuri (renewal, payment_failed, ecc.).
-      subscription_data: {
-        metadata: {
-          nonce,
-          tier: data.tier,
-          email: data.email,
-          company_slug: companySlug,
-        },
-      },
-      metadata: {
-        nonce,
-        tier: data.tier,
-        email: data.email,
-        company_slug: companySlug,
-        manifest_url: manifest.url,
-        // total_eur = canone mensile ricorrente; oneoff_eur = una-tantum (es. logo).
-        total_eur: String(totalEur),
-        oneoff_eur: String(oneoffEur),
-      },
+    // Su Vercel serverless le fetch fire-and-forget vengono CANCELLATE quando
+    // la function ritorna. Usiamo `after()` (Next.js 15) che garantisce
+    // l'esecuzione DOPO la response, mantenendo viva la function.
+    const manifestUrl = manifest.url;
+    const orchestrateSecret = secret;
+
+    // Mail conferma — no-op se RESEND_API_KEY non è settata.
+    const tierName = TIERS.find((t) => t.key === payload.tier)?.name ?? payload.tier;
+    sendEmail({
+      to: payload.email,
+      subject: `Richiesta di anteprima ricevuta — ${payload.company}`,
+      html: orderConfirmation({
+        firstName: payload.firstName || payload.company,
+        company: payload.company,
+        tier: tierName,
+        totalEur,
+        orderId: payload.nonce,
+      }),
+    }).catch((e) => console.warn("[/api/orders] order confirmation email error:", e));
+
+    after(async () => {
+      try {
+        const res = await fetch(`${appUrl}/api/orchestrate`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${orchestrateSecret}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ manifestUrl, nonce }),
+        });
+        if (!res.ok) {
+          console.error(
+            `[/api/orders] orchestrate fallito ${res.status} per ${nonce}:`,
+            await res.text(),
+          );
+        } else {
+          console.log(`[/api/orders] orchestrate OK per ${nonce}`);
+        }
+      } catch (e) {
+        console.error(`[/api/orders] orchestrate fetch error per ${nonce}:`, e);
+      }
     });
 
-    return NextResponse.json({ orderId: nonce, checkoutUrl: session.url });
+    console.log(`[/api/orders] anteprima gratuita — pipeline scheduled for ${nonce}`);
+    return NextResponse.json({
+      orderId: nonce,
+      redirectUrl: `/grazie?nonce=${nonce}`,
+    });
   } catch (err) {
     console.error("[/api/orders]", err);
     return NextResponse.json(

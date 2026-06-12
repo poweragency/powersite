@@ -1,6 +1,6 @@
 # PowerLanding (`powersite`)
 
-SaaS che **vende e genera landing page con AI**: il cliente compila il brief e paga su `/ordina`, una pipeline crea i contenuti con Claude, costruisce un progetto Next.js da template, lo pubblica come **repo GitHub dedicata + deploy Vercel**, e registra il lead nel CRM Power Hub.
+SaaS che **genera landing page con AI**: il cliente compila il brief su `/ordina` e **richiede l'anteprima gratuita** (nessun pagamento), una pipeline crea i contenuti con Claude, costruisce un progetto Next.js da template, lo pubblica come **repo GitHub dedicata + deploy Vercel**, e registra il lead nel CRM Power Hub. Il canone mensile si attiva solo se il cliente decide di tenere il sito (gestito fuori dal flusso di intake).
 
 > Naming: cartella `POWERLANDING`, package `power-agency-landing-saas`, repo GitHub `poweragency/powersite`. Il nome commerciale è **PowerLanding**.
 
@@ -35,11 +35,11 @@ Stripe: i Price di tier e addon mensili devono essere **ricorrenti mensili**, il
 
 | Route | Ruolo |
 |---|---|
-| `POST /api/orders` | intake form: brief + upload (immagini ≤30×10MB, logo, PDF, video ingresso), manifest su Vercel Blob, crea Stripe Checkout (o, con `BYPASS_STRIPE=true`, lancia direttamente la pipeline) |
-| `POST /api/stripe/webhook` | `checkout.session.completed` → verifica firma → pipeline (idempotente su event.id) |
+| `POST /api/orders` | intake form: brief + upload (immagini ≤30×10MB, logo, PDF, video ingresso), manifest su Vercel Blob, **lancia direttamente la pipeline** (anteprima gratuita, nessun checkout) e reindirizza a `/grazie` |
 | `POST /api/orchestrate` | pipeline async interna, auth `Bearer ORCHESTRATE_SECRET` (fallback `CRON_SECRET`), idempotente su nonce |
 | `GET /api/cron/cleanup-orphans` | cron Vercel 03:00 UTC: blob orfani >24h + marker >7gg, auth `Bearer CRON_SECRET` |
-| `POST /api/stripe/checkout` | **deprecata** (410 Gone) — il checkout è inline in `/api/orders` |
+| `POST /api/stripe/webhook` | **dormiente** — il flusso non crea più Checkout, quindi non viene chiamato. Restano `lib/stripe.ts` + webhook per un eventuale step "paga per tenere il sito" |
+| `POST /api/stripe/checkout` | **deprecata** (410 Gone) |
 
 ## Comandi
 

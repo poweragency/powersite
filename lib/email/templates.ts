@@ -48,16 +48,16 @@ export function orderConfirmation(p: OrderConfirmationParams) {
   const body = `
     <tr><td style="padding:16px 32px 8px;">
       <h1 style="margin:0;font-size:28px;line-height:1.2;color:#F4EDE0;font-family:Georgia,serif;">Grazie, ${escape(p.firstName)}.</h1>
-      <p style="margin:16px 0 0;color:#EBE2D3;font-size:16px;line-height:1.6;">Abbiamo ricevuto il tuo ordine per <strong>${escape(p.company)}</strong>. Il nostro team è già al lavoro.</p>
+      <p style="margin:16px 0 0;color:#EBE2D3;font-size:16px;line-height:1.6;">Abbiamo ricevuto la tua richiesta di anteprima per <strong>${escape(p.company)}</strong>. Il nostro team è già al lavoro — e l'anteprima è gratuita.</p>
     </td></tr>
     <tr><td style="padding:8px 32px 24px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:rgba(201,165,92,0.06);border:1px solid rgba(201,165,92,0.2);border-radius:12px;">
         <tr><td style="padding:18px 20px;">
           <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#C9A55C;font-weight:600;">Pacchetto</div>
           <div style="margin-top:4px;font-size:18px;color:#F4EDE0;font-weight:600;">${escape(p.tier)}</div>
-          <div style="margin-top:14px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#C9A55C;font-weight:600;">Canone mensile</div>
+          <div style="margin-top:14px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#C9A55C;font-weight:600;">Se decidi di tenerlo</div>
           <div style="margin-top:4px;font-size:18px;color:#F4EDE0;font-weight:600;">€${p.totalEur.toFixed(2)}/mese</div>
-          <div style="margin-top:4px;font-size:12px;color:#9C9180;">Dominio e hosting inclusi.</div>
+          <div style="margin-top:4px;font-size:12px;color:#9C9180;">Solo se ti piace. Dominio e hosting inclusi.</div>
           <div style="margin-top:14px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#9C9180;font-weight:500;">Riferimento</div>
           <div style="margin-top:4px;font-family:'Courier New',monospace;font-size:13px;color:#EBE2D3;">${escape(p.orderId)}</div>
         </td></tr>

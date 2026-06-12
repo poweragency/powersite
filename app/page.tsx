@@ -49,7 +49,7 @@ const VALUES = [
   { t: "Codice scritto a mano.", d: "Sviluppiamo con cura riga per riga. Il sito è veloce, pulito, e tuo per sempre." },
   { t: "Le tue immagini.", d: "Carichiamo le foto del tuo business. Niente stock photography, niente immagini generiche da archivio." },
   { t: "Copy che vende.", d: "Ogni parola è studiata per portare risultati. Headline, CTA, FAQ, tutto curato da un nostro esperto copywriter." },
-  { t: "Velocità garantita.", d: "48 ore dal pagamento al link di anteprima." },
+  { t: "Velocità garantita.", d: "48 ore dalla richiesta al link di anteprima." },
   { t: "Tuo per sempre.", d: "Codice, repository, dominio: tutto a tuo nome. Vuoi cambiare studio domani? Hai già tutto in mano." },
 ];
 
@@ -74,11 +74,11 @@ const TESTIMONIALS = [
 const FAQ = [
   {
     q: "Quanto ci impiegate davvero?",
-    a: "Quarantotto ore dal pagamento al link di anteprima. È il nostro impegno, scritto. Se per qualsiasi ragione non riusciamo a rispettarlo, ti rimborsiamo integralmente.",
+    a: "Quarantotto ore dalla richiesta al link di anteprima. È il nostro impegno, scritto. E comunque l'anteprima non ti costa nulla: la guardi con calma e decidi se tenere il sito.",
   },
   {
     q: "Cosa serve per iniziare?",
-    a: "Una mail, i dati del tuo business, qualche foto. Niente account da creare, niente login da ricordare, niente file da scaricare. Compili il brief, paghi, ricevi il sito.",
+    a: "Una mail, i dati del tuo business, qualche foto. Niente account da creare, niente login da ricordare, niente file da scaricare. Compili il brief e ricevi la tua anteprima gratuita.",
   },
   {
     q: "Posso modificare il sito dopo?",
@@ -307,7 +307,7 @@ export default function HomePage() {
 
             <Reveal delay={600}>
               <p className="mt-8 font-mono text-[11px] uppercase tracking-widest text-smoke">
-                Pacchetti dettagliati nel checkout · Pagamento sicuro via Stripe
+                Crei il sito gratis · Paghi solo se decidi di tenerlo
               </p>
             </Reveal>
           </div>

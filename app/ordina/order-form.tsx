@@ -516,11 +516,10 @@ export default function OrderForm() {
     try {
       const res = await fetch("/api/orders", { method: "POST", body: formData });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Errore nell'invio dell'ordine");
+      if (!res.ok) throw new Error(data.error ?? "Errore nell'invio della richiesta");
 
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else if (data.redirectUrl) {
+      // Anteprima gratuita: nessun checkout, si va dritti alla conferma.
+      if (data.redirectUrl) {
         router.push(data.redirectUrl);
       } else {
         router.push(`/grazie?nonce=${data.orderId}`);
@@ -801,7 +800,7 @@ export default function OrderForm() {
                       <span className="font-semibold text-cream">Non ho un logo</span>
                       <span className="font-mono text-xs text-brass">+{formatEur(logoPriceEur)} <span className="text-[10px] font-normal text-mist">una tantum</span></span>
                     </span>
-                    <span className="text-xs text-mist">Te lo disegniamo noi — addon &ldquo;Logo design su misura&rdquo;, pagamento una-tantum.</span>
+                    <span className="text-xs text-mist">Te lo disegniamo noi — addon &ldquo;Logo design su misura&rdquo;, una tantum (solo se lo vuoi).</span>
                   </button>
                 </div>
                 {logoChoice === "upload" && (
@@ -1400,8 +1399,8 @@ export default function OrderForm() {
                     Stai compilando il <span className="serif-italic">brief</span>.
                   </p>
                   <p className="mt-4 text-sm leading-relaxed text-mist">
-                    Cinque minuti per dirci chi sei. Poi scegli il piano:
-                    canone mensile, dominio e hosting inclusi.
+                    Cinque minuti per dirci chi sei. Poi scegli il piano e
+                    ricevi la tua anteprima gratuita.
                   </p>
 
                   <div className="hairline my-7" />
@@ -1419,7 +1418,7 @@ export default function OrderForm() {
                   </button>
 
                   <p className="mt-4 text-center text-[10px] uppercase tracking-widest text-smoke">
-                    Dopo: pacchetto + pagamento sicuro
+                    Dopo: scegli il piano · Anteprima gratis
                   </p>
                 </>
               ) : (
@@ -1483,7 +1482,7 @@ export default function OrderForm() {
                   <div className="hairline my-5" />
 
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="text-sm text-mist">Canone mensile</span>
+                    <span className="text-sm text-mist">Se decidi di tenerlo</span>
                     <span className="flex items-baseline gap-3">
                       {monthlyOriginalTotal > monthlyTotal && (
                         <span className="display text-2xl font-bold text-flame/85 line-through decoration-flame decoration-[1.5px]">
@@ -1502,20 +1501,19 @@ export default function OrderForm() {
                   )}
                   {oneoffTotal > 0 && (
                     <div className="mt-4 flex items-baseline justify-between gap-3 border-t border-bone/5 pt-4">
-                      <span className="text-xs text-mist">Una tantum oggi (logo)</span>
+                      <span className="text-xs text-mist">Logo su misura (una tantum)</span>
                       <span className="font-mono text-sm font-semibold text-cream">{formatEur(oneoffTotal)}</span>
                     </div>
                   )}
-                  <p className="mt-2 text-right text-[10px] uppercase tracking-widest text-smoke">Operazione non soggetta a IVA</p>
 
-                  {/* Canone tutto-incluso: dominio + hosting + mantenimento */}
+                  {/* Anteprima gratis: il canone si attiva solo se tieni il sito */}
                   <div className="mt-5 rounded-xl border border-brass/20 bg-brass/5 p-4">
-                    <span className="text-xs font-semibold text-bone">Tutto incluso nel canone</span>
+                    <span className="text-xs font-semibold text-bone">L&apos;anteprima è gratis</span>
                     <p className="mt-2 text-[11px] leading-relaxed text-mist">
-                      Il canone mensile comprende <strong className="text-bone">dominio</strong>,{" "}
-                      <strong className="text-bone">hosting</strong> e{" "}
-                      <strong className="text-bone">mantenimento</strong> (risoluzione problemi tecnici dal nostro lato).
-                      Nessun costo di attivazione: paghi solo il mese.
+                      Costruiamo il sito e te lo mostriamo <strong className="text-bone">senza pagare nulla</strong>.
+                      Paghi il canone <strong className="text-bone">solo se decidi di tenerlo</strong> — e comprende
+                      già <strong className="text-bone">dominio</strong>, <strong className="text-bone">hosting</strong> e{" "}
+                      <strong className="text-bone">mantenimento</strong>.
                     </p>
                   </div>
 
@@ -1565,11 +1563,11 @@ export default function OrderForm() {
                     }}
                     className="btn-flame btn-lg w-full disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {submitting ? "Invio in corso..." : "Procedi al pagamento"}
+                    {submitting ? "Invio in corso..." : "Richiedi la tua anteprima gratuita"}
                   </button>
 
                   <p className="mt-4 text-center text-[10px] uppercase tracking-widest text-smoke">
-                    Pagamento sicuro · Stripe
+                    Gratis · Nessun pagamento ora
                   </p>
                 </>
               )}
